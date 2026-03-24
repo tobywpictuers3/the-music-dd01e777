@@ -6,20 +6,23 @@ import AppearOnScroll from "@/components/AppearOnScroll";
 import GuidePresenter from "@/components/GuidePresenter";
 
 import {
-  STAGE_CHARACTERS,
-  MARQUEE_ITEMS,
+  GUIDE_SECTION_ID,
   HERO_TEXT,
+  HOME_HERO_ID,
+  MARQUEE_ITEMS,
+  STAGE_CHARACTERS,
+  type CharacterKey,
 } from "@/config/homepage";
 
-// Stage backgrounds
+// רקעי במה
 import stageBgLight from "@/assets/homepage/stage/lightstage.png";
 import stageBgDark from "@/assets/homepage/stage/darkstage.png";
 
-// Logo
+// לוגו
 import logoLight from "@/assets/logo-toby.png";
 import logoDark from "@/assets/whitelogo.png";
 
-// Sign-holding characters (stage)
+// דמויות-שלט על הבמה
 import signPiano from "@/assets/homepage/characters-signs/piano.png";
 import signEguitar from "@/assets/homepage/characters-signs/eguitar.png";
 import signGuitar from "@/assets/homepage/characters-signs/guitar.png";
@@ -27,7 +30,7 @@ import signDrums from "@/assets/homepage/characters-signs/drums.png";
 import signSaxophone from "@/assets/homepage/characters-signs/saxophone.png";
 import signViolin from "@/assets/homepage/characters-signs/violin.png";
 
-// Lower-page presenter characters
+// דמויות מגישות למקטע התחתון
 import drums from "@/assets/homepage/characters/drums.png";
 import piano from "@/assets/homepage/characters/piano.png";
 import saxophone from "@/assets/homepage/characters/saxophone.png";
@@ -35,17 +38,17 @@ import violin from "@/assets/homepage/characters/violin.png";
 import guitarClassic from "@/assets/homepage/characters/guitar.png";
 import guitarElectric from "@/assets/homepage/characters/eguitar.png";
 
-// Textures for quote cards
+// טקסטורות לכרטיסים
 import texStarsLight from "@/assets/homepage/textures/stars-light.png";
 import texStarsDark from "@/assets/homepage/textures/stars-dark.png";
 
 /**
  * =========================================================
- * מפת תמונות של דמויות-שלט שעל הבמה
- * אם מחליפים קבצים / שמות קבצים — משנים רק כאן
+ * מפת תמונות — דמויות הבמה
+ * אם מחליפים שם קובץ או נתיב, משנים רק כאן.
  * =========================================================
  */
-const SIGN_CHARACTER_MAP: Record<string, string> = {
+const SIGN_CHARACTER_MAP: Record<CharacterKey, string> = {
   piano: signPiano,
   eguitar: signEguitar,
   guitar: signGuitar,
@@ -56,10 +59,10 @@ const SIGN_CHARACTER_MAP: Record<string, string> = {
 
 /**
  * =========================================================
- * מפת התמונות של הדמויות למקטע הכרטיסים למטה
+ * מפת תמונות — דמויות המקטע התחתון
  * =========================================================
  */
-const PRESENTER_MAP: Record<string, string> = {
+const PRESENTER_MAP: Record<CharacterKey, string> = {
   piano,
   eguitar: guitarElectric,
   guitar: guitarClassic,
@@ -72,7 +75,7 @@ export default function Index() {
   /**
    * =======================================================
    * showMarquee
-   * הבאנר העליון מופיע רק אחרי שיוצאים מההירו
+   * הבאנר מופיע רק אחרי שיוצאים מההירו
    * =======================================================
    */
   const heroRef = useRef<HTMLElement>(null);
@@ -83,10 +86,15 @@ export default function Index() {
       ([entry]) => {
         setShowMarquee(!entry.isIntersecting);
       },
-      { threshold: 0.05 }
+      {
+        threshold: 0.04,
+      }
     );
 
-    if (heroRef.current) observer.observe(heroRef.current);
+    if (heroRef.current) {
+      observer.observe(heroRef.current);
+    }
+
     return () => observer.disconnect();
   }, []);
 
@@ -120,13 +128,11 @@ export default function Index() {
 
         .sparkle-star {
           position: absolute;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
+          border-radius: 9999px;
+          pointer-events: none;
           background: hsl(var(--primary));
           box-shadow: 0 0 6px 2px hsl(var(--primary) / 0.6);
           animation: sparkle-float 1.6s ease-in-out infinite;
-          pointer-events: none;
         }
       `}</style>
 
@@ -135,6 +141,7 @@ export default function Index() {
 
         {/* ======================================================
             באנר רץ
+            לא נראה בתחילת הדף
             מופיע רק אחרי שיוצאים מההירו
         ====================================================== */}
         {showMarquee && (
@@ -157,13 +164,16 @@ export default function Index() {
 
         {/* ======================================================
             HERO / STAGE
+            זה החלק שצריך להיות יציב ונקי:
+            1) טקסט למעלה
+            2) אזור דמויות במה מופרד למטה
         ====================================================== */}
         <section
           ref={heroRef}
-          id="home-hero"
+          id={HOME_HERO_ID}
           className="relative isolate overflow-hidden"
         >
-          {/* רקע הבמה */}
+          {/* רקע במה */}
           <div className="absolute inset-0">
             <img
               src={stageBgLight}
@@ -175,31 +185,30 @@ export default function Index() {
               alt=""
               className="hidden h-full w-full object-cover dark:block"
             />
+
+            {/* fade לתוכן שמתחת */}
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
           </div>
 
-          {/* ==================================================
-              גובה כל אזור ההירו
-              אם הדמויות מטפסות גבוה מדי על הכותרת:
-              הגדילי min-h כאן
-          ================================================== */}
-          <div className="relative mx-auto min-h-[820px] max-w-[1600px] px-4 pt-10 md:min-h-[940px] md:px-8 lg:min-h-[1040px]">
+          {/* מעטפת פנימית */}
+          <div className="relative mx-auto max-w-[1600px] min-h-[900px] px-4 pt-8 md:min-h-[1020px] md:px-8 lg:min-h-[1100px]">
             {/* ==================================================
                 טקסט ההירו
+                שמרתי ריווח תחתון גדול כדי לפנות מקום לדמויות
             ================================================== */}
-            <div className="relative z-20 mx-auto flex max-w-3xl flex-col items-center pt-6 text-center md:pt-10">
-              {/* לוגו בהיר */}
+            <div className="relative z-20 mx-auto flex max-w-3xl flex-col items-center pt-6 pb-[310px] text-center md:pt-10 md:pb-[390px] lg:pb-[450px]">
+              {/* לוגו במצב בהיר */}
               <img
                 src={logoLight}
                 alt="Toby Music"
-                className="mb-4 h-[60px] object-contain drop-shadow-lg dark:hidden md:h-[80px] lg:h-[96px]"
+                className="mb-4 h-[62px] object-contain drop-shadow-lg dark:hidden md:h-[84px] lg:h-[98px]"
               />
 
-              {/* לוגו כהה */}
+              {/* לוגו במצב כהה */}
               <img
                 src={logoDark}
                 alt="Toby Music"
-                className="mb-4 hidden h-[60px] object-contain drop-shadow-lg dark:block md:h-[80px] lg:h-[96px]"
+                className="mb-4 hidden h-[62px] object-contain drop-shadow-lg dark:block md:h-[84px] lg:h-[98px]"
               />
 
               {/* כותרת */}
@@ -207,14 +216,20 @@ export default function Index() {
                 {HERO_TEXT.subtitle}{" "}
                 <a
                   href={HERO_TEXT.linkHref}
-                  className="relative inline-block cursor-pointer text-accent underline underline-offset-8 decoration-accent/35 decoration-2 transition-colors hover:text-accent/80"
+                  className="relative inline-block cursor-pointer text-accent underline decoration-accent/35 decoration-2 underline-offset-8 transition-colors hover:text-accent/80"
                 >
                   {HERO_TEXT.linkWord}
 
                   {/* נצנצים סביב "כאן" */}
                   <span
                     className="sparkle-star"
-                    style={{ top: "-10px", right: "-6px", animationDelay: "0s" }}
+                    style={{
+                      top: "-10px",
+                      right: "-6px",
+                      width: 8,
+                      height: 8,
+                      animationDelay: "0s",
+                    }}
                     aria-hidden="true"
                   />
                   <span
@@ -222,9 +237,9 @@ export default function Index() {
                     style={{
                       top: "-4px",
                       left: "-10px",
-                      animationDelay: "0.4s",
                       width: 6,
                       height: 6,
+                      animationDelay: "0.4s",
                     }}
                     aria-hidden="true"
                   />
@@ -233,9 +248,9 @@ export default function Index() {
                     style={{
                       bottom: "-8px",
                       right: "4px",
-                      animationDelay: "0.8s",
                       width: 5,
                       height: 5,
+                      animationDelay: "0.8s",
                     }}
                     aria-hidden="true"
                   />
@@ -244,9 +259,9 @@ export default function Index() {
                     style={{
                       top: "2px",
                       right: "-14px",
-                      animationDelay: "1.2s",
                       width: 7,
                       height: 7,
+                      animationDelay: "1.2s",
                     }}
                     aria-hidden="true"
                   />
@@ -255,9 +270,9 @@ export default function Index() {
                     style={{
                       bottom: "-6px",
                       left: "-8px",
-                      animationDelay: "0.6s",
                       width: 4,
                       height: 4,
+                      animationDelay: "0.6s",
                     }}
                     aria-hidden="true"
                   />
@@ -279,53 +294,53 @@ export default function Index() {
             </div>
 
             {/* ==================================================
-                דמויות השלט על הבמה
-                חשוב:
-                left מגיע מ-homepage.ts כנקודת עיגון של המרכז-תחתית
-                לכן כאן יש -translate-x-1/2
+                אזור דמויות הבמה
+                זה ההבדל הגדול בין "טלאי" לבין מבנה נכון:
+                יש שכבה ייעודית לדמויות, נפרדת מטקסט ההירו
             ================================================== */}
-            {STAGE_CHARACTERS.map((char) => (
-              <Link
-                key={char.character}
-                to={char.href}
-                className="group absolute -translate-x-1/2 origin-bottom select-none transition-transform duration-300 hover:scale-105"
-                style={{
-                  left: char.stage.left,
-                  bottom: char.stage.bottom,
-                  width: char.stage.width,
-                  zIndex: char.stage.zIndex,
-                }}
-                aria-label={`מעבר לדף ${char.title}`}
-              >
-                <div className="relative">
-                  {/* תמונת הדמות */}
-                  <img
-                    src={SIGN_CHARACTER_MAP[char.character]}
-                    alt={char.title}
-                    className="block w-full drop-shadow-[0_14px_30px_rgba(0,0,0,0.22)]"
-                  />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[360px] md:h-[470px] lg:h-[560px]">
+              {STAGE_CHARACTERS.map((char) => (
+                <Link
+                  key={char.character}
+                  to={char.href}
+                  className="pointer-events-auto group absolute -translate-x-1/2 origin-bottom transition-transform duration-300 hover:scale-105"
+                  style={{
+                    left: char.stage.left,
+                    bottom: char.stage.bottom,
+                    width: char.stage.width,
+                    zIndex: char.stage.zIndex,
+                  }}
+                  aria-label={`מעבר לדף ${char.title}`}
+                >
+                  <div className="relative">
+                    {/* דמות */}
+                    <img
+                      src={SIGN_CHARACTER_MAP[char.character]}
+                      alt={char.title}
+                      className="block w-full drop-shadow-[0_14px_30px_rgba(0,0,0,0.22)]"
+                    />
 
-                  {/* ==========================================
-                      טקסט על השלט
-                      אם צריך להזיז אותו:
-                      משנים homepage.ts -> signBox
-                  ========================================== */}
-                  <div
-                    className="absolute flex items-center justify-center"
-                    style={{
-                      top: char.signBox.top,
-                      left: char.signBox.left,
-                      width: char.signBox.width,
-                      height: char.signBox.height,
-                    }}
-                  >
-                    <span className="text-center text-[clamp(9px,1vw,16px)] font-bold leading-tight text-foreground drop-shadow-sm transition-colors group-hover:text-accent">
-                      {char.title}
-                    </span>
+                    {/* ==========================================
+                        טקסט על השלט
+                        אם צריך להזיז, משנים רק homepage.ts → signBox
+                    ========================================== */}
+                    <div
+                      className="absolute flex items-center justify-center"
+                      style={{
+                        top: char.signBox.top,
+                        left: char.signBox.left,
+                        width: char.signBox.width,
+                        height: char.signBox.height,
+                      }}
+                    >
+                      <span className="text-center text-[clamp(9px,0.95vw,16px)] font-bold leading-tight text-foreground drop-shadow-sm transition-colors group-hover:text-accent">
+                        {char.title}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -335,7 +350,8 @@ export default function Index() {
         <GuidePresenter />
 
         {/* ======================================================
-            כרטיסים למטה
+            כרטיסי הסבר למטה
+            נשארים theme-aware עם טקסטורה עדינה
         ====================================================== */}
         <AppearOnScroll>
           <section className="px-4 py-12 md:px-8 md:py-20" dir="rtl">
@@ -347,12 +363,14 @@ export default function Index() {
                     to={char.href}
                     className="group relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl md:p-8"
                   >
-                    {/* שכבת טקסטורה עדינה */}
+                    {/* טקסטורה בהירה */}
                     <img
                       src={texStarsLight}
                       alt=""
                       className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.12] dark:hidden"
                     />
+
+                    {/* טקסטורה כהה */}
                     <img
                       src={texStarsDark}
                       alt=""
@@ -360,7 +378,7 @@ export default function Index() {
                     />
 
                     <div className="relative z-10">
-                      {/* תופים מעט גדולים יותר */}
+                      {/* תופים גדולים יותר */}
                       <img
                         src={PRESENTER_MAP[char.character]}
                         alt={char.title}
