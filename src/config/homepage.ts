@@ -1,45 +1,62 @@
 /**
- * Homepage Configuration — Single Source of Truth
+ * Homepage configuration
+ * ======================
+ * זה מקור האמת היחיד של דף הבית.
  *
- * כאן נמצאת כל השליטה הידידותית על:
- * 1. איזה דף שייך לאיזו דמות
- * 2. מיקום הדמויות על הבמה
- * 3. מיקום הכותרת על השלט של כל דמות
- * 4. טקסטים כלליים של דף הבית
- *
- * ===============================
- * איך מזיזים דמות?
- * ===============================
- * stage.left   = ימינה / שמאלה
- * stage.bottom = למעלה / למטה
- * stage.width  = גדול / קטן
+ * כאן שולטים על:
+ * 1) מיפוי דפים ← דמויות
+ * 2) מיקומי דמויות על הבמה
+ * 3) מיקום הכיתוב בתוך השלט של כל דמות
+ * 4) טקסטים כלליים של ההירו והמגיש
  *
  * חשוב:
- * left אצלנו הוא נקודת המרכז-תחתית של הדמות,
- * ולא תחילת המסגרת של קובץ התמונה.
- *
- * ===============================
- * איך מזיזים את הכיתוב שעל השלט?
- * ===============================
- * signBox.top    = למעלה / למטה
- * signBox.left   = ימינה / שמאלה
- * signBox.width  = רוחב אזור הכיתוב
- * signBox.height = גובה אזור הכיתוב
+ * left = נקודת עיגון של מרכז התחתית של הדמות
+ * bottom = גובה הבסיס של הדמות מהרצפה
+ * width = גודל הדמות
  */
 
+export const HOME_HERO_ID = "home-hero";
+export const GUIDE_SECTION_ID = "guide-presenter";
+
+export type CharacterKey =
+  | "piano"
+  | "eguitar"
+  | "guitar"
+  | "drums"
+  | "saxophone"
+  | "violin";
+
 export type StagePlacement = {
-  /** נקודת עיגון אופית */
+  /**
+   * עוגן אופקי של מרכז התחתית
+   * מזיז ימינה / שמאלה
+   */
   left: string;
-  /** גובה הדמות מהרצפה */
+
+  /**
+   * גובה בסיס הדמות מהרצפה
+   * מזיז למעלה / למטה
+   */
   bottom: string;
-  /** רוחב יחסי של כל הדמות */
+
+  /**
+   * גודל הדמות
+   * מגדיל / מקטין
+   */
   width: string;
-  /** סדר שכבות */
+
+  /**
+   * סדר שכבות
+   */
   zIndex: number;
 };
 
 export type SignBox = {
-  /** מיקום פנימי של הטקסט בתוך השלט */
+  /**
+   * אזור הכיתוב בתוך השלט
+   * top  = למעלה / למטה
+   * left = ימינה / שמאלה
+   */
   top: string;
   left: string;
   width: string;
@@ -47,49 +64,40 @@ export type SignBox = {
 };
 
 export type StageCharacter = {
-  /** כותרת הדף שמופיעה על השלט */
   title: string;
-  /** הנתיב של הדף */
   href: string;
-  /**
-   * מפתח הדמות
-   * חייב להתאים לשמות במפת האימג'ים ב-Index.tsx
-   */
-  character: "piano" | "eguitar" | "guitar" | "drums" | "saxophone" | "violin";
-  /** מיקום הדמות על הבמה */
+  character: CharacterKey;
   stage: StagePlacement;
-  /** מיקום הטקסט בתוך השלט של הדמות */
   signBox: SignBox;
-  /** טקסט לכרטיסים למטה */
   quote: string;
 };
 
 export const STAGE_CHARACTERS: StageCharacter[] = [
   /**
-   * 1 — הכי שמאלי, נמוך
+   * 1 — פסנתר — הכי שמאלי, נמוך
    */
   {
     title: "תלמידות",
     href: "/students",
     character: "piano",
     stage: {
-      left: "11%",
-      bottom: "1.5%",
-      width: "18%",
-      zIndex: 10,
+      left: "11.5%",
+      bottom: "0.5%",
+      width: "18.5%",
+      zIndex: 12,
     },
     signBox: {
-      top: "4.5%",
-      left: "12%",
-      width: "76%",
-      height: "18%",
+      top: "5%",
+      left: "10%",
+      width: "80%",
+      height: "16%",
     },
     quote:
       "מרחב שמחבר בין לימוד, תרגול, התקדמות וקשר אישי — בצורה חיה ונעימה.",
   },
 
   /**
-   * 2 — שמאל-מרכז, קצת יותר גבוה
+   * 2 — גיטרה חשמלית — שמאל-מרכז
    */
   {
     title: "תזמורות",
@@ -97,14 +105,14 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
     character: "eguitar",
     stage: {
       left: "26%",
-      bottom: "8%",
-      width: "10.25%",
-      zIndex: 13,
+      bottom: "7.5%",
+      width: "10.5%",
+      zIndex: 15,
     },
     signBox: {
       top: "4.5%",
-      left: "12%",
-      width: "76%",
+      left: "11%",
+      width: "78%",
       height: "18%",
     },
     quote:
@@ -112,22 +120,22 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
   },
 
   /**
-   * 3 — ליד 2, מעט גבוה יותר
+   * 3 — גיטרה קלאסית — מעט ימינה מ-2, קצת יותר גבוהה
    */
   {
     title: "אודות",
     href: "/about",
     character: "guitar",
     stage: {
-      left: "34.5%",
+      left: "35%",
       bottom: "9.5%",
-      width: "10.25%",
-      zIndex: 14,
+      width: "10.5%",
+      zIndex: 16,
     },
     signBox: {
       top: "4.5%",
-      left: "12%",
-      width: "76%",
+      left: "11%",
+      width: "78%",
       height: "18%",
     },
     quote:
@@ -135,7 +143,7 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
   },
 
   /**
-   * 4 — אמצע, הרחב ביותר
+   * 4 — תופים — במרכז, הכי דומיננטי
    */
   {
     title: "תווים",
@@ -143,37 +151,37 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
     character: "drums",
     stage: {
       left: "50.5%",
-      bottom: "11%",
+      bottom: "10.5%",
       width: "17.5%",
-      zIndex: 9,
+      zIndex: 11,
     },
     signBox: {
-      top: "3%",
-      left: "12%",
-      width: "76%",
-      height: "15.5%",
+      top: "3.5%",
+      left: "9%",
+      width: "82%",
+      height: "13.5%",
     },
     quote:
       "ספריית תווים מסודרת, נוחה ונעימה לעין — כדי להגיע מהר למה שצריך.",
   },
 
   /**
-   * 5 — ימין-מרכז
+   * 5 — סקסופון — ימין-מרכז
    */
   {
     title: "בלוגים",
     href: "/blog",
     character: "saxophone",
     stage: {
-      left: "69.5%",
-      bottom: "7%",
-      width: "10%",
-      zIndex: 13,
+      left: "69%",
+      bottom: "6.5%",
+      width: "9.75%",
+      zIndex: 15,
     },
     signBox: {
       top: "4.5%",
-      left: "12%",
-      width: "76%",
+      left: "11%",
+      width: "78%",
       height: "18%",
     },
     quote:
@@ -181,22 +189,22 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
   },
 
   /**
-   * 6 — הכי ימני, נמוך
+   * 6 — כינור — הכי ימני, נמוך
    */
   {
     title: "צור קשר",
     href: "/contact",
     character: "violin",
     stage: {
-      left: "82.5%",
-      bottom: "2%",
-      width: "9.5%",
-      zIndex: 10,
+      left: "83%",
+      bottom: "1%",
+      width: "9.25%",
+      zIndex: 12,
     },
     signBox: {
       top: "4.5%",
-      left: "12%",
-      width: "76%",
+      left: "11%",
+      width: "78%",
       height: "18%",
     },
     quote:
@@ -204,7 +212,34 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
   },
 ];
 
-// ── Marquee items ──────────────────────────────────────────────────
+/**
+ * טקסטים של ההירו
+ */
+export const HERO_TEXT = {
+  subtitle: "המוזיקה מתחילה",
+  linkWord: "כאן",
+  /**
+   * יעד הגלילה של "כאן"
+   * אם תרצי להעביר למקום אחר — מחליפים רק כאן.
+   */
+  linkHref: `#${GUIDE_SECTION_ID}`,
+  supportLine: "תזמורות, תלמידות, תווים ותוכן — במקום אחד.",
+  sloganPrefix: "אומנות ואמינות —",
+  sloganAccent: "זו יצירה",
+};
+
+/**
+ * טקסטים של המגיש
+ */
+export const GUIDE_PRESENTER = {
+  welcomeText:
+    "ברוכים הבאים לאתר של טובי. אני אלווה אתכם כאן בסיור באתר. בלחיצה עלי תוכלו לשאול כל מה שתצטרכו אודות הנכתב באתר, אשתדל לענות לכם ככל יכולתי. ניתן גם לבקש הסבר באופן קולי. לשירותכם!",
+  floatingLabel: "שאלו את טובי",
+};
+
+/**
+ * תוכן הבאנר הרץ
+ */
 export const MARQUEE_ITEMS = [
   "תזמורות",
   "תלמידות",
@@ -215,24 +250,3 @@ export const MARQUEE_ITEMS = [
   "אירועים • לימוד • השראה",
   "Toby Music",
 ];
-
-// ── Guide presenter ────────────────────────────────────────────────
-export const GUIDE_PRESENTER = {
-  welcomeText:
-    "ברוכים הבאים לאתר של טובי. אני אלווה אתכם כאן בסיור באתר. בלחיצה עלי תוכלו לשאול כל מה שתצטרכו אודות הנכתב באתר, אשתדל לענות לכם ככל יכולתי. ניתן גם לבקש הסבר באופן קולי. לשירותכם!",
-  floatingLabel: "שאלו את טובי",
-};
-
-// ── Hero text ──────────────────────────────────────────────────────
-export const HERO_TEXT = {
-  subtitle: "המוזיקה מתחילה",
-  linkWord: "כאן",
-  /**
-   * כרגע "כאן" יוריד לאזור המגיש שמתחת לבמה.
-   * אם תרצי שיעבור למקום אחר — מחליפים רק את הערך הזה.
-   */
-  linkHref: "#guide-presenter",
-  supportLine: "תזמורות, תלמידות, תווים ותוכן — במקום אחד.",
-  sloganPrefix: "אומנות ואמינות —",
-  sloganAccent: "זו יצירה",
-};
