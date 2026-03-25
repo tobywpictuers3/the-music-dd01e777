@@ -1,129 +1,258 @@
-import CircleOrbit from "@/components/orbit/CircleOrbit";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
+} from "react";
+import OrbitTopicButton from "./OrbitTopicButton";
+import OrbitPresenter from "./OrbitPresenter";
+import {
+  ORBIT_SETTINGS,
+} from "./orbit.constants";
+import {
+  angleFromTopClockwise,
+  buildResolvedPresenterAssets,
+  preloadImages,
+  resolveAssetByAngle,
+} from "./orbit.utils";
 import type {
-OrbitItem,
-PresenterAssets,
-} from "@/components/orbit/orbit.types";
+  OrbitItem,
+  OrbitVariant,
+  PresenterPoseKey,
+  PresenterAssets,
+} from "./orbit.types";
 
-import red3 from "@/assets/red3.png";
-import lightStage from "@/assets/homepage/stage/lightstage.png";
-import darkStage from "@/assets/homepage/stage/darkstage.png";
-
-type InnerPageOrbitHeroProps = {
-eyebrow: string;
-title: string[];
-intro: string[];
-support?: ReactNode;
-orbitItems: OrbitItem[];
-presenterAssets: PresenterAssets;
-activeOrbitId?: string | null;
-onOrbitItemClick?: (item: OrbitItem) => void;
-presenterAlt?: string;
-reverse?: boolean;
-className?: string;
-center?: ReactNode;
+type CircleOrbitProps = {
+  items: OrbitItem[];
+  presenterAssets: PresenterAssets;
+  onItemClick?: (item: OrbitItem) => void;
+  selectedId?: string | null;
+  className?: string;
+  presenterAlt?: string;
+  center?: ReactNode;
+  variant?: OrbitVariant;
+  lightTextureSrc?: string;
+  darkTextureSrc?: string;
 };
 
-function cn(...classes: Array<string | false | null | undefined>) {
-return classes.filter(Boolean).join(" ");
-}
+export default function CircleOrbit({
+  items,
+  presenterAssets,
+  onItemClick,
+  selectedId = null,
+  className = "",
+  presenterAlt = "המגיש",
+  center,
+  variant = "inner",
+  lightTextureSrc,
+  darkTextureSrc,
+}: CircleOrbitProps) {
+  const orbitZoneRef = useRef<HTMLDivElement | null>(null);
 
-export default function InnerPageOrbitHero({
-eyebrow,
-title,
-intro,
-support,
-orbitItems,
-presenterAssets,
-activeOrbitId = null,
-onOrbitItemClick,
-presenterAlt = "מגישת הדף",
-reverse = false,
-className = "",
-center,
-}: InnerPageOrbitHeroProps) {
-const textBlock = (
-<div className={cn(reverse && "lg:order-2", "max-w-2xl space-y-5")}>
-<div className="text-xs font-medium tracking-[0.34em] text-primary/85">
-{eyebrow}
-</div>
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [activePose, setActivePose] = useState<PresenterPoseKey>("front");
 
-  <h1 className="bg-gradient-to-b from-foreground via-foreground to-primary/85 bg-clip-text text-4xl font-bold leading-tight text-transparent md:text-6xl">
-    {title.map((line, index) => (
-      <span key={`${line}-${index}`}>
-        {line}
-        {index < title.length - 1 && <br />}
-      </span>
-    ))}
-  </h1>
+  const resolvedAssets = useMemo(
+    () => buildResolvedPresenterAssets(presenterAssets),
+    [presenterAssets]
+  );
 
-  <div className="space-y-3 text-lg leading-loose text-foreground/92 md:text-xl">
-    {intro.map((line, index) => (
-      <p key={`${line}-${index}`}>{line}</p>
-    ))}
-  </div>
+  const settings = ORBIT_SETTINGS.sizeByVariant[variant];
+  const assetsToPreload = useMemo(
+    () => Array.from(new Set(Object.values(resolvedAssets))),
+    [resolvedAssets]
+  );
 
-  {support}
-</div>
+  useEffect(() => {
+    preloadImages(assetsToPreload);
+  }, [assetsToPreload]);
 
-);
+  function setFrontDefault() {
+    setHoveredId(null);
+    setActivePose("front");
+  }
 
-const orbitBlock = (
-<div className={cn(reverse && "lg:order-1")}>
-<CircleOrbit items={orbitItems} presenterAssets={presenterAssets} centerTextureSrc={red3} presenterAlt={presenterAlt} selectedId={activeOrbitId} onItemClick={onOrbitItemClick} center={center} />
-</div>
-);
+  function updateAvatarFromAnchor(buttonEl: HTMLElement) {
+    const zoneEl = orbitZoneRef.current;
+    const plusEl = buttonEl.querySelector<HTMLElement>('[data-plus-anchor="true"]');
 
-return (
-<section className={cn("relative isolate bg-background", className)}>
-{/* =====================================================
-STAGE IMAGE
-התמונה נשמרת מלאה, בלי חיתוך ובלי object-cover
-===================================================== */}
-<div className="relative z-0 w-full">
-<img src={lightStage} alt="" aria-hidden="true" className="block w-full h-auto select-none dark:hidden" />
-<img src={darkStage} alt="" aria-hidden="true" className="hidden w-full h-auto select-none dark:block" />
+    if (!zoneEl || !plusEl) {
+      setActivePose("front");
+      return;
+    }
 
-    {/* מעבר תחתון עדין ופשוט */}
-    <div
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-[clamp(72px,9vw,130px)]"
-      style={{
-        background:
-          "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 46%, hsl(var(--background) / 0.16) 74%, hsl(var(--background)) 100%)",
-      }}
-    />
-  </div>
+    const zoneRect = zoneEl.getBoundingClientRect();
+    const plusRect = plusEl.getBoundingClientRect();
 
-  {/* =====================================================
-      DESKTOP OVERLAY
-      בדסקטופ התוכן יושב מעל התמונה
-      ===================================================== */}
-  <div className="pointer-events-none absolute inset-0 z-10 hidden lg:block">
-    <div className="mx-auto flex h-full max-w-7xl items-center px-6 xl:px-8">
+    const centerX = zoneRect.left + zoneRect.width / 2;
+    const centerY = zoneRect.top + zoneRect.height / 2;
+
+    const plusX = plusRect.left + plusRect.width / 2;
+    const plusY = plusRect.top + plusRect.height / 2;
+
+    const dx = plusX - centerX;
+    const dy = plusY - centerY;
+
+    const angle = angleFromTopClockwise(dx, dy);
+    const { pose } = resolveAssetByAngle(angle, resolvedAssets);
+
+    setActivePose(pose);
+  }
+
+  function handleOrbitEnter(
+    e: ReactMouseEvent<HTMLButtonElement>,
+    itemId: string
+  ) {
+    setHoveredId(itemId);
+
+    const buttonEl = e.currentTarget;
+    requestAnimationFrame(() => {
+      updateAvatarFromAnchor(buttonEl);
+    });
+  }
+
+  return (
+    <>
+      <style>{`
+        @keyframes orbitSpin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes orbitCounterSpin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+
+        @keyframes orbitAvatarFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+
+        .orbit-zone {
+          position: relative;
+          width: 100%;
+          max-width: ${settings.zoneMaxWidth}px;
+          height: ${settings.zoneHeight.base}px;
+          --orbit-radius: ${settings.radius.base}px;
+          --orbit-size: ${settings.itemSize.base}px;
+        }
+
+        .orbit-avatar-wrap {
+          width: ${settings.avatarSize.base}px;
+          height: ${settings.avatarSize.base}px;
+        }
+
+        @media (min-width: 768px) {
+          .orbit-zone {
+            height: ${settings.zoneHeight.md}px;
+            --orbit-radius: ${settings.radius.md}px;
+            --orbit-size: ${settings.itemSize.md}px;
+          }
+
+          .orbit-avatar-wrap {
+            width: ${settings.avatarSize.md}px;
+            height: ${settings.avatarSize.md}px;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .orbit-zone {
+            height: ${settings.zoneHeight.lg}px;
+            --orbit-radius: ${settings.radius.lg}px;
+            --orbit-size: ${settings.itemSize.lg}px;
+          }
+
+          .orbit-avatar-wrap {
+            width: ${settings.avatarSize.lg}px;
+            height: ${settings.avatarSize.lg}px;
+          }
+        }
+
+        .orbit-spin {
+          animation: orbitSpin ${settings.spinSeconds}s linear infinite;
+          transform-origin: center center;
+        }
+
+        .orbit-counter-spin {
+          animation: orbitCounterSpin ${settings.spinSeconds}s linear infinite;
+          transform-origin: center center;
+        }
+
+        .orbit-zone:hover .orbit-spin,
+        .orbit-zone:hover .orbit-counter-spin,
+        .orbit-zone:focus-within .orbit-spin,
+        .orbit-zone:focus-within .orbit-counter-spin {
+          animation-play-state: paused;
+        }
+
+        .orbit-avatar-float {
+          animation: orbitAvatarFloat ${ORBIT_SETTINGS.avatarFloatSeconds}s ease-in-out infinite;
+        }
+      `}</style>
+
       <div
-        className={cn(
-          "pointer-events-auto grid w-full grid-cols-[1.02fr_0.98fr] gap-10 xl:gap-14",
-          reverse && "grid-cols-[0.98fr_1.02fr]"
-        )}
+        ref={orbitZoneRef}
+        className={`orbit-zone mx-auto ${className}`}
+        onMouseLeave={setFrontDefault}
+        onMouseMove={(e) => {
+          const target = e.target as HTMLElement;
+          const insideButton = target.closest('[data-orbit-button="true"]');
+
+          if (!insideButton && activePose !== "front") {
+            setFrontDefault();
+          }
+        }}
       >
-        {textBlock}
-        {orbitBlock}
-      </div>
-    </div>
-  </div>
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.10),rgba(0,0,0,0)_72%)] md:h-[500px] md:w-[500px] lg:h-[620px] lg:w-[620px]" />
+          <div className="absolute left-1/2 top-1/2 h-[130px] w-[130px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(128,0,32,0.08),rgba(0,0,0,0)_72%)] md:h-[170px] md:w-[170px] lg:h-[210px] lg:w-[210px]" />
+        </div>
 
-  {/* =====================================================
-      MOBILE / TABLET
-      במסכים קטנים התוכן יורד מתחת לתמונה
-      ===================================================== */}
-  <div className="relative z-10 lg:hidden">
-    <div className="mx-auto max-w-7xl px-6 py-8 md:py-10">
-      <div className="grid grid-cols-1 gap-10">
-        {textBlock}
-        {orbitBlock}
-      </div>
-    </div>
-  </div>
-</section>
+        <div className="orbit-spin absolute inset-0">
+          {items.map((item) => {
+            const isActive = hoveredId === item.id || selectedId === item.id;
 
-);
+            return (
+              <div
+                key={item.id}
+                className="absolute left-1/2 top-1/2"
+                style={{
+                  transform: `translate(-50%, -50%) rotate(${item.angle}deg) translateY(calc(var(--orbit-radius) * -1))`,
+                }}
+              >
+                <div className="orbit-counter-spin">
+                  <div style={{ transform: `rotate(${-item.angle}deg)` }}>
+                    <OrbitTopicButton
+                      item={item}
+                      isActive={isActive}
+                      onEnter={(e) => handleOrbitEnter(e as any, item.id)}
+                      onClick={() => onItemClick?.(item)}
+                      lightTextureSrc={lightTextureSrc}
+                      darkTextureSrc={darkTextureSrc}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {center ? (
+          <div className="pointer-events-none absolute left-1/2 top-1/2 z-[8] -translate-x-1/2 -translate-y-1/2 opacity-85">
+            {center}
+          </div>
+        ) : null}
+
+        <OrbitPresenter
+          presenterAssets={resolvedAssets}
+          activePose={activePose}
+          alt={presenterAlt}
+          variant={variant}
+        />
+      </div>
+    </>
+  );
 }
