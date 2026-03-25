@@ -8,9 +8,21 @@ import {
 } from "react";
 import OrbitTopicButton from "./OrbitTopicButton";
 import OrbitPresenter from "./OrbitPresenter";
-import { ORBIT_SETTINGS } from "./orbit.constants";
-import { getAvatarByAngle, normalizeAngle } from "./orbit.utils";
-import type { AvatarKey, OrbitItem, PresenterAssets } from "./orbit.types";
+import {
+  ORBIT_SETTINGS,
+} from "./orbit.constants";
+import {
+  angleFromTopClockwise,
+  buildResolvedPresenterAssets,
+  preloadImages,
+  resolveAssetByAngle,
+} from "./orbit.utils";
+import type {
+  OrbitItem,
+  OrbitVariant,
+  PresenterPoseKey,
+  PresenterAssets,
+} from "./orbit.types";
 
 type CircleOrbitProps = {
   items: OrbitItem[];
@@ -18,9 +30,11 @@ type CircleOrbitProps = {
   onItemClick?: (item: OrbitItem) => void;
   selectedId?: string | null;
   className?: string;
-  centerTextureSrc?: string;
   presenterAlt?: string;
   center?: ReactNode;
+  variant?: OrbitVariant;
+  lightTextureSrc?: string;
+  darkTextureSrc?: string;
 };
 
 export default function CircleOrbit({
@@ -29,34 +43,43 @@ export default function CircleOrbit({
   onItemClick,
   selectedId = null,
   className = "",
-  centerTextureSrc,
   presenterAlt = "המגיש",
+  center,
+  variant = "inner",
+  lightTextureSrc,
+  darkTextureSrc,
 }: CircleOrbitProps) {
   const orbitZoneRef = useRef<HTMLDivElement | null>(null);
 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [activeAvatarKey, setActiveAvatarKey] = useState<AvatarKey>("front");
+  const [activePose, setActivePose] = useState<PresenterPoseKey>("front");
 
-  const assetsToPreload = useMemo(() => Object.values(presenterAssets), [presenterAssets]);
+  const resolvedAssets = useMemo(
+    () => buildResolvedPresenterAssets(presenterAssets),
+    [presenterAssets]
+  );
+
+  const settings = ORBIT_SETTINGS.sizeByVariant[variant];
+  const assetsToPreload = useMemo(
+    () => Array.from(new Set(Object.values(resolvedAssets))),
+    [resolvedAssets]
+  );
 
   useEffect(() => {
-    assetsToPreload.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
+    preloadImages(assetsToPreload);
   }, [assetsToPreload]);
 
   function setFrontDefault() {
     setHoveredId(null);
-    setActiveAvatarKey("front");
+    setActivePose("front");
   }
 
-  function updateAvatarFromPlus(buttonEl: HTMLElement) {
+  function updateAvatarFromAnchor(buttonEl: HTMLElement) {
     const zoneEl = orbitZoneRef.current;
     const plusEl = buttonEl.querySelector<HTMLElement>('[data-plus-anchor="true"]');
 
     if (!zoneEl || !plusEl) {
-      setActiveAvatarKey("front");
+      setActivePose("front");
       return;
     }
 
@@ -72,8 +95,10 @@ export default function CircleOrbit({
     const dx = plusX - centerX;
     const dy = plusY - centerY;
 
-    const angle = normalizeAngle((Math.atan2(dy, dx) * 180) / Math.PI);
-    setActiveAvatarKey(getAvatarByAngle(angle));
+    const angle = angleFromTopClockwise(dx, dy);
+    const { pose } = resolveAssetByAngle(angle, resolvedAssets);
+
+    setActivePose(pose);
   }
 
   function handleOrbitEnter(
@@ -83,11 +108,8 @@ export default function CircleOrbit({
     setHoveredId(itemId);
 
     const buttonEl = e.currentTarget;
-
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        updateAvatarFromPlus(buttonEl);
-      });
+      updateAvatarFromAnchor(buttonEl);
     });
   }
 
@@ -112,50 +134,50 @@ export default function CircleOrbit({
         .orbit-zone {
           position: relative;
           width: 100%;
-          max-width: ${ORBIT_SETTINGS.zoneMaxWidth}px;
-          height: ${ORBIT_SETTINGS.zoneHeight.base}px;
-          --orbit-radius: ${ORBIT_SETTINGS.radius.base}px;
-          --orbit-size: ${ORBIT_SETTINGS.itemSize.base}px;
+          max-width: ${settings.zoneMaxWidth}px;
+          height: ${settings.zoneHeight.base}px;
+          --orbit-radius: ${settings.radius.base}px;
+          --orbit-size: ${settings.itemSize.base}px;
         }
 
         .orbit-avatar-wrap {
-          width: ${ORBIT_SETTINGS.avatarSize.base}px;
-          height: ${ORBIT_SETTINGS.avatarSize.base}px;
+          width: ${settings.avatarSize.base}px;
+          height: ${settings.avatarSize.base}px;
         }
 
         @media (min-width: 768px) {
           .orbit-zone {
-            height: ${ORBIT_SETTINGS.zoneHeight.md}px;
-            --orbit-radius: ${ORBIT_SETTINGS.radius.md}px;
-            --orbit-size: ${ORBIT_SETTINGS.itemSize.md}px;
+            height: ${settings.zoneHeight.md}px;
+            --orbit-radius: ${settings.radius.md}px;
+            --orbit-size: ${settings.itemSize.md}px;
           }
 
           .orbit-avatar-wrap {
-            width: ${ORBIT_SETTINGS.avatarSize.md}px;
-            height: ${ORBIT_SETTINGS.avatarSize.md}px;
+            width: ${settings.avatarSize.md}px;
+            height: ${settings.avatarSize.md}px;
           }
         }
 
         @media (min-width: 1024px) {
           .orbit-zone {
-            height: ${ORBIT_SETTINGS.zoneHeight.lg}px;
-            --orbit-radius: ${ORBIT_SETTINGS.radius.lg}px;
-            --orbit-size: ${ORBIT_SETTINGS.itemSize.lg}px;
+            height: ${settings.zoneHeight.lg}px;
+            --orbit-radius: ${settings.radius.lg}px;
+            --orbit-size: ${settings.itemSize.lg}px;
           }
 
           .orbit-avatar-wrap {
-            width: ${ORBIT_SETTINGS.avatarSize.lg}px;
-            height: ${ORBIT_SETTINGS.avatarSize.lg}px;
+            width: ${settings.avatarSize.lg}px;
+            height: ${settings.avatarSize.lg}px;
           }
         }
 
         .orbit-spin {
-          animation: orbitSpin ${ORBIT_SETTINGS.spinSeconds}s linear infinite;
+          animation: orbitSpin ${settings.spinSeconds}s linear infinite;
           transform-origin: center center;
         }
 
         .orbit-counter-spin {
-          animation: orbitCounterSpin ${ORBIT_SETTINGS.spinSeconds}s linear infinite;
+          animation: orbitCounterSpin ${settings.spinSeconds}s linear infinite;
           transform-origin: center center;
         }
 
@@ -179,36 +201,16 @@ export default function CircleOrbit({
           const target = e.target as HTMLElement;
           const insideButton = target.closest('[data-orbit-button="true"]');
 
-          if (!insideButton && activeAvatarKey !== "front") {
+          if (!insideButton && activePose !== "front") {
             setFrontDefault();
           }
         }}
       >
-       <div className="pointer-events-none absolute inset-0">
-  {centerTextureSrc && (
-    <div
-      className="absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full md:h-[500px] md:w-[500px] lg:h-[600px] lg:w-[600px]"
-      style={{
-        backgroundImage: `url(${centerTextureSrc})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        opacity: 0.055,
-        filter: "blur(1.5px) saturate(0.72)",
-        maskImage:
-          "radial-gradient(circle at center, rgba(0,0,0,0.92) 18%, rgba(0,0,0,0.78) 50%, rgba(0,0,0,0) 76%)",
-        WebkitMaskImage:
-          "radial-gradient(circle at center, rgba(0,0,0,0.92) 18%, rgba(0,0,0,0.78) 50%, rgba(0,0,0,0) 76%)",
-      }}
-    />
-  )}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.10),rgba(0,0,0,0)_72%)] md:h-[500px] md:w-[500px] lg:h-[620px] lg:w-[620px]" />
+          <div className="absolute left-1/2 top-1/2 h-[130px] w-[130px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(128,0,32,0.08),rgba(0,0,0,0)_72%)] md:h-[170px] md:w-[170px] lg:h-[210px] lg:w-[210px]" />
+        </div>
 
-  {/* glow בהיר-זהוב עדין */}
-  <div className="absolute left-1/2 top-1/2 h-[220px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.10),rgba(0,0,0,0)_70%)] md:h-[300px] md:w-[300px] lg:h-[360px] lg:w-[360px]" />
-
-  {/* רק רמז בורדו קטן, לא כתם גדול */}
-  <div className="absolute left-1/2 top-1/2 h-[120px] w-[120px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(128,0,32,0.07),rgba(0,0,0,0)_72%)] md:h-[150px] md:w-[150px] lg:h-[180px] lg:w-[180px]" />
-</div>
-        
         <div className="orbit-spin absolute inset-0">
           {items.map((item) => {
             const isActive = hoveredId === item.id || selectedId === item.id;
@@ -228,6 +230,8 @@ export default function CircleOrbit({
                       isActive={isActive}
                       onEnter={(e) => handleOrbitEnter(e as any, item.id)}
                       onClick={() => onItemClick?.(item)}
+                      lightTextureSrc={lightTextureSrc}
+                      darkTextureSrc={darkTextureSrc}
                     />
                   </div>
                 </div>
@@ -236,10 +240,17 @@ export default function CircleOrbit({
           })}
         </div>
 
+        {center ? (
+          <div className="pointer-events-none absolute left-1/2 top-1/2 z-[8] -translate-x-1/2 -translate-y-1/2 opacity-85">
+            {center}
+          </div>
+        ) : null}
+
         <OrbitPresenter
-          presenterAssets={presenterAssets}
-          activeAvatarKey={activeAvatarKey}
+          presenterAssets={resolvedAssets}
+          activePose={activePose}
           alt={presenterAlt}
+          variant={variant}
         />
       </div>
     </>
