@@ -22,7 +22,10 @@ export default function InnerPageLayout({
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
 
-      <main className={cn("relative flex-1", className)}>
+      <main
+        className={cn("relative flex-1 transition-[padding] duration-300", className)}
+        style={{ paddingInlineStart: "var(--page-rail-offset, 0px)" }}
+      >
         {children}
       </main>
 
