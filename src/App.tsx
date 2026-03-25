@@ -15,9 +15,9 @@ import Contact from "./pages/Contact";
 import Students from "./pages/Students";
 import StyleGuide from "./pages/StyleGuide";
 import Privacy from "./pages/Privacy";
-
 import Terms from "./pages/Terms";
 import Orchestras from "./pages/Orchestras";
+import Performances from "./pages/Performances";
 import StudentsDemo from "./pages/StudentsDemo";
 import Blog from "./pages/blog";
 import Sheets from "./pages/sheets";
@@ -45,9 +45,9 @@ const App = () => (
           <Route path="/style-guide" element={<StyleGuide />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
-          
           <Route path="/students-demo" element={<StudentsDemo />} />
           <Route path="/orchestras" element={<Orchestras />} />
+          <Route path="/performances" element={<Performances />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/sheets" element={<Sheets />} />
           <Route path="*" element={<NotFound />} />
