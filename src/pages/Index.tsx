@@ -6,6 +6,7 @@ import AppearOnScroll from "@/components/AppearOnScroll";
 import GuidePresenter from "@/components/GuidePresenter";
 
 import {
+  GUIDE_SECTION_ID,
   HERO_TEXT,
   HOME_HERO_ID,
   MARQUEE_ITEMS,
@@ -28,6 +29,7 @@ import signGuitar from "@/assets/homepage/characters-signs/guitar.png";
 import signDrums from "@/assets/homepage/characters-signs/drums.png";
 import signSaxophone from "@/assets/homepage/characters-signs/saxophone.png";
 import signViolin from "@/assets/homepage/characters-signs/violin.png";
+import presenterGuide from "@/assets/homepage/presenter/presenter.png";
 
 // דמויות מגישות למקטע התחתון
 import drums from "@/assets/homepage/characters/drums.png";
@@ -48,6 +50,7 @@ const SIGN_CHARACTER_MAP: Record<CharacterKey, string> = {
   drums: signDrums,
   saxophone: signSaxophone,
   violin: signViolin,
+  presenter: presenterGuide,
 };
 
 const PRESENTER_MAP: Record<CharacterKey, string> = {
@@ -57,101 +60,7 @@ const PRESENTER_MAP: Record<CharacterKey, string> = {
   drums,
   saxophone,
   violin,
-};
-
-const STAGE_SHADOW_MAP: Record<
-  CharacterKey,
-  {
-    floorWidth: string;
-    floorHeight: string;
-    floorBlur: number;
-    floorOpacity: number;
-    floorBottom: string;
-    glowWidth: string;
-    glowHeight: string;
-    glowBottom: string;
-    glowOpacity: number;
-    imageShadow: string;
-  }
-> = {
-  piano: {
-    floorWidth: "46%",
-    floorHeight: "8.5%",
-    floorBlur: 16,
-    floorOpacity: 0.24,
-    floorBottom: "2.2%",
-    glowWidth: "28%",
-    glowHeight: "5.5%",
-    glowBottom: "3%",
-    glowOpacity: 0.12,
-    imageShadow:
-      "drop-shadow(0 16px 24px rgba(0,0,0,0.20)) drop-shadow(0 6px 10px rgba(76,42,14,0.16))",
-  },
-  eguitar: {
-    floorWidth: "29%",
-    floorHeight: "7%",
-    floorBlur: 13,
-    floorOpacity: 0.2,
-    floorBottom: "2.1%",
-    glowWidth: "18%",
-    glowHeight: "4.8%",
-    glowBottom: "2.8%",
-    glowOpacity: 0.11,
-    imageShadow:
-      "drop-shadow(0 14px 22px rgba(0,0,0,0.20)) drop-shadow(0 5px 9px rgba(76,42,14,0.15))",
-  },
-  guitar: {
-    floorWidth: "29%",
-    floorHeight: "7%",
-    floorBlur: 13,
-    floorOpacity: 0.2,
-    floorBottom: "2.1%",
-    glowWidth: "18%",
-    glowHeight: "4.8%",
-    glowBottom: "2.8%",
-    glowOpacity: 0.11,
-    imageShadow:
-      "drop-shadow(0 14px 22px rgba(0,0,0,0.20)) drop-shadow(0 5px 9px rgba(76,42,14,0.15))",
-  },
-  drums: {
-    floorWidth: "35%",
-    floorHeight: "8%",
-    floorBlur: 15,
-    floorOpacity: 0.22,
-    floorBottom: "2%",
-    glowWidth: "22%",
-    glowHeight: "5.6%",
-    glowBottom: "2.8%",
-    glowOpacity: 0.11,
-    imageShadow:
-      "drop-shadow(0 16px 26px rgba(0,0,0,0.20)) drop-shadow(0 6px 10px rgba(76,42,14,0.15))",
-  },
-  saxophone: {
-    floorWidth: "24%",
-    floorHeight: "6.5%",
-    floorBlur: 12,
-    floorOpacity: 0.2,
-    floorBottom: "2.2%",
-    glowWidth: "15%",
-    glowHeight: "4.5%",
-    glowBottom: "2.9%",
-    glowOpacity: 0.1,
-    imageShadow:
-      "drop-shadow(0 14px 22px rgba(0,0,0,0.20)) drop-shadow(0 5px 9px rgba(76,42,14,0.15))",
-  },
-  violin: {
-    floorWidth: "22%",
-    floorHeight: "6%",
-    floorBlur: 12,
-    floorOpacity: 0.2,
-    floorBottom: "2.2%",
-    glowWidth: "14%",
-    glowHeight: "4.2%",
-    glowBottom: "2.9%",
-    glowOpacity: 0.1,
-    imageShadow:
-      "drop-shadow(0 14px 22px rgba(0,0,0,0.20)) drop-shadow(0 5px 9px rgba(76,42,14,0.15))",
-  },
+  presenter: presenterGuide,
 };
 
 export default function Index() {
@@ -239,196 +148,157 @@ export default function Index() {
           id={HOME_HERO_ID}
           className="relative isolate overflow-hidden"
         >
-          <div className="relative w-full">
-            <div
-              className="relative w-full overflow-hidden"
-              style={{ aspectRatio: "2048 / 1365" }}
-            >
-              {/* רקע במה */}
+          <div className="absolute inset-0">
+            <img
+              src={stageBgLight}
+              alt=""
+              className="block h-full w-full object-cover dark:hidden"
+            />
+            <img
+              src={stageBgDark}
+              alt=""
+              className="hidden h-full w-full object-cover dark:block"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
+          </div>
+
+          <div className="relative mx-auto max-w-[1600px] min-h-[900px] px-4 pt-8 md:min-h-[1020px] md:px-8 lg:min-h-[1100px]">
+            <div className="relative z-20 mx-auto flex max-w-3xl flex-col items-center pt-6 pb-[310px] text-center md:pt-10 md:pb-[390px] lg:pb-[450px]">
               <img
-                src={stageBgLight}
-                alt=""
-                className="absolute inset-0 block h-full w-full object-cover dark:hidden"
+                src={logoLight}
+                alt="Toby Music"
+                className="mb-4 h-[62px] object-contain drop-shadow-lg dark:hidden md:h-[84px] lg:h-[98px]"
               />
+
               <img
-                src={stageBgDark}
-                alt=""
-                className="absolute inset-0 hidden h-full w-full object-cover dark:block"
+                src={logoDark}
+                alt="Toby Music"
+                className="mb-4 hidden h-[62px] object-contain drop-shadow-lg dark:block md:h-[84px] lg:h-[98px]"
               />
 
-              {/* מעבר רך לתוכן שמתחת */}
-              <div className="absolute inset-x-0 bottom-0 z-[1] h-[16%] bg-gradient-to-b from-transparent to-background/90" />
+              <h1 className="text-[clamp(36px,5vw,72px)] font-black leading-tight text-foreground drop-shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+                {HERO_TEXT.subtitle}{" "}
+                <a
+                  href={HERO_TEXT.linkHref}
+                  className="relative inline-block cursor-pointer text-accent underline decoration-accent/35 decoration-2 underline-offset-8 transition-colors hover:text-accent/80"
+                >
+                  {HERO_TEXT.linkWord}
 
-              {/* טקסט ההירו */}
-              <div className="absolute inset-x-0 top-0 z-20 flex h-[42%] flex-col items-center px-4 pt-[4.2%] text-center sm:px-6 md:px-8">
-                <div className="mx-auto flex w-full max-w-3xl flex-col items-center">
-                  <img
-                    src={logoLight}
-                    alt="Toby Music"
-                    className="mb-3 h-[clamp(42px,5vw,98px)] object-contain drop-shadow-lg dark:hidden"
+                  <span
+                    className="sparkle-star"
+                    style={{
+                      top: "-10px",
+                      right: "-6px",
+                      width: 8,
+                      height: 8,
+                      animationDelay: "0s",
+                    }}
+                    aria-hidden="true"
                   />
-
-                  <img
-                    src={logoDark}
-                    alt="Toby Music"
-                    className="mb-3 hidden h-[clamp(42px,5vw,98px)] object-contain drop-shadow-lg dark:block"
+                  <span
+                    className="sparkle-star"
+                    style={{
+                      top: "-4px",
+                      left: "-10px",
+                      width: 6,
+                      height: 6,
+                      animationDelay: "0.4s",
+                    }}
+                    aria-hidden="true"
                   />
+                  <span
+                    className="sparkle-star"
+                    style={{
+                      bottom: "-8px",
+                      right: "4px",
+                      width: 5,
+                      height: 5,
+                      animationDelay: "0.8s",
+                    }}
+                    aria-hidden="true"
+                  />
+                  <span
+                    className="sparkle-star"
+                    style={{
+                      top: "2px",
+                      right: "-14px",
+                      width: 7,
+                      height: 7,
+                      animationDelay: "1.2s",
+                    }}
+                    aria-hidden="true"
+                  />
+                  <span
+                    className="sparkle-star"
+                    style={{
+                      bottom: "-6px",
+                      left: "-8px",
+                      width: 4,
+                      height: 4,
+                      animationDelay: "0.6s",
+                    }}
+                    aria-hidden="true"
+                  />
+                </a>
+              </h1>
 
-                  <h1 className="text-[clamp(24px,4vw,72px)] font-black leading-tight text-foreground drop-shadow-[0_4px_20px_rgba(0,0,0,0.22)]">
-                    {HERO_TEXT.subtitle}{" "}
-                    <a
-                      href={HERO_TEXT.linkHref}
-                      className="relative inline-block cursor-pointer text-accent underline decoration-accent/35 decoration-2 underline-offset-8 transition-colors hover:text-accent/80"
-                    >
-                      {HERO_TEXT.linkWord}
+              <p className="mt-4 rounded-full bg-foreground/5 px-6 py-2 text-[clamp(14px,1.4vw,22px)] text-foreground/80 backdrop-blur-sm">
+                {HERO_TEXT.supportLine}
+              </p>
 
-                      <span
-                        className="sparkle-star"
-                        style={{
-                          top: "-10px",
-                          right: "-6px",
-                          width: 8,
-                          height: 8,
-                          animationDelay: "0s",
-                        }}
-                        aria-hidden="true"
-                      />
-                      <span
-                        className="sparkle-star"
-                        style={{
-                          top: "-4px",
-                          left: "-10px",
-                          width: 6,
-                          height: 6,
-                          animationDelay: "0.4s",
-                        }}
-                        aria-hidden="true"
-                      />
-                      <span
-                        className="sparkle-star"
-                        style={{
-                          bottom: "-8px",
-                          right: "4px",
-                          width: 5,
-                          height: 5,
-                          animationDelay: "0.8s",
-                        }}
-                        aria-hidden="true"
-                      />
-                      <span
-                        className="sparkle-star"
-                        style={{
-                          top: "2px",
-                          right: "-14px",
-                          width: 7,
-                          height: 7,
-                          animationDelay: "1.2s",
-                        }}
-                        aria-hidden="true"
-                      />
-                      <span
-                        className="sparkle-star"
-                        style={{
-                          bottom: "-6px",
-                          left: "-8px",
-                          width: 4,
-                          height: 4,
-                          animationDelay: "0.6s",
-                        }}
-                        aria-hidden="true"
-                      />
-                    </a>
-                  </h1>
+              <p className="mt-3 text-[clamp(16px,1.6vw,26px)] font-bold text-foreground/90">
+                {HERO_TEXT.sloganPrefix}{" "}
+                <span className="bg-gradient-to-l from-accent via-primary to-accent bg-clip-text text-transparent">
+                  {HERO_TEXT.sloganAccent}
+                </span>
+              </p>
+            </div>
 
-                  <p className="mt-3 rounded-full bg-foreground/7 px-4 py-2 text-[clamp(11px,1.25vw,22px)] text-foreground/85 backdrop-blur-sm sm:px-6">
-                    {HERO_TEXT.supportLine}
-                  </p>
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[360px] md:h-[470px] lg:h-[560px]">
+              {STAGE_CHARACTERS.map((char) => (
+                <Link
+                  key={char.href}
+                  to={char.href}
+                  className="pointer-events-auto group absolute -translate-x-1/2 origin-bottom transition-transform duration-300 hover:scale-105"
+                  style={{
+                    left: char.stage.left,
+                    bottom: char.stage.bottom,
+                    width: char.stage.width,
+                    zIndex: char.stage.zIndex,
+                  }}
+                  aria-label={`מעבר לדף ${char.title}`}
+                >
+                  <div className="relative">
+                    <img
+                      src={SIGN_CHARACTER_MAP[char.character]}
+                      alt={char.title}
+                      className="block w-full drop-shadow-[0_14px_30px_rgba(0,0,0,0.22)]"
+                    />
 
-                  <p className="mt-3 text-[clamp(12px,1.45vw,26px)] font-bold text-foreground/90">
-                    {HERO_TEXT.sloganPrefix}{" "}
-                    <span className="bg-gradient-to-l from-accent via-primary to-accent bg-clip-text text-transparent">
-                      {HERO_TEXT.sloganAccent}
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-              {/* שכבת דמויות בתוך אותה במה */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[50%]">
-                {STAGE_CHARACTERS.map((char) => {
-                  const shadow = STAGE_SHADOW_MAP[char.character];
-
-                  return (
-                    <Link
-                      key={char.character}
-                      to={char.href}
-                      className="pointer-events-auto group absolute -translate-x-1/2 origin-bottom transition-transform duration-300 hover:scale-[1.03]"
-                      style={{
-                        left: char.stage.left,
-                        bottom: char.stage.bottom,
-                        width: char.stage.width,
-                        zIndex: char.stage.zIndex,
-                      }}
-                      aria-label={`מעבר לדף ${char.title}`}
-                    >
-                      <div className="relative">
-                        {/* צל רצפה */}
-                        <div
-                          aria-hidden="true"
-                          className="pointer-events-none absolute left-1/2 -translate-x-1/2 rounded-full"
-                          style={{
-                            bottom: shadow.floorBottom,
-                            width: shadow.floorWidth,
-                            height: shadow.floorHeight,
-                            background: `rgba(25, 16, 8, ${shadow.floorOpacity})`,
-                            filter: `blur(${shadow.floorBlur}px)`,
-                            zIndex: 0,
-                          }}
-                        />
-
-                        {/* זוהר חם עדין */}
-                        <div
-                          aria-hidden="true"
-                          className="pointer-events-none absolute left-1/2 -translate-x-1/2 rounded-full"
-                          style={{
-                            bottom: shadow.glowBottom,
-                            width: shadow.glowWidth,
-                            height: shadow.glowHeight,
-                            background: `rgba(120, 72, 24, ${shadow.glowOpacity})`,
-                            filter: "blur(8px)",
-                            zIndex: 0,
-                          }}
-                        />
-
-                        {/* דמות */}
-                        <img
-                          src={SIGN_CHARACTER_MAP[char.character]}
-                          alt={char.title}
-                          className="relative z-10 block w-full"
-                          style={{
-                            filter: shadow.imageShadow,
-                          }}
-                        />
-
-                        {/* טקסט על השלט */}
-                        <div
-                          className="absolute z-20 flex items-center justify-center"
-                          style={{
-                            top: char.signBox.top,
-                            left: char.signBox.left,
-                            width: char.signBox.width,
-                            height: char.signBox.height,
-                          }}
-                        >
-                          <span className="text-center text-[clamp(9px,0.95vw,16px)] font-bold leading-tight text-foreground drop-shadow-sm transition-colors group-hover:text-accent">
-                            {char.title}
-                          </span>
-                        </div>
+                    {char.labelMode === "badge" ? (
+                      <div className="absolute inset-x-[10%] bottom-[8%] flex justify-center">
+                        <span className="rounded-full bg-background/78 px-4 py-2 text-center text-[clamp(10px,0.9vw,15px)] font-bold leading-tight text-foreground shadow-lg ring-1 ring-border backdrop-blur-sm transition-colors group-hover:text-accent">
+                          {char.title}
+                        </span>
                       </div>
-                    </Link>
-                  );
-                })}
-              </div>
+                    ) : (
+                      <div
+                        className="absolute flex items-center justify-center"
+                        style={{
+                          top: char.signBox.top,
+                          left: char.signBox.left,
+                          width: char.signBox.width,
+                          height: char.signBox.height,
+                        }}
+                      >
+                        <span className="text-center text-[clamp(9px,0.95vw,16px)] font-bold leading-tight text-foreground drop-shadow-sm transition-colors group-hover:text-accent">
+                          {char.title}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
@@ -437,11 +307,11 @@ export default function Index() {
 
         <AppearOnScroll>
           <section className="px-4 py-12 md:px-8 md:py-20" dir="rtl">
-            <div className="mx-auto max-w-6xl">
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mx-auto max-w-7xl">
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
                 {STAGE_CHARACTERS.map((char) => (
                   <Link
-                    key={char.character}
+                    key={char.href}
                     to={char.href}
                     className="group relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl md:p-8"
                   >
@@ -464,6 +334,8 @@ export default function Index() {
                         className={`mx-auto mb-4 drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)] ${
                           char.character === "drums"
                             ? "w-36 md:w-44 xl:w-52"
+                            : char.character === "presenter"
+                            ? "w-28 md:w-32 xl:w-36"
                             : "w-24 md:w-28 xl:w-32"
                         }`}
                       />
