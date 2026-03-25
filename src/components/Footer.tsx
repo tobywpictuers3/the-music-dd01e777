@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/whitelogo.png"; // אם שם הקובץ אצלך שונה - החליפי רק כאן
+import logo from "@/assets/whitelogo.png";
 import redTexture from "@/assets/red3.png";
 import sparkleSweep from "@/assets/shoval.png";
 
@@ -14,26 +14,22 @@ type FooterSection = {
   links: FooterLink[];
 };
 
-/**
- * כאן מעדכנים את הקישורים של הפוטר.
- * כל עמוד חדש שתוסיפי בהמשך - פשוט תוסיפי לאחד המערכים.
- */
 const primaryLinks: FooterLink[] = [
   { label: "דף הבית", href: "/" },
   { label: "אודות", href: "/about" },
   { label: "תזמורות", href: "/orchestras" },
+  { label: "הופעות", href: "/performances" },
   { label: "תלמידות", href: "/students" },
   { label: "יצירת קשר", href: "/contact" },
 ];
 
 const contentLinks: FooterLink[] = [
+  { label: "בלוג", href: "/blog" },
   { label: "יצירה", href: "/creativity" },
   { label: "צמיחה", href: "/growth" },
   { label: "נסיעות", href: "/travel" },
   { label: "וולנס", href: "/wellness" },
   { label: "מחברים", href: "/authors" },
-  // אם יש אצלך עמוד מאמרים/בלוג אמיתי:
-  // { label: "מאמרים", href: "/article" },
 ];
 
 const legalLinks: FooterLink[] = [
@@ -46,17 +42,9 @@ const footerSections: FooterSection[] = [
   { title: "עוד באתר", links: contentLinks },
 ];
 
-/**
- * זמנית שמתי את כפתור רשימת התפוצה ליצירת קשר,
- * כדי שלא יהיה קישור שבור.
- * כשתהיה לך כתובת אמיתית לרשימה - החליפי כאן בלבד.
- */
 const newsletterLink: FooterLink = {
   label: "להצטרפות לרשימת התפוצה",
   href: "/contact",
-  // לדוגמה חיצונית:
-  // href: "https://example.com/newsletter",
-  // external: true,
 };
 
 function FooterNavLink({
@@ -94,7 +82,6 @@ export default function Footer() {
       dir="rtl"
       className="relative mt-24 overflow-hidden border-t border-white/10 bg-[#140708] text-white"
     >
-      {/* טקסטורת רקע */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-[0.12]"
@@ -105,13 +92,11 @@ export default function Footer() {
         }}
       />
 
-      {/* שכבת עומק */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,190,110,0.12),transparent_34%),linear-gradient(to_bottom,rgba(20,7,8,0.92),rgba(10,3,4,0.98))]"
       />
 
-      {/* שובל עליון */}
       <img
         src={sparkleSweep}
         alt=""
@@ -121,7 +106,6 @@ export default function Footer() {
 
       <div className="relative mx-auto max-w-7xl px-6 py-14 md:px-8">
         <div className="flex flex-wrap gap-10">
-          {/* מותג */}
           <div className="min-w-[260px] flex-[1.4] text-right">
             <img
               src={logo}
@@ -145,7 +129,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* אזורי קישורים */}
           {footerSections.map((section) => (
             <div
               key={section.title}
@@ -168,7 +151,6 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* שורה תחתונה */}
         <div className="mt-10 border-t border-white/10 pt-5">
           <div className="flex flex-col gap-3 text-center md:flex-row md:items-center md:justify-between">
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-white/55 md:justify-start">
