@@ -56,31 +56,38 @@ export default function OrbitHeroLayout({
       className="relative min-h-[100svh] overflow-hidden"
       style={cssVars}
     >
-      {/* הרקע מתחיל ממש מלמעלה */}
       <div
         className="absolute inset-0"
         style={{
           backgroundColor: themeMode === "dark" ? "#080a12" : "#f6f2ee",
         }}
       >
-        {/* במה כ-img אמיתי כדי לא לחתוך */}
         <img
           src={assets.stageBg}
           alt=""
-          fetchPriority="high"
-          className="h-full w-full object-contain object-center"
           aria-hidden="true"
+          fetchPriority="high"
+          className="h-full w-full object-cover object-center select-none"
         />
       </div>
 
-      {/* שכבת עומק קלה לקריאות */}
       <div
         className="absolute inset-0"
         style={{
           background:
             themeMode === "dark"
-              ? "linear-gradient(to bottom, rgba(6,8,16,0.18), rgba(6,8,16,0.34))"
-              : "linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0.20))",
+              ? "linear-gradient(to bottom, rgba(6,8,16,0.30), rgba(6,8,16,0.18) 28%, rgba(6,8,16,0.34) 72%, rgba(6,8,16,0.54))"
+              : "linear-gradient(to bottom, rgba(255,255,255,0.22), rgba(255,255,255,0.10) 28%, rgba(255,255,255,0.16) 72%, rgba(255,255,255,0.34))",
+        }}
+      />
+
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            themeMode === "dark"
+              ? "radial-gradient(circle at 72% 44%, rgba(255,255,255,0.08), transparent 28%)"
+              : "radial-gradient(circle at 72% 44%, rgba(255,255,255,0.38), transparent 28%)",
         }}
       />
 
@@ -89,15 +96,14 @@ export default function OrbitHeroLayout({
       ) : null}
 
       <div
-        className="relative z-10 mx-auto grid min-h-[100svh] max-w-[1600px] items-center gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_2fr] lg:px-10"
+        className="relative z-10 mx-auto grid min-h-[100svh] max-w-[1600px] items-center gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(420px,640px)_minmax(0,760px)] lg:px-10"
         style={{
-          paddingTop: "calc(var(--orbit-header-offset) + 16px)",
-          paddingBottom: "20px",
+          paddingTop: "calc(var(--orbit-header-offset) + 20px)",
+          paddingBottom: "32px",
         }}
       >
-        {/* שליש שמאל */}
         <div className="relative flex items-center justify-center">
-          <div className="relative w-full max-w-[600px]">
+          <div className="relative w-full max-w-[720px]">
             <OrbitWheel
               items={page.orbit.items}
               rotationDeg={rotationDeg}
@@ -115,13 +121,16 @@ export default function OrbitHeroLayout({
           </div>
         </div>
 
-        {/* שני שליש ימין */}
         <div className="flex items-center justify-center">
           <div className="mx-auto w-full max-w-[760px] text-center">
             <h1
               className="space-y-2 text-[clamp(2rem,4.1vw,4.25rem)] font-bold leading-[1.08]"
               style={{
                 color: themeMode === "dark" ? "#ffffff" : "#1a1a1a",
+                textShadow:
+                  themeMode === "dark"
+                    ? "0 4px 24px rgba(0,0,0,0.36)"
+                    : "0 4px 18px rgba(255,255,255,0.18)",
               }}
             >
               {page.hero.titleLines.map((line, index) => (
@@ -137,7 +146,11 @@ export default function OrbitHeroLayout({
                 color:
                   themeMode === "dark"
                     ? "rgba(255,255,255,0.92)"
-                    : "rgba(26,26,26,0.86)",
+                    : "rgba(26,26,26,0.82)",
+                textShadow:
+                  themeMode === "dark"
+                    ? "0 4px 18px rgba(0,0,0,0.26)"
+                    : "0 2px 10px rgba(255,255,255,0.14)",
               }}
             >
               {page.hero.introLines.map((line, index) => (
