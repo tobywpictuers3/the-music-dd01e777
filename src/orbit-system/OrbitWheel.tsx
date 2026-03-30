@@ -1,5 +1,6 @@
+import orbitStarsLight from "@/assets/orbit-system/ui/light/orbit-stars.webp";
+import orbitStarsDark from "@/assets/orbit-system/ui/dark/orbit-stars.webp";
 import { getOrbitItemPosition, getRenderedItemClockAngle } from "./angle.utils";
-import { getThemeAssets } from "./theme.assets";
 import type {
   OrbitItemConfig,
   OrbitItemId,
@@ -25,40 +26,31 @@ export default function OrbitWheel({
   onItemLeave,
   onItemClick,
 }: OrbitWheelProps) {
-  const assets = getThemeAssets(themeMode);
-
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[700px]">
+    <div className="relative mx-auto aspect-square w-full max-w-[760px]">
       <div
         className="absolute inset-[12%] rounded-full border"
         style={{
           borderColor:
             themeMode === "dark"
-              ? "rgba(255,255,255,0.22)"
-              : "rgba(54,36,24,0.18)",
+              ? "rgba(255,255,255,0.16)"
+              : "rgba(54,36,24,0.12)",
           boxShadow:
             themeMode === "dark"
-              ? "0 0 48px rgba(255,255,255,0.06)"
-              : "0 0 42px rgba(0,0,0,0.04)",
+              ? "0 0 44px rgba(255,255,255,0.05)"
+              : "0 0 34px rgba(0,0,0,0.04)",
+          transition: "border-color 700ms ease, box-shadow 700ms ease",
         }}
       />
       <div
-        className="absolute inset-[23%] rounded-full border"
+        className="absolute inset-[20%] rounded-full border"
         style={{
           borderStyle: "dashed",
           borderColor:
             themeMode === "dark"
-              ? "rgba(255,255,255,0.12)"
-              : "rgba(54,36,24,0.12)",
-        }}
-      />
-      <div
-        className="absolute inset-[31%] rounded-full"
-        style={{
-          background:
-            themeMode === "dark"
-              ? "radial-gradient(circle, rgba(255,255,255,0.08), rgba(255,255,255,0.02) 46%, transparent 72%)"
-              : "radial-gradient(circle, rgba(255,255,255,0.56), rgba(255,255,255,0.20) 46%, transparent 72%)",
+              ? "rgba(255,255,255,0.09)"
+              : "rgba(54,36,24,0.08)",
+          transition: "border-color 700ms ease",
         }}
       />
 
@@ -68,39 +60,38 @@ export default function OrbitWheel({
           rotationDeg
         );
 
-        const position = getOrbitItemPosition(renderedAngle, 39.5);
+        const position = getOrbitItemPosition(renderedAngle, 34.5);
         const isActive = item.id === activeItemId;
 
         return (
           <button
             key={item.id}
             type="button"
-            className={[
-              "absolute z-20 grid place-items-center rounded-full border overflow-hidden backdrop-blur-[3px] transition-all duration-200",
-              "h-[clamp(112px,14vw,156px)] w-[clamp(112px,14vw,156px)]",
-              isActive
-                ? "scale-[1.06]"
-                : "scale-100 hover:scale-[1.03]",
-            ].join(" ")}
+            className="absolute z-20 grid place-items-center rounded-full border overflow-hidden backdrop-blur-[3px]"
             style={{
               ...position,
+              width: "clamp(142px, 15.5vw, 236px)",
+              height: "clamp(142px, 15.5vw, 236px)",
               borderColor: isActive
                 ? themeMode === "dark"
-                  ? "rgba(255,255,255,0.74)"
-                  : "rgba(54,36,24,0.32)"
+                  ? "rgba(255,255,255,0.66)"
+                  : "rgba(54,36,24,0.24)"
                 : themeMode === "dark"
-                ? "rgba(255,255,255,0.32)"
-                : "rgba(54,36,24,0.16)",
+                ? "rgba(255,255,255,0.28)"
+                : "rgba(54,36,24,0.14)",
               backgroundColor: isActive
                 ? themeMode === "dark"
-                  ? "rgba(9, 9, 14, 0.50)"
-                  : "rgba(255,255,255,0.50)"
+                  ? "rgba(9,9,14,0.44)"
+                  : "rgba(255,255,255,0.48)"
                 : themeMode === "dark"
-                ? "rgba(9, 9, 14, 0.34)"
+                ? "rgba(9,9,14,0.28)"
                 : "rgba(255,255,255,0.34)",
               boxShadow: isActive
-                ? "0 0 28px rgba(255,255,255,0.16)"
-                : "0 10px 24px rgba(0,0,0,0.10)",
+                ? "0 0 26px rgba(255,255,255,0.14)"
+                : "0 12px 24px rgba(0,0,0,0.08)",
+              transform: `${position.transform} scale(${isActive ? 1.03 : 1})`,
+              transition:
+                "transform 220ms ease, border-color 700ms ease, background-color 700ms ease, box-shadow 700ms ease",
             }}
             onMouseEnter={() => onItemEnter(item.id)}
             onMouseLeave={onItemLeave}
@@ -112,10 +103,21 @@ export default function OrbitWheel({
             <span
               className="absolute inset-0"
               style={{
-                backgroundImage: `url(${assets.orbitStars})`,
+                backgroundImage: `url(${orbitStarsLight})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                opacity: themeMode === "dark" ? 0.42 : 0.24,
+                opacity: themeMode === "light" ? 0.22 : 0,
+                transition: "opacity 700ms ease",
+              }}
+            />
+            <span
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url(${orbitStarsDark})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                opacity: themeMode === "dark" ? 0.42 : 0,
+                transition: "opacity 700ms ease",
               }}
             />
 
@@ -124,19 +126,21 @@ export default function OrbitWheel({
               style={{
                 background:
                   themeMode === "dark"
-                    ? "linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(0,0,0,0.16))"
-                    : "linear-gradient(to bottom, rgba(255,255,255,0.26), rgba(255,255,255,0.10))",
+                    ? "linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(0,0,0,0.16))"
+                    : "linear-gradient(to bottom, rgba(255,255,255,0.24), rgba(255,255,255,0.08))",
+                transition: "background 700ms ease",
               }}
             />
 
             <span
-              className="relative z-10 text-[clamp(1.25rem,2vw,1.7rem)] font-semibold"
+              className="relative z-10 text-[clamp(1.2rem,1.9vw,1.7rem)] font-semibold"
               style={{
-                color: themeMode === "dark" ? "#ffffff" : "#1a1a1a",
+                color: themeMode === "dark" ? "#f3d08a" : "#8f5d18",
                 textShadow:
                   themeMode === "dark"
                     ? "0 2px 10px rgba(0,0,0,0.30)"
                     : "0 1px 6px rgba(255,255,255,0.16)",
+                transition: "color 700ms ease, text-shadow 700ms ease",
               }}
             >
               {item.label}
