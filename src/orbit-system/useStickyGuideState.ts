@@ -4,8 +4,7 @@
  * - מתי הבאנר מופיע
  * - איזו בועה פעילה כרגע
  *
- * כאן החישוב הוא מתחילת הגלילה מההירו,
- * ולא רק אחרי שההירו נגמר.
+ * ההופעה מתחילה רק כשההירו נגלל בערך לחצי גובהו.
  */
 
 import { useEffect, useMemo, useState, type RefObject } from "react";
@@ -22,7 +21,7 @@ export function useStickyGuideState({
   bubbles,
   headerOffsetPx,
 }: UseStickyGuideStateArgs) {
-  const [afterHeroScrollPx, setAfterHeroScrollPx] = useState(0);
+  const [afterActivationScrollPx, setAfterActivationScrollPx] = useState(0);
 
   useEffect(() => {
     const update = () => {
@@ -30,10 +29,19 @@ export function useStickyGuideState({
       if (!heroEl) return;
 
       const heroStartY = Math.max(heroEl.offsetTop - headerOffsetPx, 0);
-      const currentScrollY = window.scrollY;
-      const delta = Math.max(currentScrollY - heroStartY, 0);
+      const heroHeight = heroEl.offsetHeight;
+      const activationThresholdPx = Math.min(
+        heroHeight * 0.5,
+        window.innerHeight * 0.52
+      );
 
-      setAfterHeroScrollPx(delta);
+      const currentScrollY = window.scrollY;
+      const delta = Math.max(
+        currentScrollY - (heroStartY + activationThresholdPx),
+        0
+      );
+
+      setAfterActivationScrollPx(delta);
     };
 
     update();
@@ -46,23 +54,23 @@ export function useStickyGuideState({
     };
   }, [headerOffsetPx, heroRef]);
 
-  const stickyVisible = afterHeroScrollPx > 24;
+  const stickyVisible = afterActivationScrollPx > 0;
   const bannerVisible = stickyVisible;
 
   const activeBubble = useMemo(() => {
     return (
       bubbles.find(
         (bubble) =>
-          afterHeroScrollPx >= bubble.showFromAfterHeroPx &&
-          afterHeroScrollPx <= bubble.hideAfterHeroPx
+          afterActivationScrollPx >= bubble.showFromAfterHeroPx &&
+          afterActivationScrollPx <= bubble.hideAfterHeroPx
       ) ?? null
     );
-  }, [afterHeroScrollPx, bubbles]);
+  }, [afterActivationScrollPx, bubbles]);
 
   return {
     stickyVisible,
     bannerVisible,
-    afterHeroScrollPx,
+    afterHeroScrollPx: afterActivationScrollPx,
     activeBubble,
   };
 }
