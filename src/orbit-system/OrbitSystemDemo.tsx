@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Footer from "@/components/Footer";
 import OrbitHeroLayout from "./OrbitHeroLayout";
 import StickyGuide from "./StickyGuide";
@@ -10,9 +10,11 @@ import type { PageId, ThemeMode } from "./orbit.types";
 
 export default function OrbitSystemDemo() {
   const heroRef = useRef<HTMLElement | null>(null);
+  const footerWrapRef = useRef<HTMLDivElement | null>(null);
 
   const [pageId, setPageId] = useState<PageId>(orbitDemoPageId);
   const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
+  const [footerDockOffsetPx, setFooterDockOffsetPx] = useState(0);
 
   const page = useMemo(() => pagesRegistry[pageId], [pageId]);
   const presenter = useMemo(
@@ -26,6 +28,32 @@ export default function OrbitSystemDemo() {
     headerOffsetPx: page.hero.headerOffsetPx,
   });
 
+  useEffect(() => {
+    const updateFooterDock = () => {
+      const footerEl = footerWrapRef.current;
+      if (!footerEl) {
+        setFooterDockOffsetPx(0);
+        return;
+      }
+
+      const rect = footerEl.getBoundingClientRect();
+      const overlap = Math.max(window.innerHeight - rect.top, 0);
+
+      setFooterDockOffsetPx(overlap);
+    };
+
+    updateFooterDock();
+    window.addEventListener("scroll", updateFooterDock, { passive: true });
+    window.addEventListener("resize", updateFooterDock);
+
+    return () => {
+      window.removeEventListener("scroll", updateFooterDock);
+      window.removeEventListener("resize", updateFooterDock);
+    };
+  }, []);
+
+  const footerDockActive = footerDockOffsetPx > 0;
+
   return (
     <div
       dir="rtl"
@@ -33,6 +61,7 @@ export default function OrbitSystemDemo() {
       style={{
         backgroundColor: themeMode === "dark" ? "#090b12" : "#f6f3ef",
         color: themeMode === "dark" ? "#ffffff" : "#171717",
+        transition: "background-color 700ms ease, color 700ms ease",
       }}
     >
       <div className="pointer-events-none fixed inset-x-0 top-0 z-[80]">
@@ -43,6 +72,7 @@ export default function OrbitSystemDemo() {
               themeMode === "dark"
                 ? "linear-gradient(to bottom, rgba(6,8,16,0.55), rgba(6,8,16,0.00))"
                 : "linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0.00))",
+            transition: "background 700ms ease",
           }}
         >
           <div className="pointer-events-auto rounded-full border px-4 py-2 text-sm font-medium backdrop-blur-sm">
@@ -92,6 +122,8 @@ export default function OrbitSystemDemo() {
         themeMode={themeMode}
         config={page.tickerBanner}
         visible={bannerVisible}
+        dockOffsetPx={footerDockOffsetPx}
+        pauseMotion={footerDockActive}
       />
 
       <StickyGuide
@@ -101,9 +133,10 @@ export default function OrbitSystemDemo() {
         activeBubble={activeBubble}
         bannerHeightPx={page.tickerBanner.heightPx}
         bannerBottomOffsetPx={page.tickerBanner.bottomOffsetPx}
+        dockOffsetPx={footerDockOffsetPx}
       />
 
-      <main className="relative z-10 pb-[190px] xl:pl-[240px]">
+      <main className="relative z-10 pb-[220px] xl:pl-[220px]">
         {page.orbit.items.map((item) => (
           <section
             key={item.id}
@@ -121,10 +154,20 @@ export default function OrbitSystemDemo() {
                   themeMode === "dark"
                     ? "rgba(255,255,255,0.10)"
                     : "rgba(0,0,0,0.06)",
+                transition:
+                  "background-color 700ms ease, border-color 700ms ease, box-shadow 700ms ease",
               }}
             >
               <div className="mb-4 text-sm opacity-70">Section {item.label}</div>
-              <h2 className="text-3xl font-bold">כותרת תוכן לדוגמה {item.label}</h2>
+              <h2
+                className="text-3xl font-bold"
+                style={{
+                  color: themeMode === "dark" ? "#f3d08a" : "#8f5d18",
+                  transition: "color 700ms ease",
+                }}
+              >
+                כותרת תוכן לדוגמה {item.label}
+              </h2>
               <p className="mt-6 max-w-[65ch] text-lg leading-8 opacity-90">
                 זהו אזור תוכן לבדיקה. כאן ייכנס בהמשך התוכן האמיתי של הדף,
                 וכל חלק יוכל להשתייך לעיגול 1, 2, 3, 4 או 5.
@@ -133,10 +176,12 @@ export default function OrbitSystemDemo() {
           </section>
         ))}
 
-        <div className="h-10" />
+        <div className="h-8" />
       </main>
 
-      <Footer />
+      <div ref={footerWrapRef}>
+        <Footer />
+      </div>
     </div>
   );
 }
