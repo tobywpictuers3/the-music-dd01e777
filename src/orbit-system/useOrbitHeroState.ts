@@ -3,6 +3,7 @@
  * - תנועה איטית רציפה
  * - עצירה חלקה בהובר
  * - קביעת הזווית הפעילה של הדמות במרכז
+ * - אפשרות לקבל אייטם פעיל חיצוני מהדף
  * - איפוס הובר בזמן גלילה, כדי שהמעגל לא ייתקע כשחוזרים למעלה
  */
 
@@ -18,25 +19,27 @@ type UseOrbitHeroStateArgs = {
   items: OrbitItemConfig[];
   rotationSpeedDegPerSec: number;
   defaultLook: PresenterLook;
+  controlledActiveItemId?: OrbitItemId | null;
 };
 
 export function useOrbitHeroState({
   items,
   rotationSpeedDegPerSec,
   defaultLook,
+  controlledActiveItemId = null,
 }: UseOrbitHeroStateArgs) {
   const [rotationDeg, setRotationDeg] = useState(0);
-  const [activeItemId, setActiveItemId] = useState<OrbitItemId | null>(null);
+  const [hoveredItemId, setHoveredItemId] = useState<OrbitItemId | null>(null);
 
   const rotationRef = useRef(0);
   const speedRef = useRef(rotationSpeedDegPerSec);
   const rafRef = useRef<number | null>(null);
   const lastTsRef = useRef<number | null>(null);
-  const activeItemIdRef = useRef<OrbitItemId | null>(null);
+  const hoveredItemIdRef = useRef<OrbitItemId | null>(null);
 
   useEffect(() => {
-    activeItemIdRef.current = activeItemId;
-  }, [activeItemId]);
+    hoveredItemIdRef.current = hoveredItemId;
+  }, [hoveredItemId]);
 
   useEffect(() => {
     const animate = (timestamp: number) => {
@@ -47,7 +50,7 @@ export function useOrbitHeroState({
       const dt = (timestamp - lastTsRef.current) / 1000;
       lastTsRef.current = timestamp;
 
-      const isHovered = activeItemIdRef.current !== null;
+      const isHovered = hoveredItemIdRef.current !== null;
       const targetSpeed = isHovered ? 0 : rotationSpeedDegPerSec;
 
       const easing = isHovered ? 8 : 3.5;
@@ -72,7 +75,7 @@ export function useOrbitHeroState({
 
   useEffect(() => {
     const clearHoverOnScroll = () => {
-      setActiveItemId(null);
+      setHoveredItemId(null);
     };
 
     window.addEventListener("scroll", clearHoverOnScroll, { passive: true });
@@ -83,6 +86,8 @@ export function useOrbitHeroState({
       window.removeEventListener("resize", clearHoverOnScroll);
     };
   }, []);
+
+  const activeItemId = hoveredItemId ?? controlledActiveItemId ?? null;
 
   const activeLook = useMemo<PresenterLook>(() => {
     if (!activeItemId) return defaultLook;
@@ -102,7 +107,7 @@ export function useOrbitHeroState({
     rotationDeg,
     activeItemId,
     activeLook,
-    setActiveItemId,
-    clearActiveItem: () => setActiveItemId(null),
+    setActiveItemId: setHoveredItemId,
+    clearActiveItem: () => setHoveredItemId(null),
   };
 }
