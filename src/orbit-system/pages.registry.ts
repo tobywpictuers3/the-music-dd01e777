@@ -91,33 +91,69 @@ const basePages: Record<PageId, PageConfig> = {
   blog: createBasePage("blog", "/blog", "avatar"),
   orchestras: createBasePage("orchestras", "/orchestras", "drums"),
   performances: createBasePage("performances", "/performances", "violin"),
-  about: createBasePage("about", "/about", "electricGuitar"),
+  about: createBasePage("about", "/about", "avatar"),
   sheetMusic: createBasePage("sheetMusic", "/sheet-music", "classicalGuitar"),
 };
 
 basePages.about = {
-  ...basePages.about,
+  pageId: "about",
+  route: "/about",
+  presenterId: "avatar",
   hero: {
-    titleLines: ["כותרת ראשית לדף", "עוד שורת כותרת"],
+    titleLines: ["לא עוד בלוק טקסט,", "אלא מסע סביב", "העולמות שלי"],
     introLines: [
-      "זהו טקסט דמה נעים לקריאה בתוך אזור שני השליש.",
-      "אחר כך תוכלי להחליף אותו לתוכן המדויק של הדף.",
+      "המוסיקה ואני התחלנו דרך משותפת עם מלאת לי 5 שנים.",
+      "מאז — אנחנו יחד. יד־ביד.",
+      "לא כתחביב, לא כשלב, לא כמשהו שעושים על הדרך...",
+      "אלא כדרך חיים של לימוד, הוראה, במה, יצירה, דיוק, הקשבה והתפתחות מתמדת.",
     ],
     headerOffsetPx: 96,
   },
   orbit: {
-    ...basePages.about.orbit,
+    items: [
+      {
+        id: "1",
+        label: "הוראה",
+        baseAngleDeg: 342,
+        targetSectionId: "about-teacher",
+      },
+      {
+        id: "2",
+        label: "למידה",
+        baseAngleDeg: 198,
+        targetSectionId: "about-student",
+      },
+      {
+        id: "3",
+        label: "במה",
+        baseAngleDeg: 54,
+        targetSectionId: "about-stage",
+      },
+      {
+        id: "4",
+        label: "עיבוד",
+        baseAngleDeg: 126,
+        targetSectionId: "about-arrangement",
+      },
+      {
+        id: "5",
+        label: "הפקה",
+        baseAngleDeg: 270,
+        targetSectionId: "about-production",
+      },
+    ],
     rotationSpeedDegPerSec: 1.05,
+    defaultLook: "default",
   },
   stickyGuide: {
     idleLook: "default",
     bubbles: [
       {
         id: "about-bubble-1",
-        text: "זו בועת דמה ראשונה. כאן יופיע הטקסט שמגיע מיד כשמתחילה הגלילה מההירו.",
+        text: "דף אודות כאן לא יושב כטקסט ארוך, אלא כמסלול שמקיף תחומי עשייה שונים ומחבר ביניהם.",
         showFromAfterHeroPx: 24,
-        hideAfterHeroPx: 640,
-        maxWidthPx: 560,
+        hideAfterHeroPx: 700,
+        maxWidthPx: 580,
         offsetX: 18,
         offsetY: -4,
         enterMs: 240,
@@ -125,9 +161,9 @@ basePages.about = {
       },
       {
         id: "about-bubble-2",
-        text: "זהו אזור תוכן לבדיקה. כאן ייכנס בהמשך התוכן האמיתי של הדף, וכל חלק יוכל להשתייך לעיגול 1, 2, 3, 4 או 5.",
-        showFromAfterHeroPx: 760,
-        hideAfterHeroPx: 1600,
+        text: "הכרטיסים כאן נפתחים לעומק, אבל האורביט נותן כבר בהתחלה מבט מרוכז על הוראה, למידה, במה, עיבוד והפקה.",
+        showFromAfterHeroPx: 880,
+        hideAfterHeroPx: 1800,
         maxWidthPx: 620,
         offsetX: 22,
         offsetY: 2,
@@ -139,15 +175,19 @@ basePages.about = {
   tickerBanner: {
     enabled: true,
     items: [
-      "טקסט נע לדוגמה",
-      "כאן יוגדר תוכן שונה לכל דף",
-      "הבאנר מופיע יחד עם המגיש הקבוע",
-      "הגלילה מההירו מפעילה את המערכת מיד",
+      "26 שנות הוראת מוסיקה",
+      "9 כלי נגינה ברמה מעולה",
+      "מאות תלמידות פרטיות לאורך השנים",
+      "אלפי בוגרות קורסים קבוצתיים",
+      "5 תזמורות לימודיות עשירות",
+      "20 קונצרטים לתלמידות",
+      "250+ הופעות בארץ ובעולם",
+      "35 שנות למידה רציפה",
     ],
     heightPx: 96,
     bottomOffsetPx: 34,
     opacity: 0.92,
-    loopDurationSec: 36,
+    loopDurationSec: 40,
   },
 };
 
