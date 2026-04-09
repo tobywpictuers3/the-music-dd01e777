@@ -88,17 +88,17 @@ const basePages: Record<PageId, PageConfig> = {
   home: createBasePage("home", "/", "avatar"),
   contact: createBasePage("contact", "/contact", "avatar"),
   students: createBasePage("students", "/students", "piano"),
-  blog: createBasePage("blog", "/blog", "avatar"),
+  blog: createBasePage("blog", "/blog", "saxophone"),
   orchestras: createBasePage("orchestras", "/orchestras", "drums"),
   performances: createBasePage("performances", "/performances", "violin"),
-  about: createBasePage("about", "/about", "avatar"),
+  about: createBasePage("about", "/about", "electricGuitar"),
   sheetMusic: createBasePage("sheetMusic", "/sheet-music", "classicalGuitar"),
 };
 
 basePages.about = {
   pageId: "about",
   route: "/about",
-  presenterId: "avatar",
+  presenterId: "electricGuitar",
   hero: {
     titleLines: ["לא עוד בלוק טקסט,", "אלא מסע סביב", "העולמות שלי"],
     introLines: [
@@ -194,7 +194,7 @@ basePages.about = {
 basePages.blog = {
   pageId: "blog",
   route: "/blog",
-  presenterId: "avatar",
+  presenterId: "saxophone",
   hero: {
     titleLines: ["במה חיה", "לתוכן, שאלות,", "וקשר עם הקוראות"],
     introLines: [
