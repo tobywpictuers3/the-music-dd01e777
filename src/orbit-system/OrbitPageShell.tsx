@@ -12,12 +12,13 @@ import TickerBanner from "./TickerBanner";
 import { pagesRegistry } from "./pages.registry";
 import { presentersRegistry } from "./presenters.registry";
 import { useStickyGuideState } from "./useStickyGuideState";
-import type { PageId, ThemeMode } from "./orbit.types";
+import type { OrbitItemConfig, PageId, ThemeMode } from "./orbit.types";
 
 type OrbitPageShellProps = {
   pageId: PageId;
   children: ReactNode;
   contentClassName?: string;
+  onOrbitItemClick?: (item: OrbitItemConfig) => void;
 };
 
 function cn(...classes: Array<string | false | null | undefined>) {
@@ -33,6 +34,7 @@ export default function OrbitPageShell({
   pageId,
   children,
   contentClassName = "",
+  onOrbitItemClick,
 }: OrbitPageShellProps) {
   const heroRef = useRef<HTMLElement | null>(null);
 
@@ -105,6 +107,7 @@ export default function OrbitPageShell({
         page={page}
         presenter={presenter}
         themeMode={themeMode}
+        onOrbitItemClick={onOrbitItemClick}
       />
 
       <TickerBanner
