@@ -147,6 +147,7 @@ export default function StickyGuide({
 
   return (
     <div
+      dir="ltr"
       className="pointer-events-none fixed left-[clamp(8px,1.4vw,22px)] z-[70] hidden xl:block"
       style={{
         bottom: `${bannerHeightPx + bannerBottomOffsetPx + 8 + dockOffsetPx}px`,
