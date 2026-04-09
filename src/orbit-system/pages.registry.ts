@@ -464,6 +464,98 @@ basePages.performances = {
   },
 };
 
+basePages.sheetMusic = {
+  pageId: "sheetMusic",
+  route: "/sheet-music",
+  presenterId: "classicalGuitar",
+  hero: {
+    titleLines: ["תווים, עיבודים", "וכתיבה מוזיקלית", "בהזמנה"],
+    introLines: [
+      "כאן אפשר גם לעיין במאגר של תווים קיימים, וגם להזמין כתיבה או עיבוד מותאם.",
+      "המטרה היא לחבר בין מאגר קיים לבין מסלול ברור להזמנה אישית: לכלי, לרמה, לסולם, להרכב או לתזמורת.",
+    ],
+    headerOffsetPx: 96,
+  },
+  orbit: {
+    items: [
+      {
+        id: "1",
+        label: "שירותים",
+        baseAngleDeg: 270,
+        targetSectionId: "services-section",
+      },
+      {
+        id: "2",
+        label: "מאגר",
+        baseAngleDeg: 338,
+        targetSectionId: "catalog",
+      },
+      {
+        id: "3",
+        label: "הזמנה",
+        baseAngleDeg: 52,
+        targetSectionId: "custom-order",
+      },
+      {
+        id: "4",
+        label: "טופס",
+        baseAngleDeg: 126,
+        targetSectionId: "request-form",
+      },
+      {
+        id: "5",
+        label: "שאלות",
+        baseAngleDeg: 202,
+        targetSectionId: "faq-section",
+      },
+    ],
+    rotationSpeedDegPerSec: 1.05,
+    defaultLook: "default",
+  },
+  stickyGuide: {
+    idleLook: "default",
+    bubbles: [
+      {
+        id: "sheetmusic-bubble-1",
+        text: "הדף הזה לא רק מציג תווים מוכנים, אלא עושה סדר בין שני מסלולים: חיפוש במאגר, או הזמנה אישית של כתיבה והתאמה.",
+        showFromAfterHeroPx: 40,
+        hideAfterHeroPx: 760,
+        maxWidthPx: 600,
+        offsetX: 18,
+        offsetY: -6,
+        enterMs: 240,
+        exitMs: 180,
+      },
+      {
+        id: "sheetmusic-bubble-2",
+        text: "השלב הבא אחרי העיון הוא בקשה מסודרת: מה השיר, לאיזה כלי, באיזו רמה, ובאיזו צורת עיבוד צריך אותו.",
+        showFromAfterHeroPx: 920,
+        hideAfterHeroPx: 1900,
+        maxWidthPx: 620,
+        offsetX: 22,
+        offsetY: 2,
+        enterMs: 240,
+        exitMs: 180,
+      },
+    ],
+  },
+  tickerBanner: {
+    enabled: true,
+    items: [
+      "מאגר תווים",
+      "התאמה לכלי",
+      "שינוי רמה",
+      "שינוי סולם",
+      "שני קולות והרכב",
+      "כתיבה בהזמנה",
+    ],
+    heightPx: 96,
+    bottomOffsetPx: 34,
+    opacity: 0.92,
+    loopDurationSec: 38,
+  },
+};
+
 export const pagesRegistry: Record<PageId, PageConfig> = basePages;
 
 /**
