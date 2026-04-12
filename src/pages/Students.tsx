@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType } from "react";
 import { useEffect, useRef, useState } from "react";
 import InnerPageLayout from "@/components/InnerPageLayout";
 import OrbitPageShell from "@/orbit-system/OrbitPageShell";
@@ -30,7 +30,6 @@ import {
   Sparkles,
   Square,
   Volume2,
-  X,
 } from "lucide-react";
 
 /* =========================================================
@@ -42,13 +41,6 @@ import studentsLearningTouch from "@/assets/students/students-learning-touch.web
 import studentsStudyMaterials from "@/assets/students/students-study-materials.webp";
 import studentsStageAtmosphereWide from "@/assets/students/students-stage-atmosphere-wide.webp";
 import studentsDemoSystemPreview from "@/assets/students/students-demo-system-preview.webp";
-
-import starsLightTexture from "@/assets/homepage/textures/stars-light.png";
-import starsLightRedTexture from "@/assets/homepage/textures/stars-light-red.png";
-import starsDarkTexture from "@/assets/homepage/textures/stars-dark.png";
-import starsDarkRedTexture from "@/assets/homepage/textures/stars-dark-red.png";
-import floorLightTexture from "@/assets/homepage/textures/floor-light.png";
-import floorDarkTexture from "@/assets/homepage/textures/floor-dark.png";
 
 type StudyCard = {
   key: string;
@@ -89,7 +81,7 @@ function cn(...classes: Array<string | false | null | undefined>) {
 const CONTACT_STUDENTS_HREF = "/contact?from=students&topic=lessons_private";
 const STUDENTS_APP_HREF = "https://tobymusic.lovable.app";
 const STUDENTS_DEMO_HREF = "/students-demo";
-const EDUCATIONAL_ORCHESTRA_HREF = "/educational-orchestra";
+const EDUCATIONAL_ORCHESTRA_HREF = "/orchestras";
 const ABOUT_TEACHING_HREF = "/about#teaching";
 
 /* =========================================================
@@ -310,8 +302,8 @@ function AudioIconButton({
       onClick={onClick}
       aria-label={speaking ? "עצירת השמעה" : "השמעה"}
       className={cn(
-        "inline-flex h-12 w-12 items-center justify-center rounded-full bg-black/75 text-white ring-1 ring-white/10 transition hover:-translate-y-[1px] hover:bg-black",
-        className
+        "inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-soft transition hover:-translate-y-[1px] hover:bg-secondary",
+        className,
       )}
     >
       {speaking ? (
@@ -320,181 +312,6 @@ function AudioIconButton({
         <Volume2 className="h-5 w-5 text-primary" />
       )}
     </button>
-  );
-}
-
-type ThemedTextureSurfaceProps = {
-  children: ReactNode;
-  lightTexture: string;
-  darkTexture: string;
-  className?: string;
-  innerClassName?: string;
-  roundedNone?: boolean;
-  ringClassName?: string;
-  overlayLightClass?: string;
-  overlayDarkClass?: string;
-};
-
-function ThemedTextureSurface({
-  children,
-  lightTexture,
-  darkTexture,
-  className,
-  innerClassName,
-  roundedNone = false,
-  ringClassName = "ring-1 ring-white/8 shadow-[0_18px_50px_rgba(0,0,0,0.22)]",
-  overlayLightClass = "bg-black/38",
-  overlayDarkClass = "bg-black/56",
-}: ThemedTextureSurfaceProps) {
-  return (
-    <div
-      className={cn(
-        "relative overflow-hidden",
-        roundedNone ? "rounded-none" : "rounded-[2rem]",
-        ringClassName,
-        className
-      )}
-    >
-      <div
-        className="absolute inset-0 bg-cover bg-center dark:hidden"
-        style={{ backgroundImage: `url(${lightTexture})` }}
-      />
-      <div
-        className="absolute inset-0 hidden bg-cover bg-center dark:block"
-        style={{ backgroundImage: `url(${darkTexture})` }}
-      />
-      <div className={cn("absolute inset-0 dark:hidden", overlayLightClass)} />
-      <div
-        className={cn("absolute inset-0 hidden dark:block", overlayDarkClass)}
-      />
-      <div className={cn("relative", innerClassName)}>{children}</div>
-    </div>
-  );
-}
-
-function StarSurface(
-  props: Omit<ThemedTextureSurfaceProps, "lightTexture" | "darkTexture">
-) {
-  return (
-    <ThemedTextureSurface
-      lightTexture={starsLightTexture}
-      darkTexture={starsDarkTexture}
-      {...props}
-    />
-  );
-}
-
-function StarRedSurface(
-  props: Omit<ThemedTextureSurfaceProps, "lightTexture" | "darkTexture">
-) {
-  return (
-    <ThemedTextureSurface
-      lightTexture={starsLightRedTexture}
-      darkTexture={starsDarkRedTexture}
-      overlayLightClass="bg-black/45"
-      overlayDarkClass="bg-black/60"
-      {...props}
-    />
-  );
-}
-
-function FloorSurface(
-  props: Omit<ThemedTextureSurfaceProps, "lightTexture" | "darkTexture">
-) {
-  return (
-    <ThemedTextureSurface
-      lightTexture={floorLightTexture}
-      darkTexture={floorDarkTexture}
-      overlayLightClass="bg-black/20"
-      overlayDarkClass="bg-black/20"
-      ringClassName="ring-1 ring-white/10 shadow-[0_18px_44px_rgba(0,0,0,0.22)]"
-      {...props}
-    />
-  );
-}
-
-function GoldSparkles() {
-  return (
-    <>
-      <span
-        className="students-sparkle"
-        style={{ top: 14, right: 18, animationDelay: "0.1s" }}
-        aria-hidden="true"
-      />
-      <span
-        className="students-sparkle"
-        style={{ top: 28, left: 24, width: 7, height: 7, animationDelay: "0.9s" }}
-        aria-hidden="true"
-      />
-      <span
-        className="students-sparkle"
-        style={{ bottom: 22, right: 28, width: 6, height: 6, animationDelay: "1.5s" }}
-        aria-hidden="true"
-      />
-      <span
-        className="students-sparkle"
-        style={{ bottom: 14, left: 16, width: 5, height: 5, animationDelay: "2.1s" }}
-        aria-hidden="true"
-      />
-    </>
-  );
-}
-
-type SpeechBubbleProps = {
-  children: ReactNode;
-  tail?: "left" | "right";
-  className?: string;
-  onClose?: () => void;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
-};
-
-function SpeechBubble({
-  children,
-  tail = "right",
-  className,
-  onClose,
-  onMouseEnter,
-  onMouseLeave,
-}: SpeechBubbleProps) {
-  return (
-    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <FloorSurface className={cn("px-5 py-5 md:px-6 md:py-6", className)}>
-        <GoldSparkles />
-
-        <span
-          className={cn(
-            "absolute top-1/2 z-10 -translate-y-1/2 border-y-[16px] border-y-transparent",
-            tail === "right"
-              ? "-right-5 border-l-[28px] border-l-[#7a5734]"
-              : "-left-5 border-r-[28px] border-r-[#7a5734]"
-          )}
-        />
-
-        <div className="mb-4 flex items-start justify-between gap-3">
-          <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/18 ring-1 ring-white/10">
-            <Quote className="h-5 w-5 text-primary" />
-          </div>
-
-          {onClose ? (
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="סגירת בועה"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-white ring-1 ring-white/10 transition hover:bg-black/50"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          ) : null}
-        </div>
-
-        <div className="rounded-[1.3rem] bg-black/10 px-4 py-3 backdrop-blur-[2px] dark:bg-black/12">
-          <div className="text-base leading-8 text-foreground/95 md:text-lg">
-            {children}
-          </div>
-        </div>
-      </FloorSurface>
-    </div>
   );
 }
 
@@ -570,12 +387,10 @@ export default function Students() {
   }
 
   useEffect(() => {
-    const elements = STUDENTS_SECTION_ORBIT_MAP
-      .map((item) => {
-        const el = document.getElementById(item.sectionId);
-        return el ? { ...item, el } : null;
-      })
-      .filter(Boolean) as Array<{
+    const elements = STUDENTS_SECTION_ORBIT_MAP.map((item) => {
+      const el = document.getElementById(item.sectionId);
+      return el ? { ...item, el } : null;
+    }).filter(Boolean) as Array<{
       sectionId: string;
       orbitId: OrbitItemId;
       el: HTMLElement;
@@ -599,7 +414,7 @@ export default function Students() {
       {
         threshold: [0.15, 0.35, 0.6],
         rootMargin: "-28% 0px -42% 0px",
-      }
+      },
     );
 
     elements.forEach(({ el }) => observer.observe(el));
@@ -618,112 +433,15 @@ export default function Students() {
       description="מסלול מוסיקלי יסודי, אנושי ומסודר לתלמידות — עם שיעור, תרגול, רצף ומערכת תומכת."
     >
       <main dir="rtl" className="pb-24">
-        <style>{`
-          @keyframes studentsFlipIn {
-            from {
-              opacity: 0;
-              transform: perspective(900px) rotateY(14deg) translateY(12px);
-            }
-            to {
-              opacity: 1;
-              transform: perspective(900px) rotateY(0deg) translateY(0);
-            }
-          }
-
-          @keyframes studentsTwinkle {
-            0%, 100% {
-              opacity: 0.25;
-              transform: scale(0.8) rotate(0deg);
-            }
-            50% {
-              opacity: 1;
-              transform: scale(1.25) rotate(20deg);
-            }
-          }
-
-          @keyframes studentsGradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-          }
-
-          .students-flip-in {
-            animation: studentsFlipIn 650ms cubic-bezier(0.19, 1, 0.22, 1);
-            transform-style: preserve-3d;
-          }
-
-          .students-glow-text {
-            text-shadow:
-              0 0 10px rgba(243, 199, 115, 0.18),
-              0 4px 20px rgba(0, 0, 0, 0.34);
-          }
-
-          .students-section-title {
-            color: rgba(246, 214, 150, 0.98);
-            text-shadow:
-              0 0 10px rgba(240, 198, 116, 0.20),
-              0 2px 18px rgba(0, 0, 0, 0.35);
-            transition:
-              transform 220ms ease,
-              text-shadow 220ms ease,
-              color 220ms ease;
-          }
-
-          .students-section-title:hover {
-            transform: translateY(-1px);
-            color: #f7dca8;
-            text-shadow:
-              0 0 18px rgba(240, 198, 116, 0.30),
-              0 6px 24px rgba(0, 0, 0, 0.38);
-          }
-
-          .students-gold-frame {
-            position: relative;
-          }
-
-          .students-gold-frame::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            padding: 1px;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(255,236,190,0.8), rgba(219,171,82,0.55), rgba(255,236,190,0.8));
-            -webkit-mask:
-              linear-gradient(#fff 0 0) content-box,
-              linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-          }
-
-          .students-sparkle {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 9999px;
-            background: radial-gradient(circle, rgba(255,245,212,0.98) 0%, rgba(249,214,135,0.88) 34%, rgba(255,245,212,0) 72%);
-            box-shadow: 0 0 10px rgba(255, 231, 170, 0.7);
-            animation: studentsTwinkle 2.8s ease-in-out infinite;
-            pointer-events: none;
-          }
-
-          .students-gradient-btn {
-            background: linear-gradient(135deg, rgba(216,160,72,0.96), rgba(167,29,49,0.96), rgba(233,191,117,0.96));
-            background-size: 200% 200%;
-            animation: studentsGradientShift 8s ease infinite;
-            box-shadow: 0 14px 28px rgba(122, 54, 20, 0.28);
-          }
-        `}</style>
-
         <OrbitPageShell
           pageId="students"
           onOrbitItemClick={handleOrbitItemClick}
           controlledActiveItemId={activeOrbitId}
         >
           <div className="pb-16">
-            <div className="mx-auto max-w-6xl space-y-10 px-6 md:space-y-14">
+            <div className="mx-auto max-w-6xl space-y-12 px-6 md:space-y-16">
               <AppearOnScroll delay={18}>
-                <section className="-mt-1 flex justify-center">
+                <section className="flex justify-center">
                   <Button
                     asChild
                     size="lg"
@@ -744,40 +462,42 @@ export default function Students() {
                   }}
                 >
                   <div className="mx-auto max-w-4xl text-center">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium ring-1 ring-primary/15 md:text-sm">
-                      <Quote className="h-4 w-4 text-primary" />
+                    <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
+                      <Quote className="h-4 w-4" />
                       מה אומרות התלמידות
                     </div>
 
-                    <h2 className="students-section-title mt-4 text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
+                    <h2 className="mt-4 text-3xl font-black leading-tight text-foreground sm:text-4xl md:text-5xl">
                       שיעור שהופך לדרך,
-                      <span className="mt-2 block text-foreground">ולא לעוד מפגש חולף</span>
+                      <span className="mt-2 block">ולא לעוד מפגש חולף</span>
                     </h2>
 
-                    <p className="students-glow-text mt-4 text-base leading-relaxed text-foreground/82 md:text-xl">
-                      ההמלצות לא נועדו רק להרשים — אלא להמחיש איך נראית למידה שיש בה רצף,
-                      בהירות, יחס אישי ועומק מקצועי גם יחד.
+                    <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-xl">
+                      ההמלצות לא נועדו רק להרשים — אלא להמחיש איך נראית למידה שיש
+                      בה רצף, בהירות, יחס אישי ועומק מקצועי גם יחד.
                     </p>
                   </div>
 
-                  <div className="mt-10 grid items-center gap-8 xl:grid-cols-[1.08fr_420px_0.92fr]">
-                    <StarRedSurface className="students-gold-frame overflow-hidden px-6 py-6 md:px-8 md:py-8">
-                      <GoldSparkles />
-                      <div
-                        className="students-flip-in text-right"
-                        key={currentTestimonial.key}
-                        onMouseEnter={() => {
-                          testimonialPauseRef.current = true;
-                        }}
-                        onMouseLeave={() => {
-                          testimonialPauseRef.current = false;
-                        }}
-                      >
-                        <div className="students-glow-text text-2xl font-semibold leading-relaxed md:text-[2rem]">
+                  <div className="mt-10 grid gap-8 lg:grid-cols-[1.08fr_0.92fr]">
+                    <div
+                      className="rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-8"
+                      onMouseEnter={() => {
+                        testimonialPauseRef.current = true;
+                      }}
+                      onMouseLeave={() => {
+                        testimonialPauseRef.current = false;
+                      }}
+                    >
+                      <div key={currentTestimonial.key} className="min-h-[220px]">
+                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15">
+                          <Quote className="h-6 w-6" />
+                        </div>
+
+                        <div className="mt-5 text-2xl font-semibold leading-relaxed text-foreground md:text-[2rem]">
                           “{currentTestimonial.quote}”
                         </div>
 
-                        <div className="mt-6 text-base text-foreground/84 md:text-lg">
+                        <div className="mt-6 text-base text-muted-foreground md:text-lg">
                           <span className="font-black text-primary">
                             {currentTestimonial.name}
                           </span>
@@ -800,8 +520,8 @@ export default function Students() {
                               className={cn(
                                 "h-3.5 w-3.5 rounded-full transition-all",
                                 i === tIndex
-                                  ? "scale-110 bg-primary shadow-[0_0_10px_rgba(230,191,110,0.65)]"
-                                  : "bg-transparent ring-1 ring-primary/40 hover:bg-primary/30"
+                                  ? "scale-110 bg-primary"
+                                  : "bg-primary/20 hover:bg-primary/40",
                               )}
                               aria-label={`המלצה ${i + 1}`}
                             />
@@ -816,7 +536,7 @@ export default function Students() {
                               setTIndex(
                                 (prev) =>
                                   (prev - 1 + TESTIMONIALS.length) %
-                                  TESTIMONIALS.length
+                                  TESTIMONIALS.length,
                               )
                             }
                           >
@@ -835,25 +555,25 @@ export default function Students() {
                           </Button>
                         </div>
                       </div>
-                    </StarRedSurface>
-
-                    <div className="flex justify-center">
-                      <img
-                        src={studentsTestimonialsAnnouncer}
-                        alt="סמל דף התלמידות"
-                        className="h-auto w-full max-w-[320px] object-contain drop-shadow-[0_30px_68px_rgba(0,0,0,0.34)] md:max-w-[420px] xl:max-w-[500px]"
-                        loading="lazy"
-                      />
                     </div>
 
-                    <StarSurface className="overflow-hidden px-6 py-6 md:px-8 md:py-8">
-                      <div className="space-y-4 text-right">
-                        <div className="students-section-title text-2xl font-black leading-tight md:text-4xl">
+                    <div className="space-y-5">
+                      <div className="flex justify-center rounded-[2rem] border border-border bg-card p-5 shadow-soft">
+                        <img
+                          src={studentsTestimonialsAnnouncer}
+                          alt="סמל דף התלמידות"
+                          className="h-auto w-full max-w-[320px] object-contain md:max-w-[420px]"
+                          loading="lazy"
+                        />
+                      </div>
+
+                      <div className="rounded-[2rem] border border-border bg-secondary p-6 shadow-soft md:p-8">
+                        <div className="text-2xl font-black leading-tight text-foreground md:text-3xl">
                           מסלול מקצועי, אנושי
-                          <span className="mt-2 block text-foreground">ועם רף ברור</span>
+                          <span className="mt-2 block">ועם רף ברור</span>
                         </div>
 
-                        <ul className="space-y-2.5 text-base leading-relaxed text-foreground/92 md:text-lg">
+                        <ul className="mt-5 space-y-2.5 text-base leading-relaxed text-muted-foreground md:text-lg">
                           <li>לתלמידות שמוכנות לתהליך ולא רק להתנסות.</li>
                           <li>למי שמחפשת ליווי, סדר ומסגרת מחזיקה.</li>
                           <li>למי שחשוב לה יחס אישי יחד עם דרישה מקצועית.</li>
@@ -861,7 +581,7 @@ export default function Students() {
 
                         <Button
                           asChild
-                          className="h-12 rounded-2xl px-5 text-sm font-semibold md:text-base"
+                          className="mt-6 h-12 rounded-2xl px-5 text-sm font-semibold md:text-base"
                         >
                           <a href={CONTACT_STUDENTS_HREF}>
                             בדיקת התאמה למסלול
@@ -869,7 +589,7 @@ export default function Students() {
                           </a>
                         </Button>
                       </div>
-                    </StarSurface>
+                    </div>
                   </div>
                 </section>
               </AppearOnScroll>
@@ -877,54 +597,64 @@ export default function Students() {
               <AppearOnScroll delay={92}>
                 <section className="pt-1">
                   <div className="mx-auto max-w-4xl text-center">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium ring-1 ring-primary/15 md:text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                    <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
+                      <CheckCircle2 className="h-4 w-4" />
                       כך נראה תהליך נכון
                     </div>
 
-                    <h2 className="students-section-title mt-4 text-3xl font-black leading-tight md:text-5xl">
+                    <h2 className="mt-4 text-3xl font-black leading-tight md:text-5xl text-foreground">
                       צורת העבודה שלי מתאימה למי שמוכנה
-                      <span className="mt-2 block text-foreground">להתמסר לתהליך אמיתי</span>
+                      <span className="mt-2 block">להתמסר לתהליך אמיתי</span>
                     </h2>
                   </div>
 
                   <div className="mt-8 grid items-center gap-8 lg:grid-cols-[1fr_1.02fr]">
-                    <div className="flex items-end justify-center gap-4">
-                      <div className="flex flex-col items-center gap-4">
-                        <AudioIconButton
-                          speaking={speakingKey === "hero-piano"}
-                          onClick={() => toggleSpeech("hero-piano", HERO_PIANO_QUOTE)}
-                        />
+                    <div className="flex flex-col items-center gap-4">
+                      <AudioIconButton
+                        speaking={speakingKey === "hero-piano"}
+                        onClick={() => toggleSpeech("hero-piano", HERO_PIANO_QUOTE)}
+                      />
 
-                        <img
-                          src={studentsPresenterMain}
-                          alt="סמל דף התלמידות"
-                          className="h-auto w-full max-w-[420px] object-contain drop-shadow-[0_28px_70px_rgba(0,0,0,0.30)] md:max-w-[560px]"
-                          loading="eager"
-                        />
-                      </div>
-
-                      <SpeechBubble tail="left" className="max-w-[520px] self-center">
-                        <div className="students-glow-text text-right text-lg md:text-xl">
-                          “{HERO_PIANO_QUOTE}”
-                        </div>
-                      </SpeechBubble>
+                      <img
+                        src={studentsPresenterMain}
+                        alt="סמל דף התלמידות"
+                        className="h-auto w-full max-w-[420px] object-contain md:max-w-[560px]"
+                        loading="eager"
+                      />
                     </div>
 
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <StarSurface className="px-5 py-5 md:px-6 md:py-6">
-                        <div className="text-base font-bold md:text-lg">מה חשוב לי במיוחד</div>
-                        <div className="mt-2 text-sm leading-relaxed text-foreground/82 md:text-base">
-                          עומק, עקביות, שקט מקצועי ובהירות שמאפשרת לתלמידה להתקדם מתוך ביטחון.
+                    <div className="space-y-4">
+                      <div className="rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-8">
+                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15">
+                          <Quote className="h-6 w-6" />
                         </div>
-                      </StarSurface>
 
-                      <StarSurface className="px-5 py-5 md:px-6 md:py-6">
-                        <div className="text-base font-bold md:text-lg">מה יוצא מזה בפועל</div>
-                        <div className="mt-2 text-sm leading-relaxed text-foreground/82 md:text-base">
-                          מסלול שמחזיק לאורך זמן, עם רמה, מסגרת, ליווי ודרך עבודה מסודרת.
+                        <div className="mt-5 text-lg leading-relaxed text-foreground md:text-2xl">
+                          “{HERO_PIANO_QUOTE}”
                         </div>
-                      </StarSurface>
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="rounded-[1.5rem] border border-border bg-card p-5 shadow-soft md:p-6">
+                          <div className="text-base font-bold text-foreground md:text-lg">
+                            מה חשוב לי במיוחד
+                          </div>
+                          <div className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
+                            עומק, עקביות, שקט מקצועי ובהירות שמאפשרת לתלמידה להתקדם
+                            מתוך ביטחון.
+                          </div>
+                        </div>
+
+                        <div className="rounded-[1.5rem] border border-border bg-card p-5 shadow-soft md:p-6">
+                          <div className="text-base font-bold text-foreground md:text-lg">
+                            מה יוצא מזה בפועל
+                          </div>
+                          <div className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
+                            מסלול שמחזיק לאורך זמן, עם רמה, מסגרת, ליווי ודרך עבודה
+                            מסודרת.
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -937,18 +667,18 @@ export default function Students() {
                   onMouseEnter={() => setActiveOrbitId("2")}
                 >
                   <div className="mx-auto max-w-4xl text-center">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium ring-1 ring-primary/15 md:text-sm">
-                      <Music2 className="h-4 w-4 text-primary" />
+                    <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
+                      <Music2 className="h-4 w-4" />
                       מה לומדים כאן
                     </div>
 
-                    <h2 className="students-section-title mt-4 text-3xl font-black sm:text-4xl md:text-5xl">
+                    <h2 className="mt-4 text-3xl font-black text-foreground sm:text-4xl md:text-5xl">
                       תחומי הלימוד
                     </h2>
 
                     <div className="mt-4 text-base leading-relaxed text-muted-foreground md:text-xl">
-                      השיעורים נבנים מתוך עומק מקצועי, התאמה אישית ומסלול התקדמות ברור.
-                      התוכן ממורכז ונקי — כדי שהעין תבין מיד מה מרכזי, ומה משלים את הדרך.
+                      השיעורים נבנים מתוך עומק מקצועי, התאמה אישית ומסלול התקדמות
+                      ברור.
                     </div>
                   </div>
 
@@ -957,16 +687,16 @@ export default function Students() {
                       <img
                         src={studentsLearningTouch}
                         alt="חוויית למידה ונגינה"
-                        className="h-auto min-h-[360px] w-full rounded-[2.25rem] object-cover object-center shadow-[0_22px_60px_rgba(0,0,0,0.18)]"
+                        className="h-auto min-h-[360px] w-full rounded-[2rem] border border-border object-cover object-center shadow-soft"
                         loading="lazy"
                       />
 
-                      <StarSurface className="px-6 py-6 md:px-7 md:py-7">
-                        <div className="students-section-title text-2xl font-black md:text-3xl">
+                      <div className="rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-7">
+                        <div className="text-2xl font-black text-foreground md:text-3xl">
                           מקצועות משלימים
                         </div>
 
-                        <div className="mt-3 text-base leading-relaxed text-foreground/82 md:text-lg">
+                        <div className="mt-3 text-base leading-relaxed text-muted-foreground md:text-lg">
                           תיאוריה, קריאת תווים, סולפז׳, הקשבה, קצב ופיתוח שמיעה —
                           שכבה שמעמיקה את היציבות ואת ההבנה המוסיקלית של התלמידה.
                         </div>
@@ -975,27 +705,27 @@ export default function Students() {
                           {SUPPORT_STUDIES.map((item) => (
                             <span
                               key={item}
-                              className="rounded-full bg-black/18 px-3.5 py-2 text-sm ring-1 ring-white/10 md:text-base"
+                              className="rounded-full bg-secondary px-3.5 py-2 text-sm text-secondary-foreground ring-1 ring-border md:text-base"
                             >
                               {item}
                             </span>
                           ))}
                         </div>
-                      </StarSurface>
+                      </div>
                     </div>
 
                     <div className="grid items-start gap-5 md:grid-cols-2">
                       {PRIMARY_STUDIES.map(({ key, title, subtitle, Icon, bullets }) => (
-                        <StarSurface
+                        <div
                           key={key}
-                          className="flex h-full flex-col px-6 py-6 md:px-7 md:py-7"
+                          className="flex h-full flex-col rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-7"
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div>
-                              <div className="students-section-title text-2xl font-black md:text-3xl">
+                              <div className="text-2xl font-black text-foreground md:text-3xl">
                                 {title}
                               </div>
-                              <div className="mt-2 text-base text-foreground/80">
+                              <div className="mt-2 text-base text-muted-foreground">
                                 {subtitle}
                               </div>
                             </div>
@@ -1009,42 +739,30 @@ export default function Students() {
                             {bullets.map((bullet) => (
                               <li key={bullet} className="flex items-start gap-3 text-base">
                                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                                <span className="leading-relaxed text-foreground/82">
+                                <span className="leading-relaxed text-muted-foreground">
                                   {bullet}
                                 </span>
                               </li>
                             ))}
                           </ul>
-                        </StarSurface>
+                        </div>
                       ))}
                     </div>
                   </div>
 
                   <div className="mt-8">
                     <a href={EDUCATIONAL_ORCHESTRA_HREF} className="block">
-                      <div className="relative overflow-hidden rounded-[2.25rem] px-8 py-8 text-center shadow-[0_24px_60px_rgba(0,0,0,0.18)] md:px-10 md:py-10">
-                        <div
-                          className="absolute inset-0 bg-cover bg-center opacity-[0.16] dark:hidden"
-                          style={{ backgroundImage: `url(${starsLightTexture})` }}
-                        />
-                        <div
-                          className="absolute inset-0 hidden bg-cover bg-center opacity-[0.18] dark:block"
-                          style={{ backgroundImage: `url(${starsDarkTexture})` }}
-                        />
-                        <div className="absolute inset-0 bg-black/78" />
-                        <GoldSparkles />
-
-                        <div className="relative">
-                          <div className="students-section-title text-3xl font-black md:text-4xl">
-                            תזמורות לימודיות
-                          </div>
-                          <div className="students-glow-text mx-auto mt-3 max-w-3xl text-lg leading-relaxed text-foreground/92 md:text-2xl">
-                            מסגרת שמפתחת הקשבה, אחריות, קצב ויכולת להשתלב בתוך מרקם מוסיקלי.
-                          </div>
-                          <div className="mt-5 inline-flex items-center gap-2 text-base font-semibold text-primary md:text-lg">
-                            לעמוד התזמורות
-                            <ArrowLeft className="h-4 w-4" />
-                          </div>
+                      <div className="rounded-[2rem] border border-border bg-card px-8 py-8 text-center shadow-soft md:px-10 md:py-10">
+                        <div className="text-3xl font-black text-foreground md:text-4xl">
+                          תזמורות לימודיות
+                        </div>
+                        <div className="mx-auto mt-3 max-w-3xl text-lg leading-relaxed text-muted-foreground md:text-2xl">
+                          מסגרת שמפתחת הקשבה, אחריות, קצב ויכולת להשתלב בתוך מרקם
+                          מוסיקלי.
+                        </div>
+                        <div className="mt-5 inline-flex items-center gap-2 text-base font-semibold text-primary md:text-lg">
+                          לעמוד התזמורות
+                          <ArrowLeft className="h-4 w-4" />
                         </div>
                       </div>
                     </a>
@@ -1058,55 +776,54 @@ export default function Students() {
                   className="scroll-mt-28 pt-2"
                   onMouseEnter={() => setActiveOrbitId("3")}
                 >
-                  <div
-                    className="relative overflow-hidden rounded-[2.4rem] shadow-[0_24px_60px_rgba(0,0,0,0.18)]"
-                    style={{
-                      backgroundImage: `url(${studentsStageAtmosphereWide})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  >
-                    <div className="relative grid items-start gap-8 px-6 py-8 md:px-10 md:py-12 lg:grid-cols-[1.02fr_0.98fr]">
-                      <div className="space-y-5 lg:order-2">
-                        <div className="w-full max-w-[640px] rounded-[1.9rem] bg-black/42 px-6 py-6 shadow-[0_16px_40px_rgba(0,0,0,0.30)] backdrop-blur-sm md:px-8 md:py-8">
-                          <div className="flex items-center gap-3">
-                            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/12 ring-1 ring-primary/20">
+                  <div className="relative overflow-hidden rounded-[2.2rem] border border-border shadow-soft">
+                    <img
+                      src={studentsStageAtmosphereWide}
+                      alt=""
+                      aria-hidden="true"
+                      className="absolute inset-0 h-full w-full object-cover object-center"
+                    />
+                    <div className="absolute inset-0 bg-background/85 dark:bg-background/80" />
+
+                    <div className="relative grid gap-8 px-6 py-8 md:px-10 md:py-12 lg:grid-cols-[1.02fr_0.98fr]">
+                      <div className="space-y-4">
+                        <div className="rounded-[1.7rem] border border-border bg-card/80 p-6 shadow-soft backdrop-blur-sm md:p-8">
+                          <div className="inline-flex items-center gap-3">
+                            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/20">
                               <Quote className="h-6 w-6 text-primary" />
                             </span>
-                            <div className="text-sm font-medium text-foreground/82 md:text-base">
+                            <div className="text-sm font-medium text-muted-foreground md:text-base">
                               הדרך שלי
                             </div>
                           </div>
 
-                          <div className="students-section-title mt-6 text-3xl font-black leading-tight md:text-5xl">
+                          <div className="mt-6 text-3xl font-black leading-tight text-foreground md:text-5xl">
                             לא עבודה טכנית,
-                            <span className="mt-2 block text-foreground">אלא חתימת דרך</span>
+                            <span className="mt-2 block">אלא חתימת דרך</span>
                           </div>
 
-                          <div className="students-glow-text mt-5 text-base leading-relaxed text-foreground/90 md:text-lg">
-                            כאן הדגש הוא על קו ברור, רמת ציפייה גבוהה והחזקת תהליך לאורך זמן —
-                            עם רקע תומך מאחורי הטקסט בלבד, כדי לשמור על קריאות ונוכחות בלי לחנוק את התמונה.
+                          <div className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
+                            כאן הדגש הוא על קו ברור, רמת ציפייה גבוהה והחזקת תהליך
+                            לאורך זמן — עם עומק, בהירות, רגישות וסדר.
                           </div>
-                        </div>
-
-                        <div className="grid gap-3">
-                          {BELIEF_LINES.map((belief, idx) => (
-                            <div
-                              key={belief}
-                              className="flex items-center gap-4 rounded-2xl bg-black/34 px-5 py-4 shadow-[0_14px_28px_rgba(0,0,0,0.22)] backdrop-blur-sm"
-                            >
-                              <div className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/16 text-sm font-bold text-primary ring-1 ring-primary/18">
-                                {idx + 1}
-                              </div>
-                              <div className="text-sm leading-relaxed text-foreground/90 md:text-base">
-                                {belief}
-                              </div>
-                            </div>
-                          ))}
                         </div>
                       </div>
 
-                      <div className="min-h-[500px] lg:order-1" />
+                      <div className="grid gap-3">
+                        {BELIEF_LINES.map((belief, idx) => (
+                          <div
+                            key={belief}
+                            className="flex items-center gap-4 rounded-2xl border border-border bg-card/80 px-5 py-4 shadow-soft backdrop-blur-sm"
+                          >
+                            <div className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary ring-1 ring-primary/18">
+                              {idx + 1}
+                            </div>
+                            <div className="text-sm leading-relaxed text-foreground md:text-base">
+                              {belief}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -1122,39 +839,43 @@ export default function Students() {
                     <img
                       src={studentsStudyMaterials}
                       alt="חומרי לימוד וסביבת עבודה"
-                      className="h-auto min-h-[380px] w-full rounded-[2.25rem] object-cover object-center shadow-[0_24px_60px_rgba(0,0,0,0.18)]"
+                      className="h-auto min-h-[380px] w-full rounded-[2rem] border border-border object-cover object-center shadow-soft"
                       loading="lazy"
                     />
 
                     <div>
-                      <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium ring-1 ring-primary/15 md:text-sm">
-                        <ClipboardList className="h-4 w-4 text-primary" />
+                      <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
+                        <ClipboardList className="h-4 w-4" />
                         איך זה עובד בפועל
                       </div>
 
-                      <h2 className="students-section-title mt-4 text-3xl font-black sm:text-4xl md:text-5xl">
+                      <h2 className="mt-4 text-3xl font-black text-foreground sm:text-4xl md:text-5xl">
                         שיעור, תרגול, רצף ומעקב
                       </h2>
 
-                      <div className="students-glow-text mt-4 max-w-3xl text-base leading-relaxed text-foreground/82 md:text-xl">
+                      <div className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground md:text-xl">
                         כאן לא לומדים רק בתוך השיעור. השיעור נותן כיוון ברור,
-                        והתהליך ממשיך בין המפגשים — עם מסגרת, חומרים, משימות ודרך עבודה שמחזיקה את ההתקדמות.
+                        והתהליך ממשיך בין המפגשים — עם מסגרת, חומרים, משימות ודרך
+                        עבודה שמחזיקה את ההתקדמות.
                       </div>
 
                       <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                         {HOW_IT_WORKS.map(({ key, title, text, Icon }) => (
-                          <StarSurface key={key} className="px-5 py-5 md:px-6 md:py-6">
+                          <div
+                            key={key}
+                            className="rounded-[1.5rem] border border-border bg-card p-5 shadow-soft md:p-6"
+                          >
                             <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
                               <Icon className="h-6 w-6 text-primary" />
                             </span>
 
-                            <div className="students-section-title mt-4 text-lg font-black md:text-xl">
+                            <div className="mt-4 text-lg font-black text-foreground md:text-xl">
                               {title}
                             </div>
-                            <div className="mt-2 text-sm leading-relaxed text-foreground/82 md:text-base">
+                            <div className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
                               {text}
                             </div>
-                          </StarSurface>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -1170,33 +891,33 @@ export default function Students() {
                 >
                   <div className="grid items-start gap-8 lg:grid-cols-[1.04fr_0.96fr]">
                     <div className="space-y-4">
-                      <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium ring-1 ring-primary/15 md:text-sm">
-                        <Smartphone className="h-4 w-4 text-primary" />
+                      <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
+                        <Smartphone className="h-4 w-4" />
                         מערכת התלמידות
                       </div>
 
-                      <h2 className="students-section-title text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
+                      <h2 className="text-3xl font-black leading-tight text-foreground sm:text-4xl md:text-5xl">
                         מערכת שממשיכה את הלמידה
-                        <span className="mt-2 block text-foreground">גם בין השיעורים</span>
+                        <span className="mt-2 block">גם בין השיעורים</span>
                       </h2>
 
-                      <div className="students-glow-text max-w-3xl text-base leading-relaxed text-foreground/82 md:text-xl">
-                        זה האזור הנכון להפנות ממנו לדמו ולכניסה. כאן כבר מבינים מהי המעטפת,
-                        ולכן אפשר לראות איך זה נראה בפועל — בלי להעמיס על ההחלטה.
+                      <div className="max-w-3xl text-base leading-relaxed text-muted-foreground md:text-xl">
+                        זה האזור הנכון להפנות ממנו לדמו ולכניסה. כאן כבר מבינים מהי
+                        המעטפת, ולכן אפשר לראות איך זה נראה בפועל.
                       </div>
 
                       <div className="grid gap-3 md:grid-cols-2">
                         {APP_FEATURES.map(({ key, title, text, Icon }) => (
                           <div
                             key={key}
-                            className="flex items-start gap-4 rounded-2xl bg-card/62 px-4 py-4 ring-1 ring-border/70"
+                            className="flex items-start gap-4 rounded-2xl border border-border bg-card px-4 py-4 shadow-soft"
                           >
                             <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
                               <Icon className="h-5 w-5 text-primary" />
                             </span>
 
                             <span className="min-w-0">
-                              <span className="students-section-title block text-sm font-black md:text-base">
+                              <span className="block text-sm font-black text-foreground md:text-base">
                                 {title}
                               </span>
                               <span className="mt-1 block text-sm leading-relaxed text-muted-foreground md:text-base">
@@ -1223,30 +944,33 @@ export default function Students() {
                       <img
                         src={studentsDemoSystemPreview}
                         alt="תצוגה מקדימה של מערכת התלמידות"
-                        className="h-auto min-h-[420px] w-full rounded-[2.25rem] object-cover object-center shadow-[0_24px_60px_rgba(0,0,0,0.18)]"
+                        className="h-auto min-h-[420px] w-full rounded-[2rem] border border-border object-cover object-center shadow-soft"
                         loading="lazy"
                       />
 
                       <div className="grid gap-3 sm:grid-cols-2">
-                        <a
-                          href={STUDENTS_DEMO_HREF}
-                          title="מעבר לדף ההדגמה של המערכת, כולל צילומי מסך והסברים חזותיים."
-                          className="students-gradient-btn students-gold-frame relative inline-flex min-h-[66px] items-center justify-center rounded-[1.6rem] px-6 py-4 text-center text-base font-black text-white transition-transform hover:-translate-y-[2px]"
+                        <Button
+                          asChild
+                          size="lg"
+                          className="h-14 rounded-[1.3rem] text-base font-black"
                         >
-                          <GoldSparkles />
-                          <span>להדגמה</span>
-                        </a>
+                          <a href={STUDENTS_DEMO_HREF}>להדגמה</a>
+                        </Button>
 
-                        <a
-                          href={STUDENTS_APP_HREF}
-                          target="_blank"
-                          rel="noreferrer"
-                          title="מעבר ישיר לתוכנת התלמידות הפעילה."
-                          className="students-gradient-btn students-gold-frame relative inline-flex min-h-[66px] items-center justify-center rounded-[1.6rem] px-6 py-4 text-center text-base font-black text-white transition-transform hover:-translate-y-[2px]"
+                        <Button
+                          asChild
+                          variant="secondary"
+                          size="lg"
+                          className="h-14 rounded-[1.3rem] text-base font-black"
                         >
-                          <GoldSparkles />
-                          <span>לכניסה</span>
-                        </a>
+                          <a
+                            href={STUDENTS_APP_HREF}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            לכניסה
+                          </a>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -1255,34 +979,35 @@ export default function Students() {
 
               <AppearOnScroll delay={190}>
                 <section>
-                  <StarRedSurface className="overflow-hidden px-5 py-5 md:px-7 md:py-6">
-                    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4 text-center md:gap-x-10">
+                  <div className="rounded-[2rem] border border-border bg-card px-5 py-5 shadow-soft md:px-7 md:py-6">
+                    <div className="grid grid-cols-2 gap-5 text-center md:grid-cols-3 xl:grid-cols-6">
                       {NUMBERS.map((item) => (
                         <div key={item.label}>
-                          <div className="students-section-title inline-block text-2xl font-black md:text-4xl">
+                          <div className="text-2xl font-black text-primary md:text-4xl">
                             {item.value}
                           </div>
-                          <div className="mt-1 text-xs text-foreground/78 md:text-sm">
+                          <div className="mt-1 text-xs text-muted-foreground md:text-sm">
                             {item.label}
                           </div>
                         </div>
                       ))}
                     </div>
-                  </StarRedSurface>
+                  </div>
                 </section>
               </AppearOnScroll>
 
               <AppearOnScroll delay={220}>
                 <section className="flex justify-center">
-                  <div className="relative w-full max-w-4xl overflow-hidden rounded-[2rem] bg-card/72 px-6 py-8 shadow-soft ring-1 ring-border backdrop-blur-sm md:px-10 md:py-10">
+                  <div className="w-full max-w-4xl rounded-[2rem] border border-border bg-card px-6 py-8 shadow-soft md:px-10 md:py-10">
                     <div className="text-center">
-                      <div className="students-section-title text-2xl font-black leading-tight md:text-4xl">
+                      <div className="text-2xl font-black leading-tight text-foreground md:text-4xl">
                         יש לך שאלות?
                       </div>
 
                       <div className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-lg">
                         אפשר לפנות דרך דף צור קשר, לראות את הדמו של המערכת,
-                        להיכנס ישירות לתוכנה, או להכיר גם את צד ההוראה שמאחורי הדרך הזו.
+                        להיכנס ישירות לתוכנה, או להכיר גם את צד ההוראה שמאחורי
+                        הדרך הזו.
                       </div>
 
                       <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
@@ -1336,7 +1061,8 @@ export default function Students() {
             <DialogHeader>
               <DialogTitle>מה כוללת מערכת התלמידות</DialogTitle>
               <DialogDescription>
-                מעטפת שממשיכה את הלמידה גם בין השיעורים, ומחזיקה את התהליך בצורה מסודרת וברורה.
+                מעטפת שממשיכה את הלמידה גם בין השיעורים, ומחזיקה את התהליך בצורה
+                מסודרת וברורה.
               </DialogDescription>
             </DialogHeader>
 
@@ -1351,7 +1077,9 @@ export default function Students() {
                   </span>
 
                   <div className="min-w-0">
-                    <div className="text-sm font-semibold md:text-base">{title}</div>
+                    <div className="text-sm font-semibold text-foreground md:text-base">
+                      {title}
+                    </div>
                     <div className="mt-1 text-sm leading-relaxed text-muted-foreground md:text-base">
                       {text}
                     </div>
