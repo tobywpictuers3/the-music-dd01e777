@@ -5,6 +5,7 @@ import InnerPageLayout from "@/components/InnerPageLayout";
 import Section from "@/components/Section";
 import ArticlePreview from "@/components/ArticlePreview";
 import NewsletterSignupForm from "@/components/newsletter/NewsletterSignupForm";
+import { useToast } from "@/components/ui/use-toast";
 
 import OrbitPageShell from "@/orbit-system/OrbitPageShell";
 import { pagesRegistry } from "@/orbit-system/pages.registry";
@@ -19,6 +20,8 @@ import blog7 from "@/assets/blog-7.avif";
 import blog8 from "@/assets/blog-8.avif";
 import blog9 from "@/assets/blog-9.avif";
 import blog10 from "@/assets/blog-10.avif";
+
+const WORKER_BASE = "https://toby-mailing-list.w0504124161.workers.dev";
 
 type NewsletterIssue = {
   title: string;
@@ -50,6 +53,25 @@ type SubscriberTeaser = {
   teaser: string;
 };
 
+type SessionSubscriber = {
+  id: string;
+  email: string;
+  name: string;
+  status: string;
+  source: string;
+  newsletterOptIn: boolean;
+  createdAt: string;
+  approvedAt: string | null;
+  lastLoginAt: string | null;
+};
+
+type SessionMeResponse = {
+  ok: boolean;
+  authenticated: boolean;
+  subscriber?: SessionSubscriber;
+  error?: string;
+};
+
 function articleHref(slug: string) {
   return `/article/${slug}`;
 }
@@ -59,12 +81,125 @@ const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("הכל");
   const [activeSectionId, setActiveSectionId] = useState<string>("featured");
 
-  const [isSubscriber] = useState<boolean>(false);
-
   const [qaQuestion, setQaQuestion] = useState("");
   const [topic, setTopic] = useState("");
 
+  const [sessionSubscriber, setSessionSubscriber] =
+    useState<SessionSubscriber | null>(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
+
+  const [signInEmail, setSignInEmail] = useState("");
+  const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const { toast } = useToast();
   const orbitNavItems = pagesRegistry.blog.orbit.items;
+
+  const isSubscriber = !!sessionSubscriber;
+
+  const refreshSession = async () => {
+    try {
+      const response = await fetch(`${WORKER_BASE}/session_me`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data: SessionMeResponse = await response.json();
+
+      if (!response.ok || !data?.ok) {
+        throw new Error(data?.error || "session_me_failed");
+      }
+
+      if (data.authenticated && data.subscriber) {
+        setSessionSubscriber(data.subscriber);
+      } else {
+        setSessionSubscriber(null);
+      }
+    } catch {
+      setSessionSubscriber(null);
+    } finally {
+      setSessionLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshSession();
+  }, []);
+
+  const handleSendMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const email = signInEmail.trim().toLowerCase();
+    if (!email) return;
+
+    setIsSendingMagicLink(true);
+
+    try {
+      const response = await fetch(`${WORKER_BASE}/send_magic_link`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data?.ok) {
+        throw new Error(data?.error || "send_magic_link_failed");
+      }
+
+      toast({
+        title: "אם הכתובת מאושרת, נשלח אלייך קישור",
+        description:
+          "בדקי את תיבת המייל. אם את כבר מאושרת במערכת, יחכה לך שם קישור כניסה.",
+      });
+    } catch (error) {
+      toast({
+        title: "לא הצלחנו לשלוח קישור כרגע",
+        description:
+          error instanceof Error
+            ? error.message
+            : "נסי שוב בעוד רגע.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSendingMagicLink(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+
+    try {
+      const response = await fetch(`${WORKER_BASE}/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data?.ok) {
+        throw new Error(data?.error || "logout_failed");
+      }
+
+      setSessionSubscriber(null);
+
+      toast({
+        title: "יצאת בהצלחה",
+        description: "אזור המנויות נסגר במכשיר הזה.",
+      });
+    } catch (error) {
+      toast({
+        title: "לא הצלחנו לנתק כרגע",
+        description:
+          error instanceof Error ? error.message : "נסי שוב בעוד רגע.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   const newsletterIssues: NewsletterIssue[] = useMemo(
     () => [
@@ -646,14 +781,14 @@ const Blog = () => {
               האזור הזה פתוח למנויות בלבד
             </div>
             <p className="mt-4 text-[1.45rem] leading-[1.8] opacity-80">
-              כדי לשאול שאלה ולקבל תשובה — מצטרפים קודם לרשימת התפוצה. כך נשמרת
-              תחושת קהילה ולא נוצר אזור תגובות פתוח ועמוס.
+              כדי לשאול שאלה ולקבל תשובה — מצטרפים קודם לרשימת התפוצה או נכנסים
+              דרך קישור שנשלח למייל.
             </p>
             <a
               href="#subscribers"
               className="mt-6 inline-flex items-center justify-center rounded-[1rem] bg-[rgba(254,44,85,0.16)] px-6 py-3 text-[1.2rem] text-[#FE2C55] transition-colors hover:bg-[rgba(254,44,85,0.22)]"
             >
-              להצטרפות לרשימת התפוצה
+              להצטרפות או כניסה
             </a>
           </div>
         ) : (
@@ -666,16 +801,19 @@ const Blog = () => {
                 מה היית רוצה לשאול?
               </div>
               <p className="mt-3 text-[1.35rem] leading-[1.8] opacity-80">
-                שאלה קצרה יכולה לקבל תשובה קצרה — או להפוך למאמר מלא בהמשך.
+                כרגע הגישה נפתחה לפי ההתחברות שלך. חיבור שליחת השאלה עצמה לשרת
+                יהיה השלב הבא.
               </p>
             </div>
 
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                alert(
-                  "השאלה עדיין לא נשלחה: הטופס לא מחובר לשרת, ולכן הטקסט נשאר כאן ולא נשמר."
-                );
+                toast({
+                  title: "השלב הבא כבר קרוב",
+                  description:
+                    "אזור המנויות פתוח עבורך, אבל שליחת השאלה לשרת עדיין לא חוברה.",
+                });
               }}
               className="mt-6 grid gap-4"
             >
@@ -764,9 +902,11 @@ const Blog = () => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              alert(
-                "הבקשה עדיין לא נשלחה: הטופס לא מחובר לשרת, ולכן הטקסט נשאר כאן ולא נשמר."
-              );
+              toast({
+                title: "השלב הבא כבר מוכן בתור",
+                description:
+                  "כרגע הטופס עדיין לא מחובר לשרת, אבל ההתחברות למנויות כבר חיה.",
+              });
             }}
             className="mt-6 grid gap-4"
           >
@@ -867,22 +1007,84 @@ const Blog = () => {
           <div className="mt-3 text-[2.2rem] font-semibold">
             מכתב קצר. כשיש משהו שווה באמת.
           </div>
-          <p className="mt-4 text-[1.35rem] leading-[1.8] opacity-80">
-            כאן מצטרפים לרשימת התפוצה. ההרשמה נשלחת לשרת, נשמרת, ומועברת לאישור
-            לפני פתיחת גישת מנויים.
-          </p>
 
-          <div className="mt-6">
-            <NewsletterSignupForm
-              source="blog-subscribers-section"
-              onSuccess={() => undefined}
-            />
-          </div>
+          {sessionLoading ? (
+            <div className="mt-5 rounded-[1rem] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-[1.05rem] opacity-75">
+              בודקת אם כבר יש חיבור פעיל למנויה…
+            </div>
+          ) : isSubscriber ? (
+            <div className="mt-5 rounded-[1.2rem] border border-[rgba(254,44,85,0.24)] bg-[rgba(254,44,85,0.08)] p-5">
+              <div className="text-[1rem] uppercase tracking-[0.24rem] text-[#FE2C55]">
+                Signed in
+              </div>
+              <div className="mt-3 text-[1.7rem] font-semibold">
+                את כבר מחוברת כאזור מנויה
+              </div>
+              <p className="mt-3 text-[1.2rem] leading-[1.8] opacity-80">
+                {sessionSubscriber?.email}
+              </p>
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="mt-5 rounded-[0.95rem] border border-white/10 bg-[rgba(255,255,255,0.06)] px-5 py-3 text-[1.05rem] transition-colors hover:bg-[rgba(255,255,255,0.1)] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isLoggingOut ? "מנתקת..." : "יציאה מאזור המנויות"}
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="mt-4 text-[1.35rem] leading-[1.8] opacity-80">
+                כאן מצטרפים לרשימת התפוצה. ההרשמה נשלחת לשרת, נשמרת, ומועברת
+                לאישור לפני פתיחת גישת מנויים.
+              </p>
 
-          <div className="mt-4 text-[1.15rem] leading-[1.8] opacity-70">
-            אחרי הרשמה תקבלי אישור מסודר, ובהמשך גם גישת מנויים לתוכן הסגור
-            ולתגובות.
-          </div>
+              <div className="mt-6">
+                <NewsletterSignupForm
+                  source="blog-subscribers-section"
+                  onSuccess={() => undefined}
+                />
+              </div>
+
+              <div className="mt-6 border-t border-white/10 pt-6">
+                <div className="text-[1rem] uppercase tracking-[0.24rem] text-[#FE2C55]">
+                  Already subscribed?
+                </div>
+                <div className="mt-3 text-[1.7rem] font-semibold">
+                  כבר אושרת? כניסה דרך המייל
+                </div>
+                <p className="mt-3 text-[1.2rem] leading-[1.8] opacity-80">
+                  מזינים כאן את המייל, ואם הכתובת כבר מאושרת — נשלח אלייך קישור
+                  כניסה אישי.
+                </p>
+
+                <form onSubmit={handleSendMagicLink} className="mt-5 grid gap-3">
+                  <input
+                    type="email"
+                    value={signInEmail}
+                    onChange={(e) => setSignInEmail(e.target.value)}
+                    placeholder="כתובת מייל…"
+                    required
+                    className="w-full rounded-xl border border-border bg-background px-5 py-3 text-sm outline-none focus:border-primary"
+                    dir="rtl"
+                  />
+
+                  <button
+                    type="submit"
+                    disabled={isSendingMagicLink}
+                    className="rounded-xl bg-accent px-6 py-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isSendingMagicLink ? "שולחת..." : "שלחי לי קישור כניסה"}
+                  </button>
+                </form>
+              </div>
+
+              <div className="mt-4 text-[1.15rem] leading-[1.8] opacity-70">
+                אחרי הרשמה תקבלי אישור מסודר, ואחרי אישור תוכלי להיכנס מכאן
+                לאזור המנויות.
+              </div>
+            </>
+          )}
         </div>
 
         <div className="grid gap-5">
@@ -937,13 +1139,18 @@ const Blog = () => {
               className="rounded-[1.6rem] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 text-right"
             >
               <div className="w-fit rounded-full border border-white/10 bg-[rgba(255,255,255,0.05)] px-3 py-1 text-[0.95rem] uppercase tracking-[0.18rem]">
-                locked
+                {isSubscriber ? "open" : "locked"}
               </div>
               <div className="mt-4 text-[1.55rem] font-semibold leading-[1.25]">
                 {item.title}
               </div>
               <div className="mt-3 text-[1.25rem] leading-[1.8] opacity-80">
                 {item.teaser}
+              </div>
+              <div className="mt-4 text-[1.05rem] leading-[1.8] opacity-70">
+                {isSubscriber
+                  ? "האזור הזה כבר נפתח עבורך כמנויה מחוברת. חיבור הפוסטים הסגורים עצמם הוא השלב הבא."
+                  : "הפוסט המלא ייפתח אחרי כניסה למנויות."}
               </div>
             </div>
           ))}
@@ -974,7 +1181,7 @@ const Blog = () => {
               href="#subscribers"
               className="inline-flex items-center justify-center rounded-[1rem] bg-[rgba(254,44,85,0.16)] px-6 py-3 text-[1.2rem] text-[#FE2C55] transition-colors hover:bg-[rgba(254,44,85,0.22)]"
             >
-              להצטרפות לרשימת התפוצה
+              {isSubscriber ? "לאזור המנויות" : "להצטרפות או כניסה"}
             </a>
             <a
               href="#articles"
