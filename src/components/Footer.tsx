@@ -80,11 +80,19 @@ export default function Footer() {
   return (
     <footer
       dir="rtl"
-      className="relative mt-24 overflow-hidden border-t border-white/10 bg-[#140708] text-white"
+      className="relative mt-24 overflow-hidden border-t text-white"
+      style={{
+        borderTopColor: "hsl(var(--footer-border) / 0.18)",
+        backgroundImage: `
+          radial-gradient(circle at top right, hsl(var(--primary) / 0.22), transparent 28%),
+          radial-gradient(circle at top left, hsl(var(--accent) / 0.24), transparent 26%),
+          linear-gradient(180deg, hsl(var(--footer-bg)) 0%, hsl(var(--footer-bg-deep)) 100%)
+        `,
+      }}
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.12]"
+        className="pointer-events-none absolute inset-0 opacity-[0.1]"
         style={{
           backgroundImage: `url(${redTexture})`,
           backgroundSize: "cover",
@@ -94,14 +102,18 @@ export default function Footer() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,190,110,0.12),transparent_34%),linear-gradient(to_bottom,rgba(20,7,8,0.92),rgba(10,3,4,0.98))]"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, hsl(var(--background) / 0) 0%, hsl(var(--footer-bg) / 0.08) 28%, hsl(var(--footer-bg) / 0.22) 100%)",
+        }}
       />
 
       <img
         src={sparkleSweep}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-0 w-full opacity-40 mix-blend-screen"
+        className="pointer-events-none absolute left-0 top-0 w-full opacity-35 mix-blend-screen"
       />
 
       <div className="relative mx-auto max-w-7xl px-6 py-14 md:px-8">
@@ -117,14 +129,14 @@ export default function Footer() {
               אומנות ואמינות. זו יצירה.
             </p>
 
-            <p className="mt-4 max-w-md text-sm leading-7 text-white/75">
+            <p className="mt-4 max-w-md text-sm leading-7 text-white/74">
               מוזיקה, יצירה ושירות מקצועי בשפה נקייה, מדויקת ומכובדת.
             </p>
 
             <div className="mt-6">
               <FooterNavLink
                 link={newsletterLink}
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[#f0b35a]/35 bg-white/5 px-5 py-3 text-sm font-medium text-white shadow-[0_0_30px_rgba(240,179,90,0.08)] backdrop-blur-sm transition hover:border-[#f0b35a]/60 hover:bg-white/10"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-primary/30 bg-white/6 px-5 py-3 text-sm font-medium text-white shadow-soft backdrop-blur-sm transition hover:border-primary/55 hover:bg-white/10"
               />
             </div>
           </div>
@@ -138,12 +150,12 @@ export default function Footer() {
                 {section.title}
               </h3>
 
-              <nav className="flex flex-col gap-3 text-sm text-white/75">
+              <nav className="flex flex-col gap-3 text-sm text-white/72">
                 {section.links.map((link) => (
                   <FooterNavLink
                     key={`${section.title}-${link.href}`}
                     link={link}
-                    className="transition hover:text-white"
+                    className="transition hover:text-primary"
                   />
                 ))}
               </nav>
@@ -153,21 +165,21 @@ export default function Footer() {
 
         <div className="mt-10 border-t border-white/10 pt-5">
           <div className="flex flex-col gap-3 text-center md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-white/55 md:justify-start">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-white/52 md:justify-start">
               {legalLinks.map((link, index) => (
                 <div key={link.href} className="flex items-center gap-4">
                   <FooterNavLink
                     link={link}
-                    className="transition hover:text-white"
+                    className="transition hover:text-primary"
                   />
                   {index < legalLinks.length - 1 ? (
-                    <span className="text-white/20">•</span>
+                    <span className="text-white/18">•</span>
                   ) : null}
                 </div>
               ))}
             </div>
 
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-white/46">
               © {year} Toby Music. כל הזכויות שמורות.
             </p>
           </div>
