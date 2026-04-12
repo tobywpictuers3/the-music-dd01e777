@@ -26,19 +26,25 @@ const Header = () => {
     const shouldBeDark = savedTheme === "dark" || (!savedTheme && prefersDark);
 
     setIsDark(shouldBeDark);
-    document.documentElement.classList.toggle("dark", shouldBeDark);
-    document.documentElement.style.colorScheme = shouldBeDark ? "dark" : "light";
+
+    if (shouldBeDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, []);
 
-  const applyTheme = (darkMode: boolean) => {
-    setIsDark(darkMode);
-    document.documentElement.classList.toggle("dark", darkMode);
-    document.documentElement.style.colorScheme = darkMode ? "dark" : "light";
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  };
-
   const toggleTheme = () => {
-    applyTheme(!isDark);
+    const next = !isDark;
+    setIsDark(next);
+
+    if (next) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
   };
 
   const isActive = (href: string) => {
@@ -71,12 +77,11 @@ const Header = () => {
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={[
-                    "rounded-full px-4 py-2 text-sm font-medium transition-all",
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
                     active
-                      ? "bg-primary/18 text-foreground shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.18)]"
-                      : "text-muted-foreground hover:bg-secondary/75 hover:text-foreground",
-                  ].join(" ")}
+                      ? "bg-primary/15 text-foreground"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -89,7 +94,7 @@ const Header = () => {
               onClick={toggleTheme}
               aria-label={isDark ? "עבור למצב יום" : "עבור למצב לילה"}
               aria-pressed={isDark}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-background/60 text-foreground shadow-soft hover:border-primary/30 hover:bg-secondary/70"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-soft hover:bg-secondary"
             >
               {isDark ? (
                 <Sun className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
@@ -100,13 +105,13 @@ const Header = () => {
 
             <Button
               asChild
-              className="hidden rounded-full bg-accent px-6 py-2 text-sm font-semibold text-accent-foreground shadow-soft hover:bg-accent/92 hover:shadow-hover md:flex"
+              className="hidden rounded-full bg-accent px-6 py-2 text-sm font-semibold text-accent-foreground shadow-soft hover:bg-accent/90 md:flex"
             >
               <Link to="/contact">צור קשר</Link>
             </Button>
 
             <button
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-background/60 text-foreground hover:bg-secondary/70 md:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground hover:bg-secondary md:hidden"
               onClick={() => setIsMenuOpen((prev) => !prev)}
               aria-label="תפריט"
               aria-expanded={isMenuOpen}
@@ -117,7 +122,7 @@ const Header = () => {
         </div>
 
         {isMenuOpen && (
-          <div className="mt-2 animate-fade-in overflow-hidden rounded-3xl border border-border/80 bg-card/96 p-4 shadow-hover backdrop-blur-xl md:hidden">
+          <div className="mt-2 animate-fade-in overflow-hidden rounded-3xl border border-border bg-card p-4 shadow-hover md:hidden">
             <nav className="flex flex-col gap-1">
               {NAV_LINKS.map((link) => {
                 const active = isActive(link.href);
@@ -126,12 +131,11 @@ const Header = () => {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className={[
-                      "rounded-2xl px-4 py-3 text-sm font-medium transition-colors",
+                    className={`rounded-2xl px-4 py-3 text-sm font-medium transition-colors ${
                       active
-                        ? "bg-primary/16 text-foreground"
-                        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-                    ].join(" ")}
+                        ? "bg-primary/15 text-foreground"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.label}
@@ -141,7 +145,7 @@ const Header = () => {
 
               <Button
                 asChild
-                className="mt-2 w-full rounded-full bg-accent font-semibold text-accent-foreground hover:bg-accent/92"
+                className="mt-2 w-full rounded-full bg-accent font-semibold text-accent-foreground hover:bg-accent/90"
               >
                 <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
                   צור קשר
