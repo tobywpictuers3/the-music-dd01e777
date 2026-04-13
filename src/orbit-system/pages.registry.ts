@@ -44,6 +44,9 @@ function createBasePage(
     },
     stickyGuide: {
       idleLook: "default",
+      activationRatio: 0.5,
+      activationOffsetPx: 0,
+      showFromAfterHeroPx: 0,
       bubbles: [
         {
           id: "bubble-1",
@@ -55,6 +58,8 @@ function createBasePage(
           offsetY: -2,
           enterMs: 220,
           exitMs: 180,
+          holdMs: 2200,
+          fadeMs: 4800,
         },
         {
           id: "bubble-2",
@@ -66,6 +71,8 @@ function createBasePage(
           offsetY: 6,
           enterMs: 220,
           exitMs: 180,
+          holdMs: 2200,
+          fadeMs: 4800,
         },
       ],
     },
@@ -80,6 +87,9 @@ function createBasePage(
       bottomOffsetPx: 32,
       opacity: 0.92,
       loopDurationSec: 34,
+      showFromAfterHeroPx: 0,
+      enterMs: 320,
+      exitMs: 260,
     },
   };
 }
@@ -93,6 +103,122 @@ const basePages: Record<PageId, PageConfig> = {
   performances: createBasePage("performances", "/performances", "violin"),
   about: createBasePage("about", "/about", "electricGuitar"),
   sheetMusic: createBasePage("sheetMusic", "/sheet-music", "classicalGuitar"),
+};
+
+basePages.contact = {
+  pageId: "contact",
+  route: "/contact",
+  presenterId: "avatar",
+  hero: {
+    titleLines: ["לא רק טופס,", "אלא התחלה", "של שיחה נכונה"],
+    introLines: [
+      "כאן אפשר לפנות לגבי שיעורים, הופעות, שיתופי פעולה, סדנאות וכל שאלה נוספת.",
+      "המטרה היא לאסוף את הפרטים החשובים בצורה נעימה, כדי שאוכל לחזור אליכם ברור ומדויק.",
+    ],
+    headerOffsetPx: 96,
+  },
+  orbit: {
+    items: [
+      {
+        id: "1",
+        label: "פתיחה",
+        baseAngleDeg: 336,
+        targetSectionId: "contact-intro-section",
+      },
+      {
+        id: "2",
+        label: "טופס",
+        baseAngleDeg: 48,
+        targetSectionId: "contact-form-section",
+      },
+      {
+        id: "3",
+        label: "נושאים",
+        baseAngleDeg: 120,
+        targetSectionId: "contact-topics-stage",
+      },
+      {
+        id: "4",
+        label: "פירוט",
+        baseAngleDeg: 192,
+        targetSectionId: "contact-details-stage",
+      },
+      {
+        id: "5",
+        label: "המשך",
+        baseAngleDeg: 264,
+        targetSectionId: "contact-followup-section",
+      },
+    ],
+    rotationSpeedDegPerSec: 1.05,
+    defaultLook: "default",
+  },
+  stickyGuide: {
+    idleLook: "default",
+    activationRatio: 0.5,
+    activationOffsetPx: 0,
+    showFromAfterHeroPx: 0,
+    bubbles: [
+      {
+        id: "contact-bubble-1",
+        text: "אפשר לבחור כמה נושאים יחד, לא רק אחד.",
+        showFromAfterHeroPx: 30,
+        hideAfterHeroPx: 520,
+        maxWidthPx: 440,
+        offsetX: 12,
+        offsetY: -4,
+        enterMs: 240,
+        exitMs: 180,
+        holdMs: 2300,
+        fadeMs: 4200,
+      },
+      {
+        id: "contact-bubble-2",
+        text: "כמה שורות ברורות בטופס יעזרו לי לחזור אליכם מדויק יותר.",
+        showFromAfterHeroPx: 560,
+        hideAfterHeroPx: 1260,
+        maxWidthPx: 500,
+        offsetX: 18,
+        offsetY: 0,
+        enterMs: 240,
+        exitMs: 180,
+        holdMs: 2600,
+        fadeMs: 5200,
+      },
+      {
+        id: "contact-bubble-3",
+        text: "אם הגעתם מדף תלמידות, אפשר להשאיר כבר כאן פנייה לשיעורים פרטיים.",
+        showFromAfterHeroPx: 1300,
+        hideAfterHeroPx: 2200,
+        maxWidthPx: 520,
+        offsetX: 18,
+        offsetY: 0,
+        enterMs: 240,
+        exitMs: 180,
+        holdMs: 2800,
+        fadeMs: 5600,
+      },
+    ],
+  },
+  tickerBanner: {
+    enabled: true,
+    items: [
+      "שיעורים פרטיים",
+      "הופעות",
+      "שיתופי פעולה",
+      "סדנאות",
+      "תזמורות",
+      "מדיה ויח״צ",
+      "פנייה מסודרת וקצרה",
+    ],
+    heightPx: 94,
+    bottomOffsetPx: 32,
+    opacity: 0.92,
+    loopDurationSec: 34,
+    showFromAfterHeroPx: 0,
+    enterMs: 320,
+    exitMs: 260,
+  },
 };
 
 basePages.students = {
@@ -145,6 +271,9 @@ basePages.students = {
   },
   stickyGuide: {
     idleLook: "default",
+    activationRatio: 0.5,
+    activationOffsetPx: 0,
+    showFromAfterHeroPx: 0,
     bubbles: [
       {
         id: "students-bubble-1",
@@ -156,6 +285,8 @@ basePages.students = {
         offsetY: -6,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5200,
       },
       {
         id: "students-bubble-2",
@@ -167,6 +298,8 @@ basePages.students = {
         offsetY: 2,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5200,
       },
       {
         id: "students-bubble-3",
@@ -178,6 +311,8 @@ basePages.students = {
         offsetY: 2,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5200,
       },
       {
         id: "students-bubble-4",
@@ -189,6 +324,8 @@ basePages.students = {
         offsetY: 2,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5200,
       },
     ],
   },
@@ -208,6 +345,9 @@ basePages.students = {
     bottomOffsetPx: 34,
     opacity: 0.92,
     loopDurationSec: 82,
+    showFromAfterHeroPx: 0,
+    enterMs: 320,
+    exitMs: 260,
   },
 };
 
@@ -263,6 +403,9 @@ basePages.about = {
   },
   stickyGuide: {
     idleLook: "default",
+    activationRatio: 0.5,
+    activationOffsetPx: 0,
+    showFromAfterHeroPx: 0,
     bubbles: [
       {
         id: "about-bubble-1",
@@ -274,6 +417,8 @@ basePages.about = {
         offsetY: -4,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
       {
         id: "about-bubble-2",
@@ -285,6 +430,8 @@ basePages.about = {
         offsetY: 2,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
     ],
   },
@@ -304,6 +451,9 @@ basePages.about = {
     bottomOffsetPx: 34,
     opacity: 0.92,
     loopDurationSec: 40,
+    showFromAfterHeroPx: 0,
+    enterMs: 320,
+    exitMs: 260,
   },
 };
 
@@ -357,6 +507,9 @@ basePages.blog = {
   },
   stickyGuide: {
     idleLook: "default",
+    activationRatio: 0.5,
+    activationOffsetPx: 0,
+    showFromAfterHeroPx: 0,
     bubbles: [
       {
         id: "blog-bubble-1",
@@ -368,6 +521,8 @@ basePages.blog = {
         offsetY: -6,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
       {
         id: "blog-bubble-2",
@@ -379,6 +534,8 @@ basePages.blog = {
         offsetY: 2,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
     ],
   },
@@ -395,6 +552,9 @@ basePages.blog = {
     bottomOffsetPx: 34,
     opacity: 0.92,
     loopDurationSec: 36,
+    showFromAfterHeroPx: 0,
+    enterMs: 320,
+    exitMs: 260,
   },
 };
 
@@ -448,6 +608,9 @@ basePages.orchestras = {
   },
   stickyGuide: {
     idleLook: "default",
+    activationRatio: 0.5,
+    activationOffsetPx: 0,
+    showFromAfterHeroPx: 0,
     bubbles: [
       {
         id: "orchestras-bubble-1",
@@ -459,6 +622,8 @@ basePages.orchestras = {
         offsetY: -6,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
       {
         id: "orchestras-bubble-2",
@@ -470,6 +635,8 @@ basePages.orchestras = {
         offsetY: 2,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
     ],
   },
@@ -486,6 +653,9 @@ basePages.orchestras = {
     bottomOffsetPx: 34,
     opacity: 0.92,
     loopDurationSec: 38,
+    showFromAfterHeroPx: 0,
+    enterMs: 320,
+    exitMs: 260,
   },
 };
 
@@ -539,6 +709,9 @@ basePages.performances = {
   },
   stickyGuide: {
     idleLook: "default",
+    activationRatio: 0.5,
+    activationOffsetPx: 0,
+    showFromAfterHeroPx: 0,
     bubbles: [
       {
         id: "performances-bubble-1",
@@ -550,6 +723,8 @@ basePages.performances = {
         offsetY: -6,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
       {
         id: "performances-bubble-2",
@@ -561,6 +736,8 @@ basePages.performances = {
         offsetY: 2,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
     ],
   },
@@ -577,6 +754,9 @@ basePages.performances = {
     bottomOffsetPx: 34,
     opacity: 0.92,
     loopDurationSec: 38,
+    showFromAfterHeroPx: 0,
+    enterMs: 320,
+    exitMs: 260,
   },
 };
 
@@ -630,6 +810,9 @@ basePages.sheetMusic = {
   },
   stickyGuide: {
     idleLook: "default",
+    activationRatio: 0.5,
+    activationOffsetPx: 0,
+    showFromAfterHeroPx: 0,
     bubbles: [
       {
         id: "sheetmusic-bubble-1",
@@ -641,6 +824,8 @@ basePages.sheetMusic = {
         offsetY: -6,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
       {
         id: "sheetmusic-bubble-2",
@@ -652,6 +837,8 @@ basePages.sheetMusic = {
         offsetY: 2,
         enterMs: 240,
         exitMs: 180,
+        holdMs: 2400,
+        fadeMs: 5000,
       },
     ],
   },
@@ -669,6 +856,9 @@ basePages.sheetMusic = {
     bottomOffsetPx: 34,
     opacity: 0.92,
     loopDurationSec: 38,
+    showFromAfterHeroPx: 0,
+    enterMs: 320,
+    exitMs: 260,
   },
 };
 
