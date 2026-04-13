@@ -42,6 +42,15 @@ export default function StickyGuide({
   const fadeStartTimerRef = useRef<number | null>(null);
   const hideTimerRef = useRef<number | null>(null);
 
+  const enterMs = activeBubble?.enterMs ?? 260;
+  const exitMs = activeBubble?.exitMs ?? 220;
+  const holdMs = activeBubble?.holdMs ?? 2200;
+  const fadeMs = activeBubble?.fadeMs ?? 6000;
+  const maxWidthPx = activeBubble?.maxWidthPx ?? 360;
+  const offsetX = activeBubble?.offsetX ?? 0;
+  const offsetY = activeBubble?.offsetY ?? 0;
+  const dismissible = activeBubble?.dismissible ?? true;
+
   function clearBubbleTimers() {
     if (fadeStartTimerRef.current) {
       window.clearTimeout(fadeStartTimerRef.current);
@@ -62,12 +71,12 @@ export default function StickyGuide({
 
     fadeStartTimerRef.current = window.setTimeout(() => {
       setBubbleFading(true);
-    }, 2000);
+    }, holdMs);
 
     hideTimerRef.current = window.setTimeout(() => {
       setBubbleVisible(false);
       setBubbleFading(false);
-    }, 10000);
+    }, holdMs + fadeMs);
   }
 
   function openBubble(text: string) {
@@ -182,17 +191,25 @@ export default function StickyGuide({
             "transition-all",
             bubbleVisible
               ? bubbleFading
-                ? "translate-y-2 opacity-0 [transition-duration:8000ms]"
-                : "translate-y-0 opacity-100 duration-300"
-              : "pointer-events-none translate-y-4 opacity-0 duration-300"
+                ? "translate-y-2 opacity-0"
+                : "translate-y-0 opacity-100"
+              : "pointer-events-none translate-y-4 opacity-0"
           )}
+          style={{
+            transitionDuration: bubbleVisible
+              ? bubbleFading
+                ? `${fadeMs}ms`
+                : `${enterMs}ms`
+              : `${exitMs}ms`,
+            transform: `translate(${offsetX}px, ${offsetY}px)`,
+          }}
         >
           <div
             onMouseEnter={handleBubbleMouseEnter}
             onMouseLeave={handleBubbleMouseLeave}
             className="relative overflow-visible rounded-[1.6rem] border px-5 py-5 shadow-[0_22px_54px_rgba(0,0,0,0.24)] backdrop-blur-sm"
             style={{
-              maxWidth: "360px",
+              maxWidth: `${maxWidthPx}px`,
               minWidth: "300px",
               borderColor:
                 themeMode === "dark"
@@ -229,14 +246,16 @@ export default function StickyGuide({
                 <Quote className="h-5 w-5 text-primary" />
               </div>
 
-              <button
-                type="button"
-                onClick={closeBubble}
-                aria-label="סגירת בועה"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-white ring-1 ring-white/10 transition hover:bg-black/50"
-              >
-                <X className="h-4 w-4" />
-              </button>
+              {dismissible ? (
+                <button
+                  type="button"
+                  onClick={closeBubble}
+                  aria-label="סגירת בועה"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-white ring-1 ring-white/10 transition hover:bg-black/50"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              ) : null}
             </div>
 
             <div className="relative z-10 rounded-[1.3rem] bg-black/10 px-4 py-3 backdrop-blur-[2px] dark:bg-black/12">
