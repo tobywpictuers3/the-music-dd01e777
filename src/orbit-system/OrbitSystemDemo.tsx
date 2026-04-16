@@ -24,7 +24,8 @@ export default function OrbitSystemDemo() {
 
   const { stickyVisible, bannerVisible, activeBubble } = useStickyGuideState({
     heroRef,
-    bubbles: page.stickyGuide.bubbles,
+    stickyGuide: page.stickyGuide,
+    tickerBanner: page.tickerBanner,
     headerOffsetPx: page.hero.headerOffsetPx,
   });
 

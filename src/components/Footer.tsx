@@ -126,7 +126,6 @@ export default function Footer() {
               <FooterNavLink
                 link={newsletterLink}
                 className="inline-flex min-h-12 items-center justify-center rounded-2xl border px-5 py-3 text-sm font-medium text-white shadow-soft transition hover:bg-white/10"
-                style={undefined}
               />
             </div>
           </div>
