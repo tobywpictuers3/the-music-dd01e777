@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import InnerPageLayout from "@/components/InnerPageLayout";
 import OrbitPageShell from "@/orbit-system/OrbitPageShell";
 import type { OrbitItemConfig, OrbitItemId } from "@/orbit-system/orbit.types";
+import { STUDENTS_PAGE_ORBIT_CONTENT } from "@/content/orbit/studentsPageOrbitContent";
 import AppearOnScroll from "@/components/AppearOnScroll";
 import {
   Dialog,
@@ -303,7 +304,7 @@ function AudioIconButton({
       aria-label={speaking ? "עצירת השמעה" : "השמעה"}
       className={cn(
         "inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-soft transition hover:-translate-y-[1px] hover:bg-secondary",
-        className,
+        className
       )}
     >
       {speaking ? (
@@ -414,7 +415,7 @@ export default function Students() {
       {
         threshold: [0.15, 0.35, 0.6],
         rootMargin: "-28% 0px -42% 0px",
-      },
+      }
     );
 
     elements.forEach(({ el }) => observer.observe(el));
@@ -435,6 +436,7 @@ export default function Students() {
       <main dir="rtl" className="pb-24">
         <OrbitPageShell
           pageId="students"
+          content={STUDENTS_PAGE_ORBIT_CONTENT}
           onOrbitItemClick={handleOrbitItemClick}
           controlledActiveItemId={activeOrbitId}
         >
@@ -521,7 +523,7 @@ export default function Students() {
                                 "h-3.5 w-3.5 rounded-full transition-all",
                                 i === tIndex
                                   ? "scale-110 bg-primary"
-                                  : "bg-primary/20 hover:bg-primary/40",
+                                  : "bg-primary/20 hover:bg-primary/40"
                               )}
                               aria-label={`המלצה ${i + 1}`}
                             />
@@ -536,7 +538,7 @@ export default function Students() {
                               setTIndex(
                                 (prev) =>
                                   (prev - 1 + TESTIMONIALS.length) %
-                                  TESTIMONIALS.length,
+                                  TESTIMONIALS.length
                               )
                             }
                           >
