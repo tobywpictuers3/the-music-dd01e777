@@ -1,12 +1,10 @@
 /**
  * כל הטיפוסים של מערכת האורביט.
  *
- * חשוב:
- * - נשמרת תאימות לאחור עם PageConfig הישן (כדי לא לשבור את הדפים הישנים והדמו)
- * - מתווספים טיפוסים חדשים להפרדה מלאה בין:
- *   תוכן/תיזמונים של הדף
- *   לבין
- *   עיצוב/חוקי מערכת האורביט
+ * עיקרון ההפרדה:
+ * - תוכן + תיזמונים נשמרים ברמת הדף (OrbitPageContentConfig)
+ * - עיצוב + חוקי מערכת נשמרים ברמת העיצוב (OrbitPageDesignConfig)
+ * - PageConfig הוא רק ה-shape המיושב שהקומפוננטות הוותיקות כבר יודעות לצרוך
  */
 
 export type ThemeMode = "light" | "dark";
@@ -62,8 +60,7 @@ export type PresenterConfig = {
 };
 
 /* =========================================================
-   Legacy / Resolved item shape
-   זהו הטיפוס שהקומפוננטות עצמן צורכות בפועל
+   Resolved / runtime types
    ========================================================= */
 
 export type OrbitItemConfig = {
@@ -81,8 +78,7 @@ export type OrbitItemConfig = {
   spoiler?: string;
 
   /**
-   * אלו נשארים במערכת כשליטה עיצובית/התנהגותית.
-   * דפי התוכן לא חייבים להשתמש בהם.
+   * נשארים ברמת המערכת / עיצוב
    */
   maxSpoilerLines?: number;
   minBubbleSizePx?: number;
@@ -95,20 +91,20 @@ export type BubbleConfig = {
   text: string;
 
   /**
-   * מתי הבועה פעילה ביחס לגלילה אחרי אזור ההפעלה של ההירו
+   * תיזמון הופעה של הבועה ביחס לגלילה אחרי נקודת ההפעלה
    */
   showFromAfterHeroPx: number;
   hideAfterHeroPx: number;
 
   /**
-   * כיווני מיקום עדינים לכל בועה
+   * ערכי עיצוב resolved
    */
   offsetX?: number;
   offsetY?: number;
   maxWidthPx?: number;
 
   /**
-   * תזמוני animation / fade - נשלטים ע"י שכבת העיצוב
+   * animation defaults resolved
    */
   enterMs?: number;
   exitMs?: number;
@@ -160,9 +156,7 @@ export type PageConfig = {
 };
 
 /* =========================================================
-   New separation layer
-   דף = תוכן + תיזמונים
-   מערכת = עיצוב + חוקים חזותיים + animation defaults
+   Page content layer
    ========================================================= */
 
 export type OrbitPageHeroContentConfig = {
@@ -177,8 +171,10 @@ export type OrbitPageOrbitItemContentConfig = Pick<
 
 export type OrbitPageBubbleContentConfig = Pick<
   BubbleConfig,
-  "id" | "text" | "showFromAfterHeroPx" | "hideAfterHeroPx" | "dismissible"
->;
+  "id" | "text" | "showFromAfterHeroPx" | "hideAfterHeroPx"
+> & {
+  dismissible?: boolean;
+};
 
 export type OrbitPageTickerContentConfig = {
   enabled?: boolean;
@@ -208,8 +204,7 @@ export type OrbitPageContentConfig = {
 };
 
 /* =========================================================
-   Design config
-   כל מה שהמערכת שולטת עליו
+   Design layer
    ========================================================= */
 
 export type OrbitLayoutDesignConfig = {
