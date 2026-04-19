@@ -8,7 +8,7 @@ import {
   ABOUT_TOPICS,
   type AboutTopicItem,
 } from "@/content/orbit/aboutOrbit";
-import { ABOUT_PAGE_CONTENT } from "@/content/orbit/aboutPageContent";
+import { ABOUT_PAGE_ORBIT_CONTENT } from "@/content/orbit/aboutPageOrbitContent";
 import red3 from "@/assets/red3.png";
 
 function SignatureLine({ text }: { text: string }) {
@@ -172,7 +172,7 @@ export default function About() {
   const [openId, setOpenId] = useState<string>(ABOUT_TOPICS[1].id);
 
   const activeOrbitId =
-    ABOUT_PAGE_CONTENT.orbit.items.find(
+    ABOUT_PAGE_ORBIT_CONTENT.orbit.items.find(
       (item) => item.targetSectionId === `about-${openId}`
     )?.id ?? null;
 
@@ -198,7 +198,7 @@ export default function About() {
     >
       <OrbitPageShell
         pageId="about"
-        content={ABOUT_PAGE_CONTENT}
+        content={ABOUT_PAGE_ORBIT_CONTENT}
         onOrbitItemClick={openCardFromOrbit}
         controlledActiveItemId={activeOrbitId}
       >
