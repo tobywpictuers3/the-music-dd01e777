@@ -127,8 +127,16 @@ export default function OrbitWheel({
     34.5
   );
 
-  const outerRingInsetPercent = clamp(50 - (maxRadiusPercent + 4.2), 5.5, 13.5);
-  const innerRingInsetPercent = clamp(50 - (maxRadiusPercent - 4.8), 13.5, 22.5);
+  const outerRingInsetPercent = clamp(
+    50 - (maxRadiusPercent + 4.2),
+    5.5,
+    13.5
+  );
+  const innerRingInsetPercent = clamp(
+    50 - (maxRadiusPercent - 4.8),
+    13.5,
+    22.5
+  );
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[840px]">
@@ -186,10 +194,14 @@ export default function OrbitWheel({
               ...position,
               width: `clamp(${Math.round(
                 measured.minSizePx
-              )}px, ${measured.fluidVw}vw, ${Math.round(measured.maxSizePx)}px)`,
+              )}px, ${measured.fluidVw}vw, ${Math.round(
+                measured.maxSizePx
+              )}px)`,
               height: `clamp(${Math.round(
                 measured.minSizePx
-              )}px, ${measured.fluidVw}vw, ${Math.round(measured.maxSizePx)}px)`,
+              )}px, ${measured.fluidVw}vw, ${Math.round(
+                measured.maxSizePx
+              )}px)`,
               borderColor: isActive
                 ? themeMode === "dark"
                   ? "rgba(255,235,205,0.74)"
@@ -207,7 +219,9 @@ export default function OrbitWheel({
               boxShadow: isActive
                 ? "0 0 28px rgba(220,170,90,0.18)"
                 : "0 12px 24px rgba(0,0,0,0.08)",
-              transform: `${position.transform} scale(${isActive ? 1.04 : 1})`,
+              transform: `${position.transform} scale(${
+                isActive ? 1.04 : 1
+              })`,
               transition:
                 "transform 220ms ease, width 260ms ease, height 260ms ease, border-color 700ms ease, background-color 700ms ease, box-shadow 700ms ease",
             }}
