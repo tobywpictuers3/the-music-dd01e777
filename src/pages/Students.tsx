@@ -1,9 +1,10 @@
 import type { ComponentType } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import InnerPageLayout from "@/components/InnerPageLayout";
 import OrbitPageShell from "@/orbit-system/OrbitPageShell";
 import type { OrbitItemConfig, OrbitItemId } from "@/orbit-system/orbit.types";
 import { STUDENTS_PAGE_ORBIT_CONTENT } from "@/content/orbit/studentsPageOrbitContent";
+import { STUDENTS_PAGE_BODY_CONTENT } from "@/content/students/studentsPageBodyContent";
 import AppearOnScroll from "@/components/AppearOnScroll";
 import {
   Dialog,
@@ -43,35 +44,6 @@ import studentsStudyMaterials from "@/assets/students/students-study-materials.w
 import studentsStageAtmosphereWide from "@/assets/students/students-stage-atmosphere-wide.webp";
 import studentsDemoSystemPreview from "@/assets/students/students-demo-system-preview.webp";
 
-type StudyCard = {
-  key: string;
-  title: string;
-  subtitle: string;
-  Icon: ComponentType<{ className?: string }>;
-  bullets: string[];
-};
-
-type QuoteItem = {
-  key: string;
-  quote: string;
-  name: string;
-  context?: string;
-};
-
-type ProcessItem = {
-  key: string;
-  title: string;
-  text: string;
-  Icon: ComponentType<{ className?: string }>;
-};
-
-type FeatureItem = {
-  key: string;
-  title: string;
-  text: string;
-  Icon: ComponentType<{ className?: string }>;
-};
-
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
@@ -86,201 +58,30 @@ const EDUCATIONAL_ORCHESTRA_HREF = "/orchestras";
 const ABOUT_TEACHING_HREF = "/about#teaching";
 
 /* =========================================================
-   טקסטים
+   אייקונים
    ========================================================= */
-const HERO_PIANO_QUOTE =
-  "כאן לא בונים רק שיעור טוב, אלא דרך יציבה ומוזיקלית שנשארת לאורך זמן — עם רמה, רצף, הקשבה וליווי אמיתי.";
+const ICONS = {
+  music: Music2,
+  mic: Mic2,
+  graduation: GraduationCap,
+  clipboard: ClipboardList,
+  calendar: CalendarRange,
+  book: BookOpen,
+  check: CheckCircle2,
+  sparkles: Sparkles,
+  message: MessageSquareMore,
+  badgeDollar: BadgeDollarSign,
+} as const;
 
-const TESTIMONIALS: QuoteItem[] = [
-  {
-    key: "t1",
-    quote:
-      "למדתי אצל טובי חליל צד ארבע שנים בערך, ובזכותה ממש התקדמתי בקריאת תווים.",
-    name: "בת שבע",
-    context: "חליל צד",
-  },
-  {
-    key: "t2",
-    quote:
-      "טובי מורה מדהימה וסבלנית, מקצוענית במיוחד, וכל שיעור היה חוויה מיוחדת שפתחה שערים לתחומים נוספים במוזיקה.",
-    name: "מירי",
-    context: "חליל צד ותזמורת",
-  },
-  {
-    key: "t3",
-    quote:
-      "החוויה הייתה הרבה מעבר לשיעורי נגינה. עברתי התקדמות מקצועית משמעותית בתוך תהליך לימוד מובנה וברור.",
-    name: "תמר",
-    context: "חליל צד",
-  },
-  {
-    key: "t4",
-    quote:
-      "השיעורים מונגשים בצורה מעניינת וחווייתית, ומעבר לידע המקצועי מקבלים הבנה עמוקה ונרחבת בחומר.",
-    name: "ריקי",
-    context: "תאוריה",
-  },
-  {
-    key: "t5",
-    quote:
-      "להיות תלמידה של טובי זה הרבה מעבר לללמוד מוזיקה. טובי אישיות מיוחדת, נעימה, חכמה וענווה.",
-    name: "נעמי",
-    context: "חליל צד ותזמורת",
-  },
-  {
-    key: "t6",
-    quote:
-      "כל השבוע חיכיתי לשיעור פסנתר; הייתה אווירה נעימה, זורמת ולא מלחיצה — ממש חוויה.",
-    name: "קרייני",
-    context: "פסנתר",
-  },
-  {
-    key: "t7",
-    quote:
-      "טובי מוסרת את השיעור שלה עם כל הלב, עם אכפתיות להתקדמות ולהבנה שלך, וזה מורגש בכל שלב.",
-    name: "תמר",
-    context: "חליל צד ותזמורת",
-  },
-  {
-    key: "t8",
-    quote:
-      "מעל לשלוש שנים שאני זוכה להיות תלמידה שלך, וכל דקה איתך שווה בשבילי זהב.",
-    name: "דסי",
-    context: "פסנתר",
-  },
-];
+const DEFAULT_ACTIVE_ORBIT_ID: OrbitItemId =
+  STUDENTS_PAGE_ORBIT_CONTENT.orbit.items[0]?.id ?? "1";
 
-const PRIMARY_STUDIES: StudyCard[] = [
-  {
-    key: "piano",
-    title: "פסנתר",
-    subtitle: "קריאה, טכניקה, הבעה ונגינה יציבה לאורך זמן.",
-    Icon: Music2,
-    bullets: [
-      "עבודה יסודית על טכניקות מגוונות של נגינה",
-      "ישיבה נכונה, משקל ויציבה משוחררת",
-      "פיתוח יכולת קריאה מהדף — prima vista",
-      "פיתוח קואורדינציה מורכבת והבעה מוסיקלית",
-      "פירוקי פסנתר, ליווי שירים ופיתוח שמיעה מעשית",
-    ],
-  },
-  {
-    key: "flute",
-    title: "חליל צד",
-    subtitle: "צליל נקי, נשימה נכונה ושליטה מדויקת בכלי.",
-    Icon: Mic2,
-    bullets: [
-      "עבודה על איכות הצליל ואמבז'ור מדויק",
-      "פיתוח מערכת הנשימה וטווחי נשיפה",
-      "דגש על יציבה נכונה והתאמה אנטומית",
-      "טכניקות ארטיקולציה, שליטה ודיוק",
-      "פיתוח נגינה בטוחה, נקייה ומסודרת",
-    ],
-  },
-];
-
-const SUPPORT_STUDIES = [
-  "תיאוריה",
-  "פיתוח שמיעה",
-  "סולפז׳",
-  "קריאת תווים",
-  "קצב",
-  "הקשבה מוסיקלית",
-];
-
-const BELIEF_LINES = [
-  "מוסיקה נבנית מתוך עומק והשקעה, לא בקיצורי דרך.",
-  "יחס אישי אינו סותר דרישות גבוהות — הוא מאפשר אותן.",
-  "התקדמות אמיתית נוצרת מתוך רצף, אימון ותוכנית עבודה.",
-  "רגישות, בהירות ומשמעת יכולות ללכת יחד.",
-  "אני מחפשת תהליך נכון, לא רושם רגעי.",
-];
-
-const HOW_IT_WORKS: ProcessItem[] = [
-  {
-    key: "lesson",
-    title: "שיעור שבועי",
-    text: "השיעור נותן כיוון, תיקון ותוכנית עבודה ברורה לשבוע.",
-    Icon: GraduationCap,
-  },
-  {
-    key: "practice",
-    title: "אימון בין שיעורים",
-    text: "ההתקדמות בפועל נבנית באימון המסודר שבין המפגשים.",
-    Icon: ClipboardList,
-  },
-  {
-    key: "tracking",
-    title: "מעקב ורצף",
-    text: "יש מסגרת שמחזיקה את התהליך ולא נותנת לדברים להתפזר.",
-    Icon: CalendarRange,
-  },
-  {
-    key: "materials",
-    title: "חומרים מסודרים",
-    text: "עזרים, משימות ותכנים נגישים לתלמידה במקום אחד.",
-    Icon: BookOpen,
-  },
-  {
-    key: "fit",
-    title: "התאמה למסלול",
-    text: "מתאים למי שמכניסה את הלימוד לסדר היום בקביעות — לא רק כפעילות מזדמנת.",
-    Icon: CheckCircle2,
-  },
-];
-
-const APP_FEATURES: FeatureItem[] = [
-  {
-    key: "schedule",
-    title: "סדר שבועי ברור",
-    text: "מה קורה עכשיו, מה לתרגל השבוע ומהו הצעד הבא בתהליך.",
-    Icon: CalendarRange,
-  },
-  {
-    key: "practice",
-    title: "מעקב אימון והתקדמות",
-    text: "התלמידה יודעת מה לתרגל ומה כבר התקדם בפועל.",
-    Icon: ClipboardList,
-  },
-  {
-    key: "tools",
-    title: "עזרים וחומרי לימוד",
-    text: "תרגילים, משימות וכלים שימושיים במקום אחד.",
-    Icon: Sparkles,
-  },
-  {
-    key: "communication",
-    title: "תקשורת מורה–תלמידה",
-    text: "שאלות, הבהרות והמשכיות גם בין השיעורים.",
-    Icon: MessageSquareMore,
-  },
-  {
-    key: "payments",
-    title: "סדר ותשלומים",
-    text: "מעטפת מסודרת, ברורה ונגישה שגם מחזיקה את הצד המנהלי.",
-    Icon: BadgeDollarSign,
-  },
-];
-
-const NUMBERS = [
-  { value: "26", label: "שנות הוראת מוסיקה" },
-  { value: "9", label: "כלי נגינה ברמה מעולה" },
-  { value: "מאות", label: "תלמידות פרטיות לאורך השנים" },
-  { value: "אלפי", label: "בוגרות קורסים קבוצתיים" },
-  { value: "5", label: "תזמורות לימודיות עשירות" },
-  { value: "20", label: "קונצרטים לתלמידות" },
-];
-
-const STUDENTS_SECTION_ORBIT_MAP: Array<{
-  sectionId: string;
-  orbitId: OrbitItemId;
-}> = [
-  { sectionId: "track-section", orbitId: "1" },
-  { sectionId: "studies-section", orbitId: "2" },
-  { sectionId: "belief-section", orbitId: "3" },
-  { sectionId: "process-section", orbitId: "4" },
-  { sectionId: "system-section", orbitId: "5" },
-];
+const STUDENTS_SECTION_ORBIT_MAP = STUDENTS_PAGE_ORBIT_CONTENT.orbit.items
+  .filter((item) => !!item.targetSectionId)
+  .map((item) => ({
+    sectionId: item.targetSectionId as string,
+    orbitId: item.id,
+  }));
 
 /* =========================================================
    רכיבי עזר
@@ -317,12 +118,29 @@ function AudioIconButton({
 }
 
 export default function Students() {
+  const content = STUDENTS_PAGE_BODY_CONTENT;
+
   const [openSmartSystem, setOpenSmartSystem] = useState(false);
   const [tIndex, setTIndex] = useState(0);
-  const [activeOrbitId, setActiveOrbitId] = useState<OrbitItemId>("1");
+  const [activeOrbitId, setActiveOrbitId] =
+    useState<OrbitItemId>(DEFAULT_ACTIVE_ORBIT_ID);
   const [speakingKey, setSpeakingKey] = useState<string | null>(null);
 
   const testimonialPauseRef = useRef(false);
+
+  const currentTestimonial =
+    content.testimonials[tIndex] ?? content.testimonials[0];
+
+  const orbitIdBySection = useMemo(() => {
+    return Object.fromEntries(
+      STUDENTS_SECTION_ORBIT_MAP.map((item) => [item.sectionId, item.orbitId])
+    ) as Record<string, OrbitItemId>;
+  }, []);
+
+  function setActiveOrbitBySection(sectionId: string) {
+    const orbitId = orbitIdBySection[sectionId];
+    if (orbitId) setActiveOrbitId(orbitId);
+  }
 
   function stopSpeech() {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
@@ -362,21 +180,6 @@ export default function Students() {
     speakText(key, text);
   }
 
-  useEffect(() => {
-    return () => {
-      stopSpeech();
-    };
-  }, []);
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      if (testimonialPauseRef.current) return;
-      setTIndex((prev) => (prev + 1) % TESTIMONIALS.length);
-    }, 8500);
-
-    return () => window.clearInterval(id);
-  }, []);
-
   function scrollToSection(sectionId?: string, orbitId?: OrbitItemId) {
     if (orbitId) setActiveOrbitId(orbitId);
     if (!sectionId) return;
@@ -386,6 +189,25 @@ export default function Students() {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
+
+  function handleOrbitItemClick(item: OrbitItemConfig) {
+    scrollToSection(item.targetSectionId, item.id);
+  }
+
+  useEffect(() => {
+    return () => {
+      stopSpeech();
+    };
+  }, []);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      if (testimonialPauseRef.current) return;
+      setTIndex((prev) => (prev + 1) % content.testimonials.length);
+    }, 8500);
+
+    return () => window.clearInterval(id);
+  }, [content.testimonials.length]);
 
   useEffect(() => {
     const elements = STUDENTS_SECTION_ORBIT_MAP.map((item) => {
@@ -422,12 +244,6 @@ export default function Students() {
     return () => observer.disconnect();
   }, []);
 
-  const currentTestimonial = TESTIMONIALS[tIndex] ?? TESTIMONIALS[0];
-
-  function handleOrbitItemClick(item: OrbitItemConfig) {
-    scrollToSection(item.targetSectionId, item.id);
-  }
-
   return (
     <InnerPageLayout
       title="תלמידות"
@@ -449,7 +265,7 @@ export default function Students() {
                     size="lg"
                     className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
                   >
-                    <a href={CONTACT_STUDENTS_HREF}>לבדיקת התאמה למסלול</a>
+                    <a href={CONTACT_STUDENTS_HREF}>{content.topCta.label}</a>
                   </Button>
                 </section>
               </AppearOnScroll>
@@ -458,7 +274,7 @@ export default function Students() {
                 <section
                   id="track-section"
                   className="scroll-mt-28 pt-2"
-                  onMouseEnter={() => setActiveOrbitId("1")}
+                  onMouseEnter={() => setActiveOrbitBySection("track-section")}
                   onMouseLeave={() => {
                     testimonialPauseRef.current = false;
                   }}
@@ -466,17 +282,18 @@ export default function Students() {
                   <div className="mx-auto max-w-4xl text-center">
                     <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
                       <Quote className="h-4 w-4" />
-                      מה אומרות התלמידות
+                      {content.trackSection.badge}
                     </div>
 
                     <h2 className="mt-4 text-3xl font-black leading-tight text-foreground sm:text-4xl md:text-5xl">
-                      שיעור שהופך לדרך,
-                      <span className="mt-2 block">ולא לעוד מפגש חולף</span>
+                      {content.trackSection.titleLines[0]}
+                      <span className="mt-2 block">
+                        {content.trackSection.titleLines[1]}
+                      </span>
                     </h2>
 
                     <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-xl">
-                      ההמלצות לא נועדו רק להרשים — אלא להמחיש איך נראית למידה שיש
-                      בה רצף, בהירות, יחס אישי ועומק מקצועי גם יחד.
+                      {content.trackSection.description}
                     </p>
                   </div>
 
@@ -514,7 +331,7 @@ export default function Students() {
 
                       <div className="mt-7 flex flex-wrap items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
-                          {TESTIMONIALS.map((item, i) => (
+                          {content.testimonials.map((item, i) => (
                             <button
                               key={item.key}
                               type="button"
@@ -537,8 +354,8 @@ export default function Students() {
                             onClick={() =>
                               setTIndex(
                                 (prev) =>
-                                  (prev - 1 + TESTIMONIALS.length) %
-                                  TESTIMONIALS.length
+                                  (prev - 1 + content.testimonials.length) %
+                                  content.testimonials.length
                               )
                             }
                           >
@@ -549,7 +366,10 @@ export default function Students() {
                           <Button
                             className="h-12 rounded-2xl px-5 text-sm font-semibold md:text-base"
                             onClick={() =>
-                              setTIndex((prev) => (prev + 1) % TESTIMONIALS.length)
+                              setTIndex(
+                                (prev) =>
+                                  (prev + 1) % content.testimonials.length
+                              )
                             }
                           >
                             הבא
@@ -563,7 +383,7 @@ export default function Students() {
                       <div className="flex justify-center rounded-[2rem] border border-border bg-card p-5 shadow-soft">
                         <img
                           src={studentsTestimonialsAnnouncer}
-                          alt="סמל דף התלמידות"
+                          alt={content.trackSection.announcerAlt}
                           className="h-auto w-full max-w-[320px] object-contain md:max-w-[420px]"
                           loading="lazy"
                         />
@@ -571,14 +391,16 @@ export default function Students() {
 
                       <div className="rounded-[2rem] border border-border bg-secondary p-6 shadow-soft md:p-8">
                         <div className="text-2xl font-black leading-tight text-foreground md:text-3xl">
-                          מסלול מקצועי, אנושי
-                          <span className="mt-2 block">ועם רף ברור</span>
+                          {content.trackSection.sideCardTitleLines[0]}
+                          <span className="mt-2 block">
+                            {content.trackSection.sideCardTitleLines[1]}
+                          </span>
                         </div>
 
                         <ul className="mt-5 space-y-2.5 text-base leading-relaxed text-muted-foreground md:text-lg">
-                          <li>לתלמידות שמוכנות לתהליך ולא רק להתנסות.</li>
-                          <li>למי שמחפשת ליווי, סדר ומסגרת מחזיקה.</li>
-                          <li>למי שחשוב לה יחס אישי יחד עם דרישה מקצועית.</li>
+                          {content.trackSection.sideCardBullets.map((bullet) => (
+                            <li key={bullet}>{bullet}</li>
+                          ))}
                         </ul>
 
                         <Button
@@ -586,7 +408,7 @@ export default function Students() {
                           className="mt-6 h-12 rounded-2xl px-5 text-sm font-semibold md:text-base"
                         >
                           <a href={CONTACT_STUDENTS_HREF}>
-                            בדיקת התאמה למסלול
+                            {content.trackSection.sideCardCtaLabel}
                             <ArrowLeft className="mr-2 h-4 w-4" />
                           </a>
                         </Button>
@@ -601,12 +423,14 @@ export default function Students() {
                   <div className="mx-auto max-w-4xl text-center">
                     <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
                       <CheckCircle2 className="h-4 w-4" />
-                      כך נראה תהליך נכון
+                      {content.commitmentSection.badge}
                     </div>
 
                     <h2 className="mt-4 text-3xl font-black leading-tight md:text-5xl text-foreground">
-                      צורת העבודה שלי מתאימה למי שמוכנה
-                      <span className="mt-2 block">להתמסר לתהליך אמיתי</span>
+                      {content.commitmentSection.titleLines[0]}
+                      <span className="mt-2 block">
+                        {content.commitmentSection.titleLines[1]}
+                      </span>
                     </h2>
                   </div>
 
@@ -614,12 +438,14 @@ export default function Students() {
                     <div className="flex flex-col items-center gap-4">
                       <AudioIconButton
                         speaking={speakingKey === "hero-piano"}
-                        onClick={() => toggleSpeech("hero-piano", HERO_PIANO_QUOTE)}
+                        onClick={() =>
+                          toggleSpeech("hero-piano", content.heroQuote)
+                        }
                       />
 
                       <img
                         src={studentsPresenterMain}
-                        alt="סמל דף התלמידות"
+                        alt={content.commitmentSection.presenterAlt}
                         className="h-auto w-full max-w-[420px] object-contain md:max-w-[560px]"
                         loading="eager"
                       />
@@ -632,28 +458,26 @@ export default function Students() {
                         </div>
 
                         <div className="mt-5 text-lg leading-relaxed text-foreground md:text-2xl">
-                          “{HERO_PIANO_QUOTE}”
+                          “{content.heroQuote}”
                         </div>
                       </div>
 
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="rounded-[1.5rem] border border-border bg-card p-5 shadow-soft md:p-6">
                           <div className="text-base font-bold text-foreground md:text-lg">
-                            מה חשוב לי במיוחד
+                            {content.commitmentSection.importantTitle}
                           </div>
                           <div className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
-                            עומק, עקביות, שקט מקצועי ובהירות שמאפשרת לתלמידה להתקדם
-                            מתוך ביטחון.
+                            {content.commitmentSection.importantText}
                           </div>
                         </div>
 
                         <div className="rounded-[1.5rem] border border-border bg-card p-5 shadow-soft md:p-6">
                           <div className="text-base font-bold text-foreground md:text-lg">
-                            מה יוצא מזה בפועל
+                            {content.commitmentSection.resultTitle}
                           </div>
                           <div className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
-                            מסלול שמחזיק לאורך זמן, עם רמה, מסגרת, ליווי ודרך עבודה
-                            מסודרת.
+                            {content.commitmentSection.resultText}
                           </div>
                         </div>
                       </div>
@@ -666,21 +490,20 @@ export default function Students() {
                 <section
                   id="studies-section"
                   className="scroll-mt-28 pt-2"
-                  onMouseEnter={() => setActiveOrbitId("2")}
+                  onMouseEnter={() => setActiveOrbitBySection("studies-section")}
                 >
                   <div className="mx-auto max-w-4xl text-center">
                     <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
                       <Music2 className="h-4 w-4" />
-                      מה לומדים כאן
+                      {content.studiesSection.badge}
                     </div>
 
                     <h2 className="mt-4 text-3xl font-black text-foreground sm:text-4xl md:text-5xl">
-                      תחומי הלימוד
+                      {content.studiesSection.title}
                     </h2>
 
                     <div className="mt-4 text-base leading-relaxed text-muted-foreground md:text-xl">
-                      השיעורים נבנים מתוך עומק מקצועי, התאמה אישית ומסלול התקדמות
-                      ברור.
+                      {content.studiesSection.description}
                     </div>
                   </div>
 
@@ -688,23 +511,22 @@ export default function Students() {
                     <div className="space-y-6">
                       <img
                         src={studentsLearningTouch}
-                        alt="חוויית למידה ונגינה"
+                        alt={content.studiesSection.imageAlt}
                         className="h-auto min-h-[360px] w-full rounded-[2rem] border border-border object-cover object-center shadow-soft"
                         loading="lazy"
                       />
 
                       <div className="rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-7">
                         <div className="text-2xl font-black text-foreground md:text-3xl">
-                          מקצועות משלימים
+                          {content.studiesSection.supportTitle}
                         </div>
 
                         <div className="mt-3 text-base leading-relaxed text-muted-foreground md:text-lg">
-                          תיאוריה, קריאת תווים, סולפז׳, הקשבה, קצב ופיתוח שמיעה —
-                          שכבה שמעמיקה את היציבות ואת ההבנה המוסיקלית של התלמידה.
+                          {content.studiesSection.supportDescription}
                         </div>
 
                         <div className="mt-5 flex flex-wrap justify-center gap-2.5 lg:justify-start">
-                          {SUPPORT_STUDIES.map((item) => (
+                          {content.studiesSection.supportStudies.map((item) => (
                             <span
                               key={item}
                               className="rounded-full bg-secondary px-3.5 py-2 text-sm text-secondary-foreground ring-1 ring-border md:text-base"
@@ -717,38 +539,46 @@ export default function Students() {
                     </div>
 
                     <div className="grid items-start gap-5 md:grid-cols-2">
-                      {PRIMARY_STUDIES.map(({ key, title, subtitle, Icon, bullets }) => (
-                        <div
-                          key={key}
-                          className="flex h-full flex-col rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-7"
-                        >
-                          <div className="flex items-start justify-between gap-4">
-                            <div>
-                              <div className="text-2xl font-black text-foreground md:text-3xl">
-                                {title}
+                      {content.studiesSection.primaryStudies.map((study) => {
+                        const Icon =
+                          ICONS[study.iconKey as keyof typeof ICONS] ?? Music2;
+
+                        return (
+                          <div
+                            key={study.key}
+                            className="flex h-full flex-col rounded-[2rem] border border-border bg-card p-6 shadow-soft md:p-7"
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <div className="text-2xl font-black text-foreground md:text-3xl">
+                                  {study.title}
+                                </div>
+                                <div className="mt-2 text-base text-muted-foreground">
+                                  {study.subtitle}
+                                </div>
                               </div>
-                              <div className="mt-2 text-base text-muted-foreground">
-                                {subtitle}
-                              </div>
+
+                              <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
+                                <Icon className="h-7 w-7 text-primary" />
+                              </span>
                             </div>
 
-                            <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
-                              <Icon className="h-7 w-7 text-primary" />
-                            </span>
+                            <ul className="mt-6 space-y-3">
+                              {study.bullets.map((bullet) => (
+                                <li
+                                  key={bullet}
+                                  className="flex items-start gap-3 text-base"
+                                >
+                                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                  <span className="leading-relaxed text-muted-foreground">
+                                    {bullet}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-
-                          <ul className="mt-6 space-y-3">
-                            {bullets.map((bullet) => (
-                              <li key={bullet} className="flex items-start gap-3 text-base">
-                                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                                <span className="leading-relaxed text-muted-foreground">
-                                  {bullet}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -756,14 +586,13 @@ export default function Students() {
                     <a href={EDUCATIONAL_ORCHESTRA_HREF} className="block">
                       <div className="rounded-[2rem] border border-border bg-card px-8 py-8 text-center shadow-soft md:px-10 md:py-10">
                         <div className="text-3xl font-black text-foreground md:text-4xl">
-                          תזמורות לימודיות
+                          {content.studiesSection.orchestraTitle}
                         </div>
                         <div className="mx-auto mt-3 max-w-3xl text-lg leading-relaxed text-muted-foreground md:text-2xl">
-                          מסגרת שמפתחת הקשבה, אחריות, קצב ויכולת להשתלב בתוך מרקם
-                          מוסיקלי.
+                          {content.studiesSection.orchestraDescription}
                         </div>
                         <div className="mt-5 inline-flex items-center gap-2 text-base font-semibold text-primary md:text-lg">
-                          לעמוד התזמורות
+                          {content.studiesSection.orchestraCtaLabel}
                           <ArrowLeft className="h-4 w-4" />
                         </div>
                       </div>
@@ -776,7 +605,7 @@ export default function Students() {
                 <section
                   id="belief-section"
                   className="scroll-mt-28 pt-2"
-                  onMouseEnter={() => setActiveOrbitId("3")}
+                  onMouseEnter={() => setActiveOrbitBySection("belief-section")}
                 >
                   <div className="relative overflow-hidden rounded-[2.2rem] border border-border shadow-soft">
                     <img
@@ -795,24 +624,25 @@ export default function Students() {
                               <Quote className="h-6 w-6 text-primary" />
                             </span>
                             <div className="text-sm font-medium text-muted-foreground md:text-base">
-                              הדרך שלי
+                              {content.beliefSection.label}
                             </div>
                           </div>
 
                           <div className="mt-6 text-3xl font-black leading-tight text-foreground md:text-5xl">
-                            לא עבודה טכנית,
-                            <span className="mt-2 block">אלא חתימת דרך</span>
+                            {content.beliefSection.titleLines[0]}
+                            <span className="mt-2 block">
+                              {content.beliefSection.titleLines[1]}
+                            </span>
                           </div>
 
                           <div className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-                            כאן הדגש הוא על קו ברור, רמת ציפייה גבוהה והחזקת תהליך
-                            לאורך זמן — עם עומק, בהירות, רגישות וסדר.
+                            {content.beliefSection.description}
                           </div>
                         </div>
                       </div>
 
                       <div className="grid gap-3">
-                        {BELIEF_LINES.map((belief, idx) => (
+                        {content.beliefSection.lines.map((belief, idx) => (
                           <div
                             key={belief}
                             className="flex items-center gap-4 rounded-2xl border border-border bg-card/80 px-5 py-4 shadow-soft backdrop-blur-sm"
@@ -835,12 +665,12 @@ export default function Students() {
                 <section
                   id="process-section"
                   className="scroll-mt-28 pt-2"
-                  onMouseEnter={() => setActiveOrbitId("4")}
+                  onMouseEnter={() => setActiveOrbitBySection("process-section")}
                 >
                   <div className="grid items-start gap-8 lg:grid-cols-[0.96fr_1.04fr]">
                     <img
                       src={studentsStudyMaterials}
-                      alt="חומרי לימוד וסביבת עבודה"
+                      alt={content.processSection.imageAlt}
                       className="h-auto min-h-[380px] w-full rounded-[2rem] border border-border object-cover object-center shadow-soft"
                       loading="lazy"
                     />
@@ -848,37 +678,41 @@ export default function Students() {
                     <div>
                       <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
                         <ClipboardList className="h-4 w-4" />
-                        איך זה עובד בפועל
+                        {content.processSection.badge}
                       </div>
 
                       <h2 className="mt-4 text-3xl font-black text-foreground sm:text-4xl md:text-5xl">
-                        שיעור, תרגול, רצף ומעקב
+                        {content.processSection.title}
                       </h2>
 
                       <div className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground md:text-xl">
-                        כאן לא לומדים רק בתוך השיעור. השיעור נותן כיוון ברור,
-                        והתהליך ממשיך בין המפגשים — עם מסגרת, חומרים, משימות ודרך
-                        עבודה שמחזיקה את ההתקדמות.
+                        {content.processSection.description}
                       </div>
 
                       <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        {HOW_IT_WORKS.map(({ key, title, text, Icon }) => (
-                          <div
-                            key={key}
-                            className="rounded-[1.5rem] border border-border bg-card p-5 shadow-soft md:p-6"
-                          >
-                            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
-                              <Icon className="h-6 w-6 text-primary" />
-                            </span>
+                        {content.processSection.items.map((item) => {
+                          const Icon =
+                            ICONS[item.iconKey as keyof typeof ICONS] ??
+                            ClipboardList;
 
-                            <div className="mt-4 text-lg font-black text-foreground md:text-xl">
-                              {title}
+                          return (
+                            <div
+                              key={item.key}
+                              className="rounded-[1.5rem] border border-border bg-card p-5 shadow-soft md:p-6"
+                            >
+                              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
+                                <Icon className="h-6 w-6 text-primary" />
+                              </span>
+
+                              <div className="mt-4 text-lg font-black text-foreground md:text-xl">
+                                {item.title}
+                              </div>
+                              <div className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
+                                {item.text}
+                              </div>
                             </div>
-                            <div className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
-                              {text}
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -889,45 +723,52 @@ export default function Students() {
                 <section
                   id="system-section"
                   className="scroll-mt-28 pt-2"
-                  onMouseEnter={() => setActiveOrbitId("5")}
+                  onMouseEnter={() => setActiveOrbitBySection("system-section")}
                 >
                   <div className="grid items-start gap-8 lg:grid-cols-[1.04fr_0.96fr]">
                     <div className="space-y-4">
                       <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary ring-1 ring-primary/15 md:text-sm">
                         <Smartphone className="h-4 w-4" />
-                        מערכת התלמידות
+                        {content.systemSection.badge}
                       </div>
 
                       <h2 className="text-3xl font-black leading-tight text-foreground sm:text-4xl md:text-5xl">
-                        מערכת שממשיכה את הלמידה
-                        <span className="mt-2 block">גם בין השיעורים</span>
+                        {content.systemSection.titleLines[0]}
+                        <span className="mt-2 block">
+                          {content.systemSection.titleLines[1]}
+                        </span>
                       </h2>
 
                       <div className="max-w-3xl text-base leading-relaxed text-muted-foreground md:text-xl">
-                        זה האזור הנכון להפנות ממנו לדמו ולכניסה. כאן כבר מבינים מהי
-                        המעטפת, ולכן אפשר לראות איך זה נראה בפועל.
+                        {content.systemSection.description}
                       </div>
 
                       <div className="grid gap-3 md:grid-cols-2">
-                        {APP_FEATURES.map(({ key, title, text, Icon }) => (
-                          <div
-                            key={key}
-                            className="flex items-start gap-4 rounded-2xl border border-border bg-card px-4 py-4 shadow-soft"
-                          >
-                            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
-                              <Icon className="h-5 w-5 text-primary" />
-                            </span>
+                        {content.systemSection.features.map((item) => {
+                          const Icon =
+                            ICONS[item.iconKey as keyof typeof ICONS] ??
+                            Sparkles;
 
-                            <span className="min-w-0">
-                              <span className="block text-sm font-black text-foreground md:text-base">
-                                {title}
+                          return (
+                            <div
+                              key={item.key}
+                              className="flex items-start gap-4 rounded-2xl border border-border bg-card px-4 py-4 shadow-soft"
+                            >
+                              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
+                                <Icon className="h-5 w-5 text-primary" />
                               </span>
-                              <span className="mt-1 block text-sm leading-relaxed text-muted-foreground md:text-base">
-                                {text}
+
+                              <span className="min-w-0">
+                                <span className="block text-sm font-black text-foreground md:text-base">
+                                  {item.title}
+                                </span>
+                                <span className="mt-1 block text-sm leading-relaxed text-muted-foreground md:text-base">
+                                  {item.text}
+                                </span>
                               </span>
-                            </span>
-                          </div>
-                        ))}
+                            </div>
+                          );
+                        })}
                       </div>
 
                       <div>
@@ -937,7 +778,7 @@ export default function Students() {
                           className="h-12 rounded-2xl px-6 text-sm font-semibold md:text-base"
                           onClick={() => setOpenSmartSystem(true)}
                         >
-                          מה כוללת המערכת
+                          {content.systemSection.modalButtonLabel}
                         </Button>
                       </div>
                     </div>
@@ -945,7 +786,7 @@ export default function Students() {
                     <div className="space-y-5">
                       <img
                         src={studentsDemoSystemPreview}
-                        alt="תצוגה מקדימה של מערכת התלמידות"
+                        alt={content.systemSection.demoImageAlt}
                         className="h-auto min-h-[420px] w-full rounded-[2rem] border border-border object-cover object-center shadow-soft"
                         loading="lazy"
                       />
@@ -956,7 +797,9 @@ export default function Students() {
                           size="lg"
                           className="h-14 rounded-[1.3rem] text-base font-black"
                         >
-                          <a href={STUDENTS_DEMO_HREF}>להדגמה</a>
+                          <a href={STUDENTS_DEMO_HREF}>
+                            {content.systemSection.demoButtonLabel}
+                          </a>
                         </Button>
 
                         <Button
@@ -970,7 +813,7 @@ export default function Students() {
                             target="_blank"
                             rel="noreferrer"
                           >
-                            לכניסה
+                            {content.systemSection.loginButtonLabel}
                           </a>
                         </Button>
                       </div>
@@ -983,7 +826,7 @@ export default function Students() {
                 <section>
                   <div className="rounded-[2rem] border border-border bg-card px-5 py-5 shadow-soft md:px-7 md:py-6">
                     <div className="grid grid-cols-2 gap-5 text-center md:grid-cols-3 xl:grid-cols-6">
-                      {NUMBERS.map((item) => (
+                      {content.numbers.map((item) => (
                         <div key={item.label}>
                           <div className="text-2xl font-black text-primary md:text-4xl">
                             {item.value}
@@ -1003,13 +846,11 @@ export default function Students() {
                   <div className="w-full max-w-4xl rounded-[2rem] border border-border bg-card px-6 py-8 shadow-soft md:px-10 md:py-10">
                     <div className="text-center">
                       <div className="text-2xl font-black leading-tight text-foreground md:text-4xl">
-                        יש לך שאלות?
+                        {content.bottomCta.title}
                       </div>
 
                       <div className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-lg">
-                        אפשר לפנות דרך דף צור קשר, לראות את הדמו של המערכת,
-                        להיכנס ישירות לתוכנה, או להכיר גם את צד ההוראה שמאחורי
-                        הדרך הזו.
+                        {content.bottomCta.description}
                       </div>
 
                       <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
@@ -1018,26 +859,8 @@ export default function Students() {
                           size="lg"
                           className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
                         >
-                          <a href={CONTACT_STUDENTS_HREF}>צור קשר</a>
-                        </Button>
-
-                        <Button
-                          asChild
-                          variant="secondary"
-                          size="lg"
-                          className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
-                        >
-                          <a href={STUDENTS_DEMO_HREF}>להדגמה</a>
-                        </Button>
-
-                        <Button
-                          asChild
-                          variant="secondary"
-                          size="lg"
-                          className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
-                        >
-                          <a href={STUDENTS_APP_HREF} target="_blank" rel="noreferrer">
-                            לכניסה
+                          <a href={CONTACT_STUDENTS_HREF}>
+                            {content.bottomCta.contactButtonLabel}
                           </a>
                         </Button>
 
@@ -1047,7 +870,31 @@ export default function Students() {
                           size="lg"
                           className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
                         >
-                          <a href={ABOUT_TEACHING_HREF}>להכיר אותי</a>
+                          <a href={STUDENTS_DEMO_HREF}>
+                            {content.bottomCta.demoButtonLabel}
+                          </a>
+                        </Button>
+
+                        <Button
+                          asChild
+                          variant="secondary"
+                          size="lg"
+                          className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
+                        >
+                          <a href={STUDENTS_APP_HREF} target="_blank" rel="noreferrer">
+                            {content.bottomCta.loginButtonLabel}
+                          </a>
+                        </Button>
+
+                        <Button
+                          asChild
+                          variant="secondary"
+                          size="lg"
+                          className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
+                        >
+                          <a href={ABOUT_TEACHING_HREF}>
+                            {content.bottomCta.aboutButtonLabel}
+                          </a>
                         </Button>
                       </div>
                     </div>
@@ -1061,44 +908,50 @@ export default function Students() {
         <Dialog open={openSmartSystem} onOpenChange={setOpenSmartSystem}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>מה כוללת מערכת התלמידות</DialogTitle>
+              <DialogTitle>{content.systemSection.modalTitle}</DialogTitle>
               <DialogDescription>
-                מעטפת שממשיכה את הלמידה גם בין השיעורים, ומחזיקה את התהליך בצורה
-                מסודרת וברורה.
+                {content.systemSection.modalDescription}
               </DialogDescription>
             </DialogHeader>
 
             <div className="grid gap-3 pt-2">
-              {APP_FEATURES.map(({ key, title, text, Icon }) => (
-                <div
-                  key={key}
-                  className="flex items-start gap-4 rounded-2xl border border-border bg-card/60 px-4 py-4"
-                >
-                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
-                    <Icon className="h-5 w-5 text-primary" />
-                  </span>
+              {content.systemSection.features.map((item) => {
+                const Icon =
+                  ICONS[item.iconKey as keyof typeof ICONS] ?? Sparkles;
 
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold text-foreground md:text-base">
-                      {title}
-                    </div>
-                    <div className="mt-1 text-sm leading-relaxed text-muted-foreground md:text-base">
-                      {text}
+                return (
+                  <div
+                    key={item.key}
+                    className="flex items-start gap-4 rounded-2xl border border-border bg-card/60 px-4 py-4"
+                  >
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
+                      <Icon className="h-5 w-5 text-primary" />
+                    </span>
+
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-foreground md:text-base">
+                        {item.title}
+                      </div>
+                      <div className="mt-1 text-sm leading-relaxed text-muted-foreground md:text-base">
+                        {item.text}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="flex flex-wrap gap-3 pt-4">
               <Button asChild className="rounded-2xl">
                 <a href={STUDENTS_APP_HREF} target="_blank" rel="noreferrer">
-                  כניסה לתוכנה
+                  {content.systemSection.modalPrimaryButtonLabel}
                 </a>
               </Button>
 
               <Button asChild variant="secondary" className="rounded-2xl">
-                <a href={STUDENTS_DEMO_HREF}>לצפייה בדמו</a>
+                <a href={STUDENTS_DEMO_HREF}>
+                  {content.systemSection.modalSecondaryButtonLabel}
+                </a>
               </Button>
             </div>
           </DialogContent>
