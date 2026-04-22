@@ -39,10 +39,19 @@ const NewsletterSignupForm = ({ source = "blog-sidebar", onSuccess }: Props) => 
         }),
       });
 
-      const data = await response.json();
+      let data: { ok?: boolean; error?: string } | null = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok || !data?.ok) {
-        throw new Error(data?.error || "signup_failed");
+        // Log technical detail for debugging, but never surface it to the user
+        if (data?.error) {
+          console.warn("Newsletter signup failed:", data.error);
+        }
+        throw new Error("signup_failed");
       }
 
       toast({
@@ -56,12 +65,12 @@ const NewsletterSignupForm = ({ source = "blog-sidebar", onSuccess }: Props) => 
 
       onSuccess?.();
     } catch (error) {
+      if (error instanceof Error && error.message !== "signup_failed") {
+        console.warn("Newsletter signup error:", error);
+      }
       toast({
         title: "משהו השתבש",
-        description:
-          error instanceof Error
-            ? error.message
-            : "לא הצלחנו לשלוח את ההרשמה כרגע. נסי שוב בעוד רגע.",
+        description: "לא הצלחנו לשלוח את ההרשמה כרגע. נסי שוב בעוד רגע.",
         variant: "destructive",
       });
     } finally {
