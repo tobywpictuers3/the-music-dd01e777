@@ -143,10 +143,20 @@ const Blog = () => {
         body: JSON.stringify({ email }),
       });
 
-      const data = await response.json();
+      let data: { ok?: boolean; error?: string } | null = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
+      // Always show the same generic confirmation regardless of whether the
+      // email exists in the system. This prevents email enumeration via
+      // distinguishing responses.
       if (!response.ok || !data?.ok) {
-        throw new Error(data?.error || "send_magic_link_failed");
+        if (data?.error) {
+          console.warn("send_magic_link non-ok:", data.error);
+        }
       }
 
       toast({
@@ -155,12 +165,10 @@ const Blog = () => {
           "בדקי את תיבת המייל. אם את כבר מאושרת במערכת, יחכה לך שם קישור כניסה.",
       });
     } catch (error) {
+      console.warn("send_magic_link error:", error);
       toast({
         title: "לא הצלחנו לשלוח קישור כרגע",
-        description:
-          error instanceof Error
-            ? error.message
-            : "נסי שוב בעוד רגע.",
+        description: "נסי שוב בעוד רגע.",
         variant: "destructive",
       });
     } finally {
@@ -177,10 +185,18 @@ const Blog = () => {
         credentials: "include",
       });
 
-      const data = await response.json();
+      let data: { ok?: boolean; error?: string } | null = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok || !data?.ok) {
-        throw new Error(data?.error || "logout_failed");
+        if (data?.error) {
+          console.warn("logout failed:", data.error);
+        }
+        throw new Error("logout_failed");
       }
 
       setSessionSubscriber(null);
@@ -190,10 +206,12 @@ const Blog = () => {
         description: "אזור המנויות נסגר במכשיר הזה.",
       });
     } catch (error) {
+      if (error instanceof Error && error.message !== "logout_failed") {
+        console.warn("logout error:", error);
+      }
       toast({
         title: "לא הצלחנו לנתק כרגע",
-        description:
-          error instanceof Error ? error.message : "נסי שוב בעוד רגע.",
+        description: "נסי שוב בעוד רגע.",
         variant: "destructive",
       });
     } finally {
