@@ -154,8 +154,6 @@ export default function OrbitPageShell({
     };
   }, []);
 
-  const footerDockActive = footerDockOffsetPx > 0;
-
   const contentVars = {
     "--orbit-content-left-offset": `${mergedDesign.layout.contentLeftOffsetPx}px`,
   } as CSSProperties;
@@ -179,12 +177,11 @@ export default function OrbitPageShell({
         controlledActiveItemId={controlledActiveItemId}
       />
 
+      {/* TickerBanner: ללא dockOffset — הבאנר נשאר קבוע בתחתית גם כשהפוטר מגיע */}
       <TickerBanner
         themeMode={themeMode}
         config={page.tickerBanner}
         visible={bannerVisible}
-        dockOffsetPx={footerDockOffsetPx}
-        pauseMotion={footerDockActive}
       />
 
       {stickyGuideEnabled ? (

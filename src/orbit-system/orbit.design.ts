@@ -20,8 +20,8 @@ export const defaultOrbitPageDesign: OrbitPageDesignConfig = {
     activationRatio: 0.5,
     showFromAfterHeroPx: 0,
     bubble: {
-      maxWidthPx: 560,
-      offsetX: 18,
+      maxWidthPx: 180,
+      offsetX: 0,
       offsetY: 0,
       enterMs: 240,
       exitMs: 180,
@@ -33,8 +33,8 @@ export const defaultOrbitPageDesign: OrbitPageDesignConfig = {
 
   tickerBanner: {
     enabled: true,
-    heightPx: 96,
-    bottomOffsetPx: 34,
+    heightPx: 48,
+    bottomOffsetPx: 0,
     opacity: 0.92,
     loopDurationSec: 38,
     showFromAfterHeroPx: 0,

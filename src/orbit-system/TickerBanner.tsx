@@ -6,22 +6,18 @@ type TickerBannerProps = {
   themeMode: ThemeMode;
   config: TickerBannerConfig;
   visible: boolean;
-  dockOffsetPx?: number;
-  pauseMotion?: boolean;
 };
 
 export default function TickerBanner({
   themeMode,
   config,
   visible,
-  dockOffsetPx = 0,
-  pauseMotion = false,
 }: TickerBannerProps) {
   if (!config.enabled) return null;
 
-  const tickerText = `${config.items.join("   ✦   ")}   ✦   ${config.items.join(
-    "   ✦   "
-  )}`;
+  // מכפילים פי 4 לגלילה חלקה לחלוטין ללא עצירות
+  const repeated = [...config.items, ...config.items, ...config.items, ...config.items];
+  const tickerText = repeated.join("   ✦   ");
 
   const enterMs = config.enterMs ?? 320;
   const exitMs = config.exitMs ?? 320;
@@ -32,8 +28,8 @@ export default function TickerBanner({
       <style>
         {`
           @keyframes orbitTickerMarquee {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-25%); }
           }
         `}
       </style>
@@ -41,10 +37,10 @@ export default function TickerBanner({
       <div
         className="pointer-events-none fixed inset-x-0 z-[60]"
         style={{
-          bottom: `${config.bottomOffsetPx + dockOffsetPx}px`,
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(24px)",
-          transition: `bottom 120ms linear, opacity ${transitionMs}ms ease, transform ${transitionMs}ms ease`,
+          bottom: `${config.bottomOffsetPx}px`,
+          opacity: visible ? config.opacity : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: `opacity ${transitionMs}ms ease, transform ${transitionMs}ms ease`,
         }}
         aria-hidden={!visible}
       >
@@ -52,7 +48,6 @@ export default function TickerBanner({
           className="relative overflow-hidden border-y"
           style={{
             height: `${config.heightPx}px`,
-            opacity: config.opacity,
             borderColor:
               themeMode === "dark"
                 ? "rgba(255,255,255,0.14)"
@@ -62,9 +57,10 @@ export default function TickerBanner({
                 ? "rgba(16,16,20,0.42)"
                 : "rgba(255,255,255,0.42)",
             transition:
-              "background-color 700ms ease, border-color 700ms ease, opacity 320ms ease",
+              "background-color 700ms ease, border-color 700ms ease",
           }}
         >
+          {/* רקע תמונה */}
           <span
             className="absolute inset-0"
             style={{
@@ -86,6 +82,7 @@ export default function TickerBanner({
             }}
           />
 
+          {/* שכבת blur */}
           <span
             className="absolute inset-0"
             style={{
@@ -98,6 +95,7 @@ export default function TickerBanner({
             }}
           />
 
+          {/* הטקסט הנע — לולאה אינסופית ורציפה */}
           <div className="relative h-full overflow-hidden">
             <div
               className="flex h-full min-w-max items-center whitespace-nowrap"
@@ -106,12 +104,12 @@ export default function TickerBanner({
                 animationDuration: `${config.loopDurationSec}s`,
                 animationTimingFunction: "linear",
                 animationIterationCount: "infinite",
-                animationPlayState: pauseMotion ? "paused" : "running",
+                animationPlayState: "running",
                 width: "max-content",
               }}
             >
               <span
-                className="px-8 text-[clamp(1rem,1.35vw,1.14rem)] font-medium tracking-[0.02em]"
+                className="px-6 text-[clamp(0.72rem,1.1vw,0.88rem)] font-medium tracking-[0.025em]"
                 style={{
                   color: themeMode === "dark" ? "#ffffff" : "#1b1b1b",
                   transition: "color 700ms ease",

@@ -174,6 +174,11 @@ export type OrbitPageBubbleContentConfig = Pick<
   "id" | "text" | "showFromAfterHeroPx" | "hideAfterHeroPx"
 > & {
   dismissible?: boolean;
+  /** תזמון per-page — כל דף יכול לדרוס את ברירות המחדל מ-orbit.design.ts */
+  enterMs?: number;
+  exitMs?: number;
+  holdMs?: number;
+  fadeMs?: number;
 };
 
 export type OrbitPageTickerContentConfig = {

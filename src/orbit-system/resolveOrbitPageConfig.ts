@@ -28,10 +28,10 @@ function resolveBubbleConfig(
     maxWidthPx: mergedDesign.stickyGuide.bubble.maxWidthPx,
     offsetX: mergedDesign.stickyGuide.bubble.offsetX,
     offsetY: mergedDesign.stickyGuide.bubble.offsetY,
-    enterMs: mergedDesign.stickyGuide.bubble.enterMs,
-    exitMs: mergedDesign.stickyGuide.bubble.exitMs,
-    holdMs: mergedDesign.stickyGuide.bubble.holdMs,
-    fadeMs: mergedDesign.stickyGuide.bubble.fadeMs,
+    enterMs: bubble.enterMs ?? mergedDesign.stickyGuide.bubble.enterMs,
+    exitMs: bubble.exitMs ?? mergedDesign.stickyGuide.bubble.exitMs,
+    holdMs: bubble.holdMs ?? mergedDesign.stickyGuide.bubble.holdMs,
+    fadeMs: bubble.fadeMs ?? mergedDesign.stickyGuide.bubble.fadeMs,
   };
 }
 
