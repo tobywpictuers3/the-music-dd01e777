@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Quote, X } from "lucide-react";
 import { getThemeAssets } from "./theme.assets";
 import type {
   BubbleConfig,
@@ -16,10 +15,6 @@ type StickyGuideProps = {
   bannerBottomOffsetPx: number;
   dockOffsetPx?: number;
 };
-
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export default function StickyGuide({
   presenter,
@@ -46,17 +41,15 @@ export default function StickyGuide({
   const exitMs = activeBubble?.exitMs ?? 220;
   const holdMs = activeBubble?.holdMs ?? 2200;
   const fadeMs = activeBubble?.fadeMs ?? 6000;
-  const maxWidthPx = activeBubble?.maxWidthPx ?? 360;
+  const maxWidthPx = activeBubble?.maxWidthPx ?? 180;
   const offsetX = activeBubble?.offsetX ?? 0;
   const offsetY = activeBubble?.offsetY ?? 0;
-  const dismissible = activeBubble?.dismissible ?? true;
 
   function clearBubbleTimers() {
     if (fadeStartTimerRef.current) {
       window.clearTimeout(fadeStartTimerRef.current);
       fadeStartTimerRef.current = null;
     }
-
     if (hideTimerRef.current) {
       window.clearTimeout(hideTimerRef.current);
       hideTimerRef.current = null;
@@ -65,7 +58,6 @@ export default function StickyGuide({
 
   function scheduleBubbleFade() {
     if (bubbleHoverRef.current) return;
-
     clearBubbleTimers();
     setBubbleFading(false);
 
@@ -84,16 +76,6 @@ export default function StickyGuide({
     setBubbleVisible(true);
     setBubbleFading(false);
     scheduleBubbleFade();
-  }
-
-  function closeBubble() {
-    clearBubbleTimers();
-    setBubbleVisible(false);
-    setBubbleFading(false);
-
-    if (activeBubble?.id) {
-      setDismissedBubbleId(activeBubble.id);
-    }
   }
 
   function handleBubbleMouseEnter() {
@@ -154,6 +136,8 @@ export default function StickyGuide({
     };
   }, []);
 
+  const presenterWidth = "clamp(72px, 6.8vw, 100px)";
+
   return (
     <div
       dir="ltr"
@@ -167,104 +151,104 @@ export default function StickyGuide({
       }}
       aria-hidden={!visible}
     >
-      <div
-        className={cn(
-          "pointer-events-auto flex items-end gap-4 transition-transform duration-300",
-          bubbleVisible ? "translate-x-6" : "translate-x-0"
-        )}
-      >
-        <div className="flex flex-col items-center gap-3">
-          <img
-            src={presenter.looks.default.src}
-            alt={presenter.looks.default.alt}
-            className="pointer-events-none h-auto object-contain"
+      <div className="pointer-events-auto relative inline-block">
+        {/* Speech bubble — floats above the presenter, tail points down-left toward mouth */}
+        <div
+          className="absolute"
+          style={{
+            bottom: `calc(${presenterWidth} * 0.62 + 6px)`,
+            left: "46%",
+            transform: `translate(${offsetX}px, ${offsetY}px)`,
+            opacity: bubbleVisible ? (bubbleFading ? 0 : 1) : 0,
+            transition: bubbleVisible
+              ? bubbleFading
+                ? `opacity ${fadeMs}ms ease`
+                : `opacity ${enterMs}ms ease, transform ${enterMs}ms cubic-bezier(0.22,1,0.36,1)`
+              : `opacity ${exitMs}ms ease`,
+            pointerEvents: bubbleVisible ? "auto" : "none",
+          }}
+          onMouseEnter={handleBubbleMouseEnter}
+          onMouseLeave={handleBubbleMouseLeave}
+        >
+          {/* Bubble body */}
+          <div
+            className="relative overflow-hidden"
             style={{
-              width: "clamp(82px, 7.8vw, 116px)",
-              maxWidth: "116px",
-              filter: "drop-shadow(0 10px 22px rgba(0,0,0,0.24))",
+              maxWidth: `${maxWidthPx}px`,
+              minWidth: 0,
+              borderRadius: "1.4rem",
+              padding: "8px 14px 10px",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              background:
+                "linear-gradient(to bottom, rgba(255,255,255,0.04) 0%, rgba(255,90,10,0.18) 60%, rgba(255,60,0,0.32) 100%)",
+              border: "1px solid rgba(255,120,20,0.28)",
+              boxShadow:
+                "0 6px 28px rgba(255,80,0,0.18), inset 0 1px 0 rgba(255,200,100,0.12)",
+            }}
+          >
+            {/* Decorative background stars layer */}
+            {assets.bubbleStarsRed && (
+              <span
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  backgroundImage: `url(${assets.bubbleStarsRed})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  opacity: 0.1,
+                  borderRadius: "inherit",
+                }}
+              />
+            )}
+
+            {/* Fire gradient text */}
+            <p
+              className="relative z-10 text-right leading-[1.55] font-medium"
+              style={{
+                fontSize: "clamp(0.72rem, 1.05vw, 0.82rem)",
+                whiteSpace: "normal",
+                wordBreak: "keep-all",
+                overflowWrap: "break-word",
+                background:
+                  "linear-gradient(to bottom, #ffdd55 0%, #ff8800 42%, #ff3300 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                margin: 0,
+              }}
+            >
+              {bubbleText}
+            </p>
+          </div>
+
+          {/* Tail — bottom-left triangle pointing down toward the presenter's mouth */}
+          <span
+            style={{
+              position: "absolute",
+              bottom: "-10px",
+              left: "18px",
+              width: 0,
+              height: 0,
+              borderLeft: "7px solid transparent",
+              borderRight: "7px solid transparent",
+              borderTop: "11px solid rgba(255,75,10,0.42)",
+              filter: "drop-shadow(0 2px 4px rgba(255,60,0,0.2))",
             }}
           />
         </div>
 
-        <div
-          className={cn(
-            "transition-all",
-            bubbleVisible
-              ? bubbleFading
-                ? "translate-y-2 opacity-0"
-                : "translate-y-0 opacity-100"
-              : "pointer-events-none translate-y-4 opacity-0"
-          )}
+        {/* Presenter image */}
+        <img
+          src={presenter.looks.default.src}
+          alt={presenter.looks.default.alt}
+          className="pointer-events-none h-auto object-contain"
           style={{
-            transitionDuration: bubbleVisible
-              ? bubbleFading
-                ? `${fadeMs}ms`
-                : `${enterMs}ms`
-              : `${exitMs}ms`,
-            transform: `translate(${offsetX}px, ${offsetY}px)`,
+            width: presenterWidth,
+            maxWidth: "100px",
+            filter: "drop-shadow(0 8px 18px rgba(0,0,0,0.22))",
+            display: "block",
           }}
-        >
-          <div
-            onMouseEnter={handleBubbleMouseEnter}
-            onMouseLeave={handleBubbleMouseLeave}
-            className="relative overflow-visible rounded-[1.6rem] border px-5 py-5 shadow-[0_22px_54px_rgba(0,0,0,0.24)] backdrop-blur-sm"
-            style={{
-              maxWidth: `${maxWidthPx}px`,
-              minWidth: "300px",
-              borderColor:
-                themeMode === "dark"
-                  ? "rgba(255,255,255,0.16)"
-                  : "rgba(120,30,30,0.14)",
-              backgroundColor:
-                themeMode === "dark"
-                  ? "rgba(76,52,34,0.86)"
-                  : "rgba(152,116,78,0.76)",
-            }}
-          >
-            <span
-              className="absolute inset-0 rounded-[1.6rem]"
-              style={{
-                backgroundImage: `url(${assets.bubbleStarsRed})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                opacity: 0.26,
-              }}
-            />
-
-            <span
-              className="absolute left-[-18px] top-1/2 z-10 -translate-y-1/2 border-y-[16px] border-y-transparent border-r-[28px]"
-              style={{
-                borderRightColor:
-                  themeMode === "dark"
-                    ? "rgba(122,87,52,0.96)"
-                    : "rgba(152,116,78,0.96)",
-              }}
-            />
-
-            <div className="relative z-10 mb-4 flex items-start justify-between gap-3">
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/18 ring-1 ring-white/10">
-                <Quote className="h-5 w-5 text-primary" />
-              </div>
-
-              {dismissible ? (
-                <button
-                  type="button"
-                  onClick={closeBubble}
-                  aria-label="סגירת בועה"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-white ring-1 ring-white/10 transition hover:bg-black/50"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              ) : null}
-            </div>
-
-            <div className="relative z-10 rounded-[1.3rem] bg-black/10 px-4 py-3 backdrop-blur-[2px] dark:bg-black/12">
-              <div className="text-right text-base leading-8 text-foreground/95">
-                “{bubbleText}”
-              </div>
-            </div>
-          </div>
-        </div>
+        />
       </div>
     </div>
   );

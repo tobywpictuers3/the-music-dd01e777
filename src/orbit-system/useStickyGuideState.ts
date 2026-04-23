@@ -1,10 +1,8 @@
 /**
  * קובע:
- * - מתי המגיש הקבוע מופיע
- * - מתי הבאנר מופיע
+ * - מתי המגיש הקבוע מופיע (אחרי threshold של ה-hero)
+ * - מתי הבאנר מופיע (מיד עם תחילת גלילה — tracking נפרד)
  * - איזו בועה פעילה כרגע
- *
- * כל התיזמונים מגיעים עכשיו מהקונפיג של הדף.
  */
 
 import { useEffect, useMemo, useState, type RefObject } from "react";
@@ -28,6 +26,7 @@ export function useStickyGuideState({
   headerOffsetPx,
 }: UseStickyGuideStateArgs) {
   const [afterActivationScrollPx, setAfterActivationScrollPx] = useState(0);
+  const [rawFromHeroScrollPx, setRawFromHeroScrollPx] = useState(0);
 
   useEffect(() => {
     const update = () => {
@@ -45,12 +44,17 @@ export function useStickyGuideState({
         activationOffsetPx;
 
       const currentScrollY = window.scrollY;
+
+      // מגיש: מופיע אחרי threshold
       const delta = Math.max(
         currentScrollY - (heroStartY + activationThresholdPx),
         0
       );
-
       setAfterActivationScrollPx(delta);
+
+      // באנר: מופיע מיד עם תחילת גלילה (raw scroll מתחילת ה-hero)
+      const rawDelta = Math.max(currentScrollY - heroStartY, 0);
+      setRawFromHeroScrollPx(rawDelta);
     };
 
     update();
@@ -68,7 +72,7 @@ export function useStickyGuideState({
 
   const bannerVisible =
     tickerBanner.enabled &&
-    afterActivationScrollPx >= (tickerBanner.showFromAfterHeroPx ?? 0);
+    rawFromHeroScrollPx >= (tickerBanner.showFromAfterHeroPx ?? 0);
 
   const activeBubble = useMemo(() => {
     return (
