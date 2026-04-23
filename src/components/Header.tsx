@@ -103,10 +103,7 @@ const Header = () => {
               )}
             </button>
 
-            <Button
-              asChild
-              className="hidden rounded-full bg-accent px-6 py-2 text-sm font-semibold text-accent-foreground shadow-soft hover:bg-accent/90 md:flex"
-            >
+            <Button asChild variant="wine" className="hidden md:flex">
               <Link to="/contact">צור קשר</Link>
             </Button>
 
@@ -143,10 +140,7 @@ const Header = () => {
                 );
               })}
 
-              <Button
-                asChild
-                className="mt-2 w-full rounded-full bg-accent font-semibold text-accent-foreground hover:bg-accent/90"
-              >
+              <Button asChild variant="wine" className="mt-2 w-full">
                 <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
                   צור קשר
                 </Link>

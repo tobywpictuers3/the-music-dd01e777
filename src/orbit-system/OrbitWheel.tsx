@@ -1,11 +1,7 @@
 import { useMemo, type CSSProperties } from "react";
 import { getThemeAssets } from "./theme.assets";
 import { getOrbitItemPosition, getRenderedItemClockAngle } from "./angle.utils";
-import type {
-  OrbitItemConfig,
-  OrbitItemId,
-  ThemeMode,
-} from "./orbit.types";
+import type { OrbitItemConfig, OrbitItemId, ThemeMode } from "./orbit.types";
 
 type OrbitWheelProps = {
   items: OrbitItemConfig[];
@@ -51,9 +47,9 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
   const titleText = (item.title ?? item.label).trim();
   const spoilerText = (item.spoiler ?? "").trim();
   const eyebrowText = item.eyebrow?.trim();
-
   const hasRichContent = Boolean(item.title || item.spoiler || item.eyebrow);
 
+  // Passive: 1/3 of original sizes. Active: ~40% for legible text.
   if (!hasRichContent) {
     return {
       item,
@@ -61,22 +57,14 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
       titleText,
       spoilerText,
       eyebrowText,
-      passiveMinSizePx: 150,
-      passiveMaxSizePx: 230,
-      activeMinSizePx: 150,
-      activeMaxSizePx: 230,
-      passiveFluidVw: 15.5,
-      activeFluidVw: 15.5,
-      passiveRadiusPercent: clamp(
-        34.5 + (item.radiusBoostPercent ?? 0),
-        34.5,
-        45.5
-      ),
-      activeRadiusPercent: clamp(
-        34.5 + (item.radiusBoostPercent ?? 0),
-        34.5,
-        45.5
-      ),
+      passiveMinSizePx: 50,
+      passiveMaxSizePx: 77,
+      activeMinSizePx: 50,
+      activeMaxSizePx: 77,
+      passiveFluidVw: 5.2,
+      activeFluidVw: 5.2,
+      passiveRadiusPercent: clamp(34.5 + (item.radiusBoostPercent ?? 0), 34.5, 45.5),
+      activeRadiusPercent: clamp(34.5 + (item.radiusBoostPercent ?? 0), 34.5, 45.5),
       spoilerLines: 0,
     };
   }
@@ -91,43 +79,44 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
     Math.min(spoilerLength, 160) * 0.62 +
     eyebrowLength * 0.24;
 
-  const passiveRequestedMin = 150;
-  const passiveRequestedMax = 236;
-  const activeRequestedMin = item.minBubbleSizePx ?? 222;
-  const activeRequestedMax = item.maxBubbleSizePx ?? 360;
+  const passiveRequestedMin = 50;
+  const passiveRequestedMax = 79;
 
   const passiveMaxSizePx = clamp(
-    170 + titleScore * 0.35,
-    passiveRequestedMin + 8,
+    57 + titleScore * 0.12,
+    passiveRequestedMin + 3,
     passiveRequestedMax
   );
   const passiveMinSizePx = clamp(
     passiveMaxSizePx * 0.82,
     passiveRequestedMin,
-    passiveMaxSizePx - 10
+    passiveMaxSizePx - 4
   );
-  const passiveFluidVw = clamp(passiveMaxSizePx / 14.5, 15.2, 18.5);
+  const passiveFluidVw = clamp(passiveMaxSizePx / 14.5, 5.1, 6.2);
+
+  const activeRequestedMin = item.minBubbleSizePx
+    ? Math.round(item.minBubbleSizePx * 0.4)
+    : 90;
+  const activeRequestedMax = item.maxBubbleSizePx
+    ? Math.round(item.maxBubbleSizePx * 0.4)
+    : 145;
 
   const activeMaxSizePx = clamp(
-    232 + activeScore * 0.5,
-    activeRequestedMin + 12,
+    78 + activeScore * 0.18,
+    activeRequestedMin + 4,
     activeRequestedMax
   );
   const activeMinSizePx = clamp(
     activeMaxSizePx * 0.82,
     activeRequestedMin,
-    activeMaxSizePx - 14
+    activeMaxSizePx - 6
   );
-  const activeFluidVw = clamp(activeMaxSizePx / 12.5, 18.4, 25.2);
+  const activeFluidVw = clamp(activeMaxSizePx / 12.5, 7.2, 11.8);
 
-  const passiveRadiusPercent = clamp(
-    35 + (item.radiusBoostPercent ?? 0),
-    35,
-    45.5
-  );
+  const passiveRadiusPercent = clamp(35 + (item.radiusBoostPercent ?? 0), 35, 45.5);
 
   const activeRadiusBoost =
-    Math.max(activeMaxSizePx - 250, 0) / 16 +
+    Math.max(activeMaxSizePx - 90, 0) / 20 +
     Math.max(spoilerLength - 52, 0) / 45;
 
   const activeRadiusPercent = clamp(
@@ -150,7 +139,24 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
     activeFluidVw,
     passiveRadiusPercent,
     activeRadiusPercent,
-    spoilerLines: item.maxSpoilerLines ?? 2,
+    spoilerLines: 1,
+  };
+}
+
+// Multi-layer text shadow simulates text engraved on a sphere surface
+function sphereTextStyle(isActive: boolean): CSSProperties {
+  return {
+    fontFamily: "'Frank Ruhl Libre', 'Playfair Display', Georgia, serif",
+    display: "inline-block",
+    transform: isActive ? "perspective(200px) rotateX(5deg)" : "none",
+    textShadow: isActive
+      ? `0 1px 2px rgba(255,255,255,0.22),
+         0 -1px 2px rgba(0,0,0,0.55),
+         0 2px 10px rgba(0,0,0,0.42),
+         0 0 10px rgba(243,146,30,0.28)`
+      : "0 1px 5px rgba(0,0,0,0.38)",
+    WebkitTextStroke: isActive ? "0.35px rgba(0,0,0,0.18)" : "none",
+    transition: "color 280ms ease, text-shadow 280ms ease, transform 280ms ease",
   };
 }
 
@@ -172,40 +178,33 @@ export default function OrbitWheel({
       current.item.id === activeItemId
         ? current.activeRadiusPercent
         : current.passiveRadiusPercent;
-
     return Math.max(maxValue, candidate);
   }, 35.5);
 
-  const outerRingInsetPercent = clamp(
-    50 - (maxRadiusPercent + 4.5),
-    4.5,
-    12.8
-  );
-  const innerRingInsetPercent = clamp(
-    50 - (maxRadiusPercent - 5.2),
-    12.5,
-    22
-  );
+  const outerRingInsetPercent = clamp(50 - (maxRadiusPercent + 4.5), 4.5, 12.8);
+  const innerRingInsetPercent = clamp(50 - (maxRadiusPercent - 5.2), 12.5, 22);
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[920px]">
+      {/* Outer orbit ring */}
       <div
         className="absolute rounded-full border"
         style={{
           inset: `${outerRingInsetPercent}%`,
           borderColor:
             themeMode === "dark"
-              ? "rgba(255,255,255,0.12)"
-              : "rgba(120,30,30,0.12)",
+              ? "rgba(243,146,30,0.14)"
+              : "rgba(207,65,18,0.10)",
           boxShadow:
             themeMode === "dark"
-              ? "0 0 44px rgba(255,255,255,0.05)"
-              : "0 0 34px rgba(120,30,30,0.06)",
+              ? "0 0 44px rgba(243,146,30,0.06)"
+              : "0 0 34px rgba(207,65,18,0.05)",
           transition:
             "inset 260ms ease, border-color 700ms ease, box-shadow 700ms ease",
         }}
       />
 
+      {/* Inner dashed ring */}
       <div
         className="absolute rounded-full border"
         style={{
@@ -213,8 +212,8 @@ export default function OrbitWheel({
           borderStyle: "dashed",
           borderColor:
             themeMode === "dark"
-              ? "rgba(255,255,255,0.08)"
-              : "rgba(120,30,30,0.10)",
+              ? "rgba(243,146,30,0.08)"
+              : "rgba(207,65,18,0.08)",
           transition: "inset 260ms ease, border-color 700ms ease",
         }}
       />
@@ -226,15 +225,11 @@ export default function OrbitWheel({
           item.baseAngleDeg,
           rotationDeg
         );
-
         const isActive = item.id === activeItemId;
-
         const radiusPercent = isActive
           ? measured.activeRadiusPercent
           : measured.passiveRadiusPercent;
-
         const position = getOrbitItemPosition(renderedAngle, radiusPercent);
-
         const minSizePx = isActive
           ? measured.activeMinSizePx
           : measured.passiveMinSizePx;
@@ -244,42 +239,30 @@ export default function OrbitWheel({
         const fluidVw = isActive
           ? measured.activeFluidVw
           : measured.passiveFluidVw;
-
         const ariaText = measured.titleText || item.label;
 
         return (
           <button
             key={item.id}
             type="button"
-            className="absolute z-20 overflow-hidden rounded-full border backdrop-blur-[4px]"
+            className="absolute z-20 overflow-hidden rounded-full border backdrop-blur-[6px]"
             style={{
               ...position,
-              width: `clamp(${Math.round(minSizePx)}px, ${fluidVw}vw, ${Math.round(
-                maxSizePx
-              )}px)`,
-              height: `clamp(${Math.round(minSizePx)}px, ${fluidVw}vw, ${Math.round(
-                maxSizePx
-              )}px)`,
+              width: `clamp(${Math.round(minSizePx)}px, ${fluidVw}vw, ${Math.round(maxSizePx)}px)`,
+              height: `clamp(${Math.round(minSizePx)}px, ${fluidVw}vw, ${Math.round(maxSizePx)}px)`,
               borderColor: isActive
-                ? themeMode === "dark"
-                  ? "rgba(255,235,205,0.74)"
-                  : "rgba(170,90,30,0.34)"
-                : themeMode === "dark"
-                ? "rgba(255,255,255,0.24)"
-                : "rgba(120,30,30,0.14)",
+                ? "rgba(243,146,30,0.82)"
+                : "rgba(243,146,30,0.28)",
+              // 90% transparent passive (alpha 0.10), 75% active
               backgroundColor: isActive
-                ? themeMode === "dark"
-                  ? "rgba(64, 14, 22, 0.56)"
-                  : "rgba(183, 57, 70, 0.24)"
-                : themeMode === "dark"
-                ? "rgba(54, 12, 20, 0.34)"
-                : "rgba(158, 41, 55, 0.15)",
+                ? "rgba(100,16,26,0.25)"
+                : "rgba(100,16,26,0.10)",
               boxShadow: isActive
-                ? "0 0 28px rgba(220,170,90,0.18)"
-                : "0 12px 24px rgba(0,0,0,0.08)",
-              transform: `${position.transform} scale(${isActive ? 1.05 : 1})`,
+                ? "0 0 0 1.5px rgba(243,146,30,0.55), 0 0 20px rgba(243,146,30,0.42), 0 4px 16px rgba(0,0,0,0.28)"
+                : "0 0 0 1px rgba(243,146,30,0.16), 0 2px 10px rgba(0,0,0,0.08)",
+              transform: `${position.transform} scale(${isActive ? 1.08 : 1})`,
               transition:
-                "transform 220ms ease, width 260ms ease, height 260ms ease, border-color 700ms ease, background-color 700ms ease, box-shadow 700ms ease",
+                "transform 260ms cubic-bezier(0.16,1,0.30,1), width 260ms ease, height 260ms ease, border-color 280ms ease, background-color 280ms ease, box-shadow 280ms ease",
             }}
             onMouseEnter={() => onItemEnter(item.id)}
             onMouseLeave={onItemLeave}
@@ -288,57 +271,87 @@ export default function OrbitWheel({
             onClick={() => onItemClick?.(item)}
             aria-label={ariaText}
           >
+            {/* 3D Sphere — Layer 1: body gradient (fire × wine palette) */}
+            <span
+              className="absolute inset-0"
+              style={{
+                background: isActive
+                  ? `radial-gradient(circle at 42% 38%,
+                      rgba(243,146,30,0.90) 0%,
+                      rgba(207,65,18,0.80) 28%,
+                      rgba(142,27,8,0.90) 60%,
+                      rgba(99,16,30,0.96) 100%)`
+                  : `radial-gradient(circle at 42% 38%,
+                      rgba(243,146,30,0.13) 0%,
+                      rgba(207,65,18,0.08) 28%,
+                      rgba(142,27,8,0.10) 60%,
+                      rgba(99,16,30,0.14) 100%)`,
+                transition: "background 280ms ease",
+              }}
+            />
+
+            {/* 3D Sphere — Layer 2: stars texture */}
             <span
               className="absolute inset-0"
               style={{
                 backgroundImage: `url(${assets.bubbleStarsRed})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                opacity: isActive ? 0.74 : 0.5,
+                opacity: isActive ? 0.32 : 0.10,
                 transition: "opacity 280ms ease",
               }}
             />
 
+            {/* 3D Sphere — Layer 3: limb darkening (creates spherical depth) */}
             <span
               className="absolute inset-0"
               style={{
-                background: isActive
-                  ? "linear-gradient(to bottom, rgba(255,224,170,0.22), rgba(146,34,46,0.30))"
-                  : "linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(120,18,30,0.10))",
+                background: `radial-gradient(circle at 50% 50%,
+                  transparent 22%,
+                  rgba(0,0,0,0.22) 58%,
+                  rgba(0,0,0,0.58) 100%)`,
+              }}
+            />
+
+            {/* 3D Sphere — Layer 4: specular highlight (top-left sheen) */}
+            <span
+              className="absolute inset-0"
+              style={{
+                background: `radial-gradient(ellipse 52% 42% at 33% 28%,
+                  rgba(255,255,255,${isActive ? "0.62" : "0.38"}) 0%,
+                  rgba(255,255,255,0.10) 32%,
+                  transparent 58%)`,
                 transition: "background 280ms ease",
               }}
             />
 
+            {/* 3D Sphere — Layer 5: bottom rim light (secondary reflection) */}
             <span
               className="absolute inset-0"
               style={{
-                background:
-                  themeMode === "dark"
-                    ? "radial-gradient(circle at top, rgba(255,255,255,0.04), rgba(0,0,0,0.12))"
-                    : "radial-gradient(circle at top, rgba(255,255,255,0.24), rgba(255,255,255,0.06))",
-                transition: "background 700ms ease",
+                background: `radial-gradient(ellipse 58% 28% at 58% 88%,
+                  rgba(243,146,30,${isActive ? "0.36" : "0.10"}) 0%,
+                  transparent 58%)`,
+                transition: "background 280ms ease",
               }}
             />
 
+            {/* Text rendered as if engraved on the sphere surface */}
             {measured.hasRichContent ? (
               <span
                 className={`relative z-10 flex h-full w-full flex-col items-center text-center ${
-                  isActive ? "justify-start px-4 py-5" : "justify-center px-4 py-4"
+                  isActive
+                    ? "justify-start px-2 py-2.5"
+                    : "justify-center px-2 py-2"
                 }`}
               >
                 {isActive && measured.eyebrowText ? (
                   <span
-                    className="mb-2 inline-flex rounded-full border px-2.5 py-1 text-[0.62rem] font-semibold tracking-[0.18em]"
+                    className="mb-1 inline-flex rounded-full border px-1.5 py-0.5 text-[0.44rem] font-semibold tracking-[0.14em]"
                     style={{
-                      color: themeMode === "dark" ? "#ffe8be" : "#8f5d18",
-                      borderColor:
-                        themeMode === "dark"
-                          ? "rgba(255,240,210,0.22)"
-                          : "rgba(143,93,24,0.18)",
-                      backgroundColor:
-                        themeMode === "dark"
-                          ? "rgba(255,255,255,0.04)"
-                          : "rgba(255,255,255,0.34)",
+                      color: "#ffe8be",
+                      borderColor: "rgba(255,240,210,0.22)",
+                      backgroundColor: "rgba(255,255,255,0.06)",
                     }}
                   >
                     {measured.eyebrowText}
@@ -348,22 +361,12 @@ export default function OrbitWheel({
                 <span
                   className={
                     isActive
-                      ? "text-[clamp(0.92rem,1.18vw,1.28rem)] font-bold leading-[1.18]"
-                      : "text-[clamp(1rem,1.35vw,1.42rem)] font-bold leading-[1.18]"
+                      ? "text-[clamp(0.5rem,0.78vw,0.72rem)] font-bold leading-[1.18]"
+                      : "text-[clamp(0.52rem,0.88vw,0.74rem)] font-bold leading-[1.18]"
                   }
                   style={{
-                    color: isActive
-                      ? themeMode === "dark"
-                        ? "#ffe0aa"
-                        : "#9f6118"
-                      : themeMode === "dark"
-                      ? "#f3d08a"
-                      : "#8f5d18",
-                    textShadow:
-                      themeMode === "dark"
-                        ? "0 2px 10px rgba(0,0,0,0.30)"
-                        : "0 1px 6px rgba(255,255,255,0.16)",
-                    transition: "color 280ms ease, text-shadow 700ms ease",
+                    ...sphereTextStyle(isActive),
+                    color: isActive ? "#ffe0aa" : "#f3d08a",
                   }}
                 >
                   {measured.titleText}
@@ -371,14 +374,12 @@ export default function OrbitWheel({
 
                 {isActive && measured.spoilerText ? (
                   <span
-                    className="mt-2 text-[clamp(0.64rem,0.8vw,0.8rem)] leading-[1.45]"
+                    className="mt-1 text-[clamp(0.4rem,0.58vw,0.54rem)] leading-[1.38]"
                     style={{
                       ...getSpoilerClampStyle(measured.spoilerLines),
-                      color:
-                        themeMode === "dark"
-                          ? "rgba(255,255,255,0.9)"
-                          : "rgba(34,24,18,0.82)",
-                      maxWidth: "88%",
+                      color: "rgba(255,255,255,0.88)",
+                      textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+                      maxWidth: "90%",
                     }}
                   >
                     {measured.spoilerText}
@@ -387,20 +388,10 @@ export default function OrbitWheel({
               </span>
             ) : (
               <span
-                className="relative z-10 grid h-full w-full place-items-center text-[clamp(1.2rem,1.9vw,1.7rem)] font-semibold"
+                className="relative z-10 grid h-full w-full place-items-center text-[clamp(0.58rem,1vw,0.82rem)] font-semibold"
                 style={{
-                  color: isActive
-                    ? themeMode === "dark"
-                      ? "#ffe0aa"
-                      : "#9f6118"
-                    : themeMode === "dark"
-                    ? "#f3d08a"
-                    : "#8f5d18",
-                  textShadow:
-                    themeMode === "dark"
-                      ? "0 2px 10px rgba(0,0,0,0.30)"
-                      : "0 1px 6px rgba(255,255,255,0.16)",
-                  transition: "color 280ms ease, text-shadow 700ms ease",
+                  ...sphereTextStyle(isActive),
+                  color: isActive ? "#ffe0aa" : "#f3d08a",
                 }}
               >
                 {item.label}
