@@ -263,7 +263,7 @@ export default function Students() {
                   <Button
                     asChild
                     size="lg"
-                    className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
+                    className="px-7 text-sm font-semibold md:text-base"
                   >
                     <a href={CONTACT_STUDENTS_HREF}>{content.topCta.label}</a>
                   </Button>
@@ -350,7 +350,7 @@ export default function Students() {
                         <div className="flex items-center gap-2">
                           <Button
                             variant="secondary"
-                            className="h-12 rounded-2xl px-5 text-sm font-semibold md:text-base"
+                            className="px-5 text-sm font-semibold md:text-base"
                             onClick={() =>
                               setTIndex(
                                 (prev) =>
@@ -364,7 +364,7 @@ export default function Students() {
                           </Button>
 
                           <Button
-                            className="h-12 rounded-2xl px-5 text-sm font-semibold md:text-base"
+                            className="px-5 text-sm font-semibold md:text-base"
                             onClick={() =>
                               setTIndex(
                                 (prev) =>
@@ -405,7 +405,7 @@ export default function Students() {
 
                         <Button
                           asChild
-                          className="mt-6 h-12 rounded-2xl px-5 text-sm font-semibold md:text-base"
+                          className="mt-6 px-5 text-sm font-semibold md:text-base"
                         >
                           <a href={CONTACT_STUDENTS_HREF}>
                             {content.trackSection.sideCardCtaLabel}
@@ -775,7 +775,7 @@ export default function Students() {
                         <Button
                           type="button"
                           variant="secondary"
-                          className="h-12 rounded-2xl px-6 text-sm font-semibold md:text-base"
+                          className="px-6 text-sm font-semibold md:text-base"
                           onClick={() => setOpenSmartSystem(true)}
                         >
                           {content.systemSection.modalButtonLabel}
@@ -857,7 +857,7 @@ export default function Students() {
                         <Button
                           asChild
                           size="lg"
-                          className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
+                          className="px-7 text-sm font-semibold md:text-base"
                         >
                           <a href={CONTACT_STUDENTS_HREF}>
                             {content.bottomCta.contactButtonLabel}
@@ -868,7 +868,7 @@ export default function Students() {
                           asChild
                           variant="secondary"
                           size="lg"
-                          className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
+                          className="px-7 text-sm font-semibold md:text-base"
                         >
                           <a href={STUDENTS_DEMO_HREF}>
                             {content.bottomCta.demoButtonLabel}
@@ -879,7 +879,7 @@ export default function Students() {
                           asChild
                           variant="secondary"
                           size="lg"
-                          className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
+                          className="px-7 text-sm font-semibold md:text-base"
                         >
                           <a href={STUDENTS_APP_HREF} target="_blank" rel="noreferrer">
                             {content.bottomCta.loginButtonLabel}
@@ -890,7 +890,7 @@ export default function Students() {
                           asChild
                           variant="secondary"
                           size="lg"
-                          className="h-12 rounded-2xl px-7 text-sm font-semibold md:text-base"
+                          className="px-7 text-sm font-semibold md:text-base"
                         >
                           <a href={ABOUT_TEACHING_HREF}>
                             {content.bottomCta.aboutButtonLabel}

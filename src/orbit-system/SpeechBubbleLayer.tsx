@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { getThemeAssets } from "./theme.assets";
 import type { BubbleConfig, ThemeMode } from "./orbit.types";
 
 type SpeechBubbleLayerProps = {
@@ -10,10 +9,8 @@ type SpeechBubbleLayerProps = {
 
 export default function SpeechBubbleLayer({
   bubble,
-  themeMode,
+  themeMode: _themeMode,
 }: SpeechBubbleLayerProps) {
-  const assets = getThemeAssets(themeMode);
-
   const [dismissedBubbleId, setDismissedBubbleId] = useState<string | null>(null);
   const [isRendered, setIsRendered] = useState(false);
   const [isFading, setIsFading] = useState(false);
@@ -120,31 +117,40 @@ export default function SpeechBubbleLayer({
       }}
     >
       <div
-        className="relative overflow-visible rounded-[24px] border px-5 py-5 shadow-[0_22px_54px_rgba(0,0,0,0.24)] backdrop-blur-sm"
+        className="relative overflow-hidden rounded-[14px] backdrop-blur-[8px]"
         style={{
-          width: `min(${bubbleWidth}px, 23vw)`,
-          minWidth: "280px",
-          minHeight: "220px",
-          borderColor:
-            themeMode === "dark"
-              ? "rgba(255,255,255,0.20)"
-              : "rgba(120,30,30,0.18)",
-          backgroundColor:
-            themeMode === "dark"
-              ? "rgba(92, 18, 32, 0.80)"
-              : "rgba(158, 41, 55, 0.74)",
+          width: `min(${Math.round(bubbleWidth / 3)}px, 8vw)`,
+          minWidth: "93px",
+          minHeight: "73px",
+          borderColor: "transparent",
+          backgroundColor: "transparent",
+          boxShadow: "0 4px 18px rgba(0,0,0,0.18)",
           opacity: isFading ? 0 : 1,
-          transform: isFading ? "translateY(8px)" : "translateY(0px)",
+          transform: isFading ? "translateY(6px)" : "translateY(0px)",
           transition: `opacity ${transitionMs}ms linear, transform ${transitionMs}ms linear`,
         }}
       >
+        {/* Glass body — ultra-subtle tint */}
         <span
-          className="absolute inset-0 rounded-[24px]"
+          className="absolute inset-0 rounded-[14px]"
           style={{
-            backgroundImage: `url(${assets.bubbleStarsRed})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.42,
+            background: "radial-gradient(circle at 50% 55%, rgba(202,95,33,0.04) 0%, transparent 70%)",
+          }}
+        />
+
+        {/* Glass bottom caustic */}
+        <span
+          className="absolute inset-0 rounded-[14px]"
+          style={{
+            background: "radial-gradient(ellipse 88% 52% at 50% 100%, rgba(168,72,90,0.55) 0%, rgba(202,95,33,0.22) 42%, transparent 68%)",
+          }}
+        />
+
+        {/* Glass top specular */}
+        <span
+          className="absolute inset-0 rounded-[14px]"
+          style={{
+            background: "radial-gradient(ellipse 38% 22% at 36% 14%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.06) 44%, transparent 64%)",
           }}
         />
 
@@ -152,30 +158,28 @@ export default function SpeechBubbleLayer({
           type="button"
           onClick={closeImmediately}
           aria-label="סגירת בועה"
-          className="absolute left-3 top-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/28 text-white ring-1 ring-white/10 transition hover:bg-black/40"
+          className="absolute left-1 top-1 z-20 inline-flex h-4 w-4 items-center justify-center rounded-full bg-black/25 text-white ring-1 ring-white/10 transition hover:bg-black/40"
         >
-          <X className="h-4 w-4" />
+          <X className="h-2.5 w-2.5" />
         </button>
 
-        <div className="relative z-10 flex min-h-[180px] flex-col justify-center text-right">
+        <div className="relative z-10 flex min-h-[55px] flex-col justify-center px-2 py-2 text-right">
           <div
-            className="text-[0.98rem] leading-8"
+            className="text-[0.46rem] leading-[1.4]"
             style={{
               color: "#ffffff",
-              textShadow: "0 2px 14px rgba(0,0,0,0.24)",
+              textShadow: "0 1px 6px rgba(0,0,0,0.45)",
             }}
           >
             {bubble.text}
           </div>
         </div>
 
+        {/* Tail pointer */}
         <span
-          className="absolute bottom-7 -left-3 h-5 w-5 rotate-45 rounded-[4px]"
+          className="absolute bottom-4 -left-1.5 h-3 w-3 rotate-45 rounded-[2px]"
           style={{
-            backgroundColor:
-              themeMode === "dark"
-                ? "rgba(92, 18, 32, 0.86)"
-                : "rgba(158, 41, 55, 0.82)",
+            background: "rgba(168,72,90,0.45)",
           }}
         />
       </div>

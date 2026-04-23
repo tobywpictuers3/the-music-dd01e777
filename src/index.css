@@ -43,9 +43,9 @@
     --radius: 0.9rem;
 
     /* Fire brand tokens */
-    --fire-bright: 32 92% 54%;       /* #F3921E */
-    --fire-core: 20 88% 44%;         /* #CF4112 */
-    --fire-deep: 7 82% 30%;          /* #8E1B08 */
+    --fire-bright: 36 78% 55%;       /* #E69E33 */
+    --fire-core: 22 72% 46%;         /* #CA5F21 */
+    --fire-deep: 10 66% 32%;         /* #882E1C */
 
     /* Gold brand tokens */
     --gold-light: 46 80% 62%;        /* #ECC84E */
@@ -112,9 +112,9 @@
     --ring: 32 92% 54%;
 
     /* Fire brand tokens */
-    --fire-bright: 32 92% 54%;
-    --fire-core: 20 88% 44%;
-    --fire-deep: 7 82% 30%;
+    --fire-bright: 36 78% 55%;
+    --fire-core: 22 72% 46%;
+    --fire-deep: 10 66% 32%;
 
     /* Gold brand tokens */
     --gold-light: 46 80% 62%;
@@ -241,11 +241,11 @@
   .shimmer-fire {
     background: linear-gradient(
       90deg,
-      #8E1B08 0%,
-      #F3921E 45%,
+      #882E1C 0%,
+      #E69E33 45%,
       #ECC84E 55%,
-      #F3921E 65%,
-      #8E1B08 100%
+      #E69E33 65%,
+      #882E1C 100%
     );
     background-size: 250% 100%;
     -webkit-background-clip: text;
@@ -407,45 +407,126 @@
     border: 1px solid rgba(58, 45, 36, 0.7);
   }
 
-  /* ── Gradient border cards ── */
+  /* ── Gradient border cards — thin shimmer border, neutral fill ── */
 
-  /* Technique: background padding-box + border-box creates a true gradient border */
+  @keyframes shimmer-border-sweep {
+    0%, 100% { background-position: 200% 0; }
+    50% { background-position: -100% 0; }
+  }
+
   .card-fire {
+    position: relative;
     background:
-      linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
-      linear-gradient(135deg, #F3921E 0%, #CF4112 55%, #8E1B08 100%) border-box;
-    border: 1.5px solid transparent;
-    box-shadow: 0 8px 28px rgba(243,146,30,0.14), 0 2px 6px rgba(0,0,0,0.08);
-    transition: box-shadow 0.32s cubic-bezier(0.16,1,0.30,1);
+      hsl(var(--card)) padding-box,
+      linear-gradient(135deg, rgba(230,158,51,0.52) 0%, rgba(202,95,33,0.40) 55%, rgba(136,46,28,0.32) 100%) border-box;
+    border: 1px solid transparent;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    transition: box-shadow 0.32s ease, transform 0.32s ease;
+    overflow: hidden;
+  }
+  .card-fire::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    padding: 1px;
+    background: linear-gradient(
+      120deg,
+      transparent 15%,
+      rgba(236,200,78,0.65) 40%,
+      rgba(255,255,255,0.80) 50%,
+      rgba(230,158,51,0.65) 60%,
+      transparent 85%
+    );
+    background-size: 300% 100%;
+    background-position: 200% 0;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: shimmer-border-sweep 4.5s ease-in-out infinite;
   }
   .card-fire:hover {
-    box-shadow: 0 14px 38px rgba(243,146,30,0.24), 0 4px 12px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.16);
     transform: translateY(-2px);
   }
 
   .card-gold {
+    position: relative;
     background:
-      linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
-      linear-gradient(135deg, #ECC84E 0%, #D9A22A 55%, #AD7C1F 100%) border-box;
-    border: 1.5px solid transparent;
-    box-shadow: 0 8px 28px rgba(217,162,42,0.12), 0 2px 6px rgba(0,0,0,0.06);
-    transition: box-shadow 0.32s cubic-bezier(0.16,1,0.30,1), transform 0.32s ease;
+      hsl(var(--card)) padding-box,
+      linear-gradient(135deg, rgba(236,200,78,0.52) 0%, rgba(217,162,42,0.40) 55%, rgba(173,124,31,0.32) 100%) border-box;
+    border: 1px solid transparent;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    transition: box-shadow 0.32s ease, transform 0.32s ease;
+    overflow: hidden;
+  }
+  .card-gold::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    padding: 1px;
+    background: linear-gradient(
+      120deg,
+      transparent 15%,
+      rgba(255,255,200,0.65) 40%,
+      rgba(255,255,255,0.85) 50%,
+      rgba(236,200,78,0.65) 60%,
+      transparent 85%
+    );
+    background-size: 300% 100%;
+    background-position: 200% 0;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: shimmer-border-sweep 5s ease-in-out infinite;
+    animation-delay: 0.8s;
   }
   .card-gold:hover {
-    box-shadow: 0 14px 38px rgba(217,162,42,0.22), 0 4px 12px rgba(0,0,0,0.10);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.16);
     transform: translateY(-2px);
   }
 
   .card-wine {
+    position: relative;
     background:
-      linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
-      linear-gradient(135deg, #A8485A 0%, #9E2E3F 50%, #63101E 100%) border-box;
-    border: 1.5px solid transparent;
-    box-shadow: 0 8px 28px rgba(158,46,63,0.12), 0 2px 6px rgba(0,0,0,0.06);
-    transition: box-shadow 0.32s cubic-bezier(0.16,1,0.30,1), transform 0.32s ease;
+      hsl(var(--card)) padding-box,
+      linear-gradient(135deg, rgba(168,72,90,0.52) 0%, rgba(158,46,63,0.40) 50%, rgba(99,16,30,0.32) 100%) border-box;
+    border: 1px solid transparent;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    transition: box-shadow 0.32s ease, transform 0.32s ease;
+    overflow: hidden;
+  }
+  .card-wine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    padding: 1px;
+    background: linear-gradient(
+      120deg,
+      transparent 15%,
+      rgba(220,150,160,0.65) 40%,
+      rgba(255,255,255,0.80) 50%,
+      rgba(168,72,90,0.65) 60%,
+      transparent 85%
+    );
+    background-size: 300% 100%;
+    background-position: 200% 0;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: shimmer-border-sweep 5.5s ease-in-out infinite;
+    animation-delay: 1.6s;
   }
   .card-wine:hover {
-    box-shadow: 0 14px 38px rgba(158,46,63,0.22), 0 4px 12px rgba(0,0,0,0.10);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.16);
     transform: translateY(-2px);
   }
 

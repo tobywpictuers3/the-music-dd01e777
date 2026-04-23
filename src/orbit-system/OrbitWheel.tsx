@@ -49,7 +49,7 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
   const eyebrowText = item.eyebrow?.trim();
   const hasRichContent = Boolean(item.title || item.spoiler || item.eyebrow);
 
-  // Passive: 1/3 of original sizes. Active: ~40% for legible text.
+  // Restored to original sizes — visual effect changes instead of size
   if (!hasRichContent) {
     return {
       item,
@@ -57,12 +57,12 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
       titleText,
       spoilerText,
       eyebrowText,
-      passiveMinSizePx: 50,
-      passiveMaxSizePx: 77,
-      activeMinSizePx: 50,
-      activeMaxSizePx: 77,
-      passiveFluidVw: 5.2,
-      activeFluidVw: 5.2,
+      passiveMinSizePx: 150,
+      passiveMaxSizePx: 230,
+      activeMinSizePx: 150,
+      activeMaxSizePx: 230,
+      passiveFluidVw: 15.5,
+      activeFluidVw: 15.5,
       passiveRadiusPercent: clamp(34.5 + (item.radiusBoostPercent ?? 0), 34.5, 45.5),
       activeRadiusPercent: clamp(34.5 + (item.radiusBoostPercent ?? 0), 34.5, 45.5),
       spoilerLines: 0,
@@ -79,44 +79,39 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
     Math.min(spoilerLength, 160) * 0.62 +
     eyebrowLength * 0.24;
 
-  const passiveRequestedMin = 50;
-  const passiveRequestedMax = 79;
+  const passiveRequestedMin = 150;
+  const passiveRequestedMax = 236;
+  const activeRequestedMin = item.minBubbleSizePx ?? 222;
+  const activeRequestedMax = item.maxBubbleSizePx ?? 360;
 
   const passiveMaxSizePx = clamp(
-    57 + titleScore * 0.12,
-    passiveRequestedMin + 3,
+    170 + titleScore * 0.35,
+    passiveRequestedMin + 8,
     passiveRequestedMax
   );
   const passiveMinSizePx = clamp(
     passiveMaxSizePx * 0.82,
     passiveRequestedMin,
-    passiveMaxSizePx - 4
+    passiveMaxSizePx - 10
   );
-  const passiveFluidVw = clamp(passiveMaxSizePx / 14.5, 5.1, 6.2);
-
-  const activeRequestedMin = item.minBubbleSizePx
-    ? Math.round(item.minBubbleSizePx * 0.4)
-    : 90;
-  const activeRequestedMax = item.maxBubbleSizePx
-    ? Math.round(item.maxBubbleSizePx * 0.4)
-    : 145;
+  const passiveFluidVw = clamp(passiveMaxSizePx / 14.5, 15.2, 18.5);
 
   const activeMaxSizePx = clamp(
-    78 + activeScore * 0.18,
-    activeRequestedMin + 4,
+    232 + activeScore * 0.5,
+    activeRequestedMin + 12,
     activeRequestedMax
   );
   const activeMinSizePx = clamp(
     activeMaxSizePx * 0.82,
     activeRequestedMin,
-    activeMaxSizePx - 6
+    activeMaxSizePx - 14
   );
-  const activeFluidVw = clamp(activeMaxSizePx / 12.5, 7.2, 11.8);
+  const activeFluidVw = clamp(activeMaxSizePx / 12.5, 18.4, 25.2);
 
   const passiveRadiusPercent = clamp(35 + (item.radiusBoostPercent ?? 0), 35, 45.5);
 
   const activeRadiusBoost =
-    Math.max(activeMaxSizePx - 90, 0) / 20 +
+    Math.max(activeMaxSizePx - 250, 0) / 16 +
     Math.max(spoilerLength - 52, 0) / 45;
 
   const activeRadiusPercent = clamp(
@@ -139,7 +134,7 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
     activeFluidVw,
     passiveRadiusPercent,
     activeRadiusPercent,
-    spoilerLines: 1,
+    spoilerLines: item.maxSpoilerLines ?? 2,
   };
 }
 
@@ -245,21 +240,16 @@ export default function OrbitWheel({
           <button
             key={item.id}
             type="button"
-            className="absolute z-20 overflow-hidden rounded-full border backdrop-blur-[6px]"
+            className="absolute z-20 overflow-hidden rounded-full backdrop-blur-[6px]"
             style={{
               ...position,
               width: `clamp(${Math.round(minSizePx)}px, ${fluidVw}vw, ${Math.round(maxSizePx)}px)`,
               height: `clamp(${Math.round(minSizePx)}px, ${fluidVw}vw, ${Math.round(maxSizePx)}px)`,
-              borderColor: isActive
-                ? "rgba(243,146,30,0.82)"
-                : "rgba(243,146,30,0.28)",
-              // 90% transparent passive (alpha 0.10), 75% active
-              backgroundColor: isActive
-                ? "rgba(100,16,26,0.25)"
-                : "rgba(100,16,26,0.10)",
+              borderColor: "transparent",
+              backgroundColor: "transparent",
               boxShadow: isActive
-                ? "0 0 0 1.5px rgba(243,146,30,0.55), 0 0 20px rgba(243,146,30,0.42), 0 4px 16px rgba(0,0,0,0.28)"
-                : "0 0 0 1px rgba(243,146,30,0.16), 0 2px 10px rgba(0,0,0,0.08)",
+                ? "0 4px 24px rgba(202,95,33,0.28), 0 2px 10px rgba(0,0,0,0.16)"
+                : "none",
               transform: `${position.transform} scale(${isActive ? 1.08 : 1})`,
               transition:
                 "transform 260ms cubic-bezier(0.16,1,0.30,1), width 260ms ease, height 260ms ease, border-color 280ms ease, background-color 280ms ease, box-shadow 280ms ease",
@@ -271,67 +261,41 @@ export default function OrbitWheel({
             onClick={() => onItemClick?.(item)}
             aria-label={ariaText}
           >
-            {/* 3D Sphere — Layer 1: body gradient (fire × wine palette) */}
+            {/* Glass bubble — body: ultra-subtle tint */}
+            <span
+              className="absolute inset-0"
+              style={{
+                background: `radial-gradient(circle at 50% 55%,
+                  rgba(243,146,30,0.05) 0%,
+                  transparent 68%)`,
+              }}
+            />
+
+            {/* Glass bubble — bottom refraction / light caustic */}
             <span
               className="absolute inset-0"
               style={{
                 background: isActive
-                  ? `radial-gradient(circle at 42% 38%,
-                      rgba(243,146,30,0.90) 0%,
-                      rgba(207,65,18,0.80) 28%,
-                      rgba(142,27,8,0.90) 60%,
-                      rgba(99,16,30,0.96) 100%)`
-                  : `radial-gradient(circle at 42% 38%,
-                      rgba(243,146,30,0.13) 0%,
-                      rgba(207,65,18,0.08) 28%,
-                      rgba(142,27,8,0.10) 60%,
-                      rgba(99,16,30,0.14) 100%)`,
+                  ? `radial-gradient(ellipse 88% 52% at 50% 100%,
+                      rgba(202,95,33,0.62) 0%,
+                      rgba(243,146,30,0.30) 40%,
+                      transparent 70%)`
+                  : `radial-gradient(ellipse 88% 52% at 50% 100%,
+                      rgba(202,95,33,0.26) 0%,
+                      rgba(243,146,30,0.10) 40%,
+                      transparent 70%)`,
                 transition: "background 280ms ease",
               }}
             />
 
-            {/* 3D Sphere — Layer 2: stars texture */}
+            {/* Glass bubble — top specular highlight */}
             <span
               className="absolute inset-0"
               style={{
-                backgroundImage: `url(${assets.bubbleStarsRed})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                opacity: isActive ? 0.32 : 0.10,
-                transition: "opacity 280ms ease",
-              }}
-            />
-
-            {/* 3D Sphere — Layer 3: limb darkening (creates spherical depth) */}
-            <span
-              className="absolute inset-0"
-              style={{
-                background: `radial-gradient(circle at 50% 50%,
-                  transparent 22%,
-                  rgba(0,0,0,0.22) 58%,
-                  rgba(0,0,0,0.58) 100%)`,
-              }}
-            />
-
-            {/* 3D Sphere — Layer 4: specular highlight (top-left sheen) */}
-            <span
-              className="absolute inset-0"
-              style={{
-                background: `radial-gradient(ellipse 52% 42% at 33% 28%,
-                  rgba(255,255,255,${isActive ? "0.62" : "0.38"}) 0%,
-                  rgba(255,255,255,0.10) 32%,
-                  transparent 58%)`,
-                transition: "background 280ms ease",
-              }}
-            />
-
-            {/* 3D Sphere — Layer 5: bottom rim light (secondary reflection) */}
-            <span
-              className="absolute inset-0"
-              style={{
-                background: `radial-gradient(ellipse 58% 28% at 58% 88%,
-                  rgba(243,146,30,${isActive ? "0.36" : "0.10"}) 0%,
-                  transparent 58%)`,
+                background: `radial-gradient(ellipse 36% 20% at 38% 15%,
+                  rgba(255,255,255,${isActive ? "0.52" : "0.28"}) 0%,
+                  rgba(255,255,255,0.06) 44%,
+                  transparent 64%)`,
                 transition: "background 280ms ease",
               }}
             />
