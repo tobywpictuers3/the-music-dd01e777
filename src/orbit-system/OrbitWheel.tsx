@@ -49,7 +49,6 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
   const eyebrowText = item.eyebrow?.trim();
   const hasRichContent = Boolean(item.title || item.spoiler || item.eyebrow);
 
-  // Restored to original sizes — visual effect changes instead of size
   if (!hasRichContent) {
     return {
       item,
@@ -138,20 +137,31 @@ function measureOrbitItem(item: OrbitItemConfig): MeasuredItem {
   };
 }
 
-// Multi-layer text shadow simulates text engraved on a sphere surface
+/**
+ * Text rendered as if engraved/embossed on a glassy sphere surface.
+ * Passive: wide arc perspective to simulate text wrapping the sphere.
+ * Active: deeper perspective tilt + warm glow to show the text "reveals" with hover.
+ */
 function sphereTextStyle(isActive: boolean): CSSProperties {
   return {
     fontFamily: "'Frank Ruhl Libre', 'Playfair Display', Georgia, serif",
-    display: "inline-block",
-    transform: isActive ? "perspective(200px) rotateX(5deg)" : "none",
+    display: "block",
+    width: "100%",
+    textAlign: "center",
+    transform: isActive
+      ? "perspective(160px) rotateX(7deg) scaleX(0.93)"
+      : "perspective(260px) rotateX(10deg) scaleX(0.90)",
     textShadow: isActive
-      ? `0 1px 2px rgba(255,255,255,0.22),
+      ? `0 1px 0 rgba(255,255,255,0.28),
+         0 -1px 3px rgba(0,0,0,0.65),
+         0 2px 12px rgba(0,0,0,0.48),
+         0 0 14px rgba(243,146,30,0.36)`
+      : `0 1px 0 rgba(255,255,255,0.18),
          0 -1px 2px rgba(0,0,0,0.55),
-         0 2px 10px rgba(0,0,0,0.42),
-         0 0 10px rgba(243,146,30,0.28)`
-      : "0 1px 5px rgba(0,0,0,0.38)",
-    WebkitTextStroke: isActive ? "0.35px rgba(0,0,0,0.18)" : "none",
-    transition: "color 280ms ease, text-shadow 280ms ease, transform 280ms ease",
+         0 2px 8px rgba(0,0,0,0.40)`,
+    WebkitTextStroke: isActive ? "0.4px rgba(0,0,0,0.22)" : "0.3px rgba(0,0,0,0.15)",
+    letterSpacing: "0.03em",
+    transition: "color 280ms ease, text-shadow 280ms ease, transform 280ms ease, font-size 280ms ease",
   };
 }
 
@@ -261,7 +271,7 @@ export default function OrbitWheel({
             onClick={() => onItemClick?.(item)}
             aria-label={ariaText}
           >
-            {/* Glass bubble — body: ultra-subtle tint */}
+            {/* Glass bubble body */}
             <span
               className="absolute inset-0"
               style={{
@@ -271,7 +281,7 @@ export default function OrbitWheel({
               }}
             />
 
-            {/* Glass bubble — bottom refraction / light caustic */}
+            {/* Bottom refraction / light caustic */}
             <span
               className="absolute inset-0"
               style={{
@@ -288,7 +298,7 @@ export default function OrbitWheel({
               }}
             />
 
-            {/* Glass bubble — top specular highlight */}
+            {/* Top specular highlight */}
             <span
               className="absolute inset-0"
               style={{
@@ -305,13 +315,13 @@ export default function OrbitWheel({
               <span
                 className={`relative z-10 flex h-full w-full flex-col items-center text-center ${
                   isActive
-                    ? "justify-start px-2 py-2.5"
-                    : "justify-center px-2 py-2"
+                    ? "justify-start px-3 py-3"
+                    : "justify-center px-3 py-2"
                 }`}
               >
                 {isActive && measured.eyebrowText ? (
                   <span
-                    className="mb-1 inline-flex rounded-full border px-1.5 py-0.5 text-[0.44rem] font-semibold tracking-[0.14em]"
+                    className="mb-1.5 inline-flex rounded-full border px-1.5 py-0.5 text-[0.5rem] font-semibold tracking-[0.14em]"
                     style={{
                       color: "#ffe8be",
                       borderColor: "rgba(255,240,210,0.22)",
@@ -322,28 +332,32 @@ export default function OrbitWheel({
                   </span>
                 ) : null}
 
+                {/* Title — large and fills the sphere, shrinks when active to reveal spoiler */}
                 <span
-                  className={
-                    isActive
-                      ? "text-[clamp(0.5rem,0.78vw,0.72rem)] font-bold leading-[1.18]"
-                      : "text-[clamp(0.52rem,0.88vw,0.74rem)] font-bold leading-[1.18]"
-                  }
                   style={{
                     ...sphereTextStyle(isActive),
                     color: isActive ? "#ffe0aa" : "#f3d08a",
+                    fontSize: isActive
+                      ? "clamp(0.58rem,0.92vw,0.82rem)"
+                      : "clamp(0.78rem,1.18vw,1.04rem)",
+                    fontWeight: 800,
+                    lineHeight: 1.14,
                   }}
                 >
                   {measured.titleText}
                 </span>
 
+                {/* Spoiler — revealed on hover */}
                 {isActive && measured.spoilerText ? (
                   <span
-                    className="mt-1 text-[clamp(0.4rem,0.58vw,0.54rem)] leading-[1.38]"
+                    className="mt-1.5 px-1"
                     style={{
                       ...getSpoilerClampStyle(measured.spoilerLines),
-                      color: "rgba(255,255,255,0.88)",
+                      fontSize: "clamp(0.44rem,0.62vw,0.58rem)",
+                      lineHeight: 1.42,
+                      color: "rgba(255,255,255,0.90)",
                       textShadow: "0 1px 4px rgba(0,0,0,0.5)",
-                      maxWidth: "90%",
+                      maxWidth: "92%",
                     }}
                   >
                     {measured.spoilerText}
@@ -352,10 +366,12 @@ export default function OrbitWheel({
               </span>
             ) : (
               <span
-                className="relative z-10 grid h-full w-full place-items-center text-[clamp(0.58rem,1vw,0.82rem)] font-semibold"
+                className="relative z-10 grid h-full w-full place-items-center"
                 style={{
                   ...sphereTextStyle(isActive),
                   color: isActive ? "#ffe0aa" : "#f3d08a",
+                  fontSize: "clamp(0.72rem,1.1vw,0.96rem)",
+                  fontWeight: 700,
                 }}
               >
                 {item.label}
