@@ -126,15 +126,53 @@ export default function OrbitHeroLayout({
         <div className="absolute inset-x-0 top-0 z-[80]">{headerOverlay}</div>
       ) : null}
 
+      {/*
+        Grid layout — in RTL (dir="rtl" on <html>):
+          col 1 = RIGHT column  → text goes here
+          col 2 = LEFT  column  → orbit goes here
+        DOM order: orbit first (so it renders on the left / top on mobile),
+        text second (right on desktop, bottom on mobile).
+        We use lg:col-start to pin each to its target column explicitly.
+      */}
       <div
-        className="relative z-10 mx-auto grid min-h-[100svh] max-w-[1600px] items-center gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(420px,760px)_minmax(0,760px)] lg:px-10"
+        className="relative z-10 mx-auto grid min-h-[100svh] max-w-[1600px] items-center gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,700px)_minmax(380px,680px)] lg:px-10"
         style={{
-          paddingTop: "calc(var(--orbit-header-offset) + 20px)",
-          paddingBottom: "32px",
+          paddingTop: "calc(var(--orbit-header-offset) + 16px)",
+          paddingBottom: "28px",
         }}
       >
-        <div className="flex items-center justify-center lg:col-start-2 lg:justify-self-end">
-          <div className="mx-auto w-full max-w-[760px] text-right">
+        {/* Orbit wheel — left column in RTL (col-start-2 = physical left) */}
+        <div className="relative flex items-center justify-center lg:col-start-2 lg:row-start-1">
+          {/*
+            Constrain orbit so it always fits within the viewport height.
+            Since OrbitWheel is aspect-square, limiting width = limiting height.
+          */}
+          <div
+            className="relative w-full"
+            style={{
+              maxWidth: "min(700px, calc(100svh - var(--orbit-header-offset, 80px) - 80px))",
+            }}
+          >
+            <OrbitWheel
+              items={page.orbit.items}
+              rotationDeg={rotationDeg}
+              activeItemId={activeItemId}
+              themeMode={themeMode}
+              onItemEnter={setActiveItemId}
+              onItemLeave={clearActiveItem}
+              onItemClick={handleItemClick}
+            />
+
+            <HeroCenterPresenter
+              presenter={presenter}
+              activeLook={activeLook}
+            />
+          </div>
+        </div>
+
+        {/* Text — right column in RTL (col-start-1 = physical right) */}
+        <div className="flex items-center justify-center lg:col-start-1 lg:row-start-1 lg:justify-self-end">
+          <div className="mx-auto w-full max-w-[680px] text-right">
             <h1 className="space-y-2 text-[clamp(2rem,4.1vw,4.35rem)] font-bold leading-[1.08]">
               {page.hero.titleLines.map((line, index) => (
                 <span
@@ -172,25 +210,6 @@ export default function OrbitHeroLayout({
                 <p key={index}>{line}</p>
               ))}
             </div>
-          </div>
-        </div>
-
-        <div className="relative flex items-center justify-center lg:col-start-1 lg:row-start-1">
-          <div className="relative w-full max-w-[760px]">
-            <OrbitWheel
-              items={page.orbit.items}
-              rotationDeg={rotationDeg}
-              activeItemId={activeItemId}
-              themeMode={themeMode}
-              onItemEnter={setActiveItemId}
-              onItemLeave={clearActiveItem}
-              onItemClick={handleItemClick}
-            />
-
-            <HeroCenterPresenter
-              presenter={presenter}
-              activeLook={activeLook}
-            />
           </div>
         </div>
       </div>

@@ -36,13 +36,33 @@ export type StageCharacter = {
 
 export const STAGE_CHARACTERS: StageCharacter[] = [
   {
+    title: "צור קשר",
+    href: "/contact",
+    character: "presenter",
+    stage: {
+      left: "7%",
+      bottom: "38%",
+      width: "12.4%",
+      zIndex: 14,
+    },
+    signBox: {
+      top: "0%",
+      left: "0%",
+      width: "100%",
+      height: "100%",
+    },
+    quote:
+      "רוצה לשאול, להתייעץ או להזמין? כאן מתחילים שיחה פשוטה ונעימה.",
+    labelMode: "badge",
+  },
+  {
     title: "תלמידות",
     href: "/students",
     character: "piano",
     stage: {
-      left: "6%",
+      left: "20%",
       bottom: "42.5%",
-      width: "27.5%",
+      width: "22%",
       zIndex: 12,
     },
     signBox: {
@@ -60,9 +80,9 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
     href: "/orchestras",
     character: "eguitar",
     stage: {
-      left: "21.5%",
+      left: "33%",
       bottom: "50%",
-      width: "21.75%",
+      width: "17.4%",
       zIndex: 15,
     },
     signBox: {
@@ -80,9 +100,9 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
     href: "/about",
     character: "guitar",
     stage: {
-      left: "35%",
+      left: "46%",
       bottom: "55.5%",
-      width: "22%",
+      width: "17.6%",
       zIndex: 16,
     },
     signBox: {
@@ -100,9 +120,9 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
     href: "/sheets",
     character: "drums",
     stage: {
-      left: "50.5%",
+      left: "59%",
       bottom: "60.5%",
-      width: "30%",
+      width: "24%",
       zIndex: 11,
     },
     signBox: {
@@ -120,9 +140,9 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
     href: "/blog",
     character: "saxophone",
     stage: {
-      left: "66.5%",
+      left: "74%",
       bottom: "52.5%",
-      width: "20.5%",
+      width: "16.4%",
       zIndex: 15,
     },
     signBox: {
@@ -140,9 +160,9 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
     href: "/performances",
     character: "violin",
     stage: {
-      left: "80%",
+      left: "87%",
       bottom: "44.5%",
-      width: "19.25%",
+      width: "15.4%",
       zIndex: 13,
     },
     signBox: {
@@ -154,26 +174,6 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
     quote:
       "יומן הופעות, חוויה מוסיקלית והזמנה מסודרת — במקום אחד ברור.",
     labelMode: "overlay",
-  },
-  {
-    title: "צור קשר",
-    href: "/contact",
-    character: "presenter",
-    stage: {
-      left: "91.5%",
-      bottom: "36.5%",
-      width: "15.5%",
-      zIndex: 12,
-    },
-    signBox: {
-      top: "0%",
-      left: "0%",
-      width: "100%",
-      height: "100%",
-    },
-    quote:
-      "רוצה לשאול, להתייעץ או להזמין? כאן מתחילים שיחה פשוטה ונעימה.",
-    labelMode: "badge",
   },
 ];
 

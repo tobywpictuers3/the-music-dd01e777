@@ -61,6 +61,8 @@ const PRESENTER_MAP: Record<CharacterKey, string> = {
 export default function Index() {
   const heroRef = useRef<HTMLElement>(null);
   const [showMarquee, setShowMarquee] = useState(false);
+  const [showSpeechBubble, setShowSpeechBubble] = useState(false);
+  const [bubbleDismissed, setBubbleDismissed] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -78,6 +80,22 @@ export default function Index() {
 
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!bubbleDismissed && window.scrollY > 60) {
+        setShowSpeechBubble(true);
+      }
+      if (window.scrollY < 20) {
+        setShowSpeechBubble(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [bubbleDismissed]);
+
+  const presenterChar = STAGE_CHARACTERS.find((c) => c.character === "presenter");
 
   return (
     <>
@@ -114,6 +132,46 @@ export default function Index() {
           background: hsl(var(--primary));
           box-shadow: 0 0 6px 2px hsl(var(--primary) / 0.6);
           animation: sparkle-float 1.6s ease-in-out infinite;
+        }
+
+        @keyframes logo-entrance {
+          0% {
+            opacity: 0;
+            transform: scale(0.6) translateY(-28px);
+            filter: blur(6px);
+          }
+          55% {
+            opacity: 1;
+            transform: scale(1.07) translateY(4px);
+            filter: blur(0px);
+          }
+          75% {
+            transform: scale(0.97) translateY(-2px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0px);
+          }
+        }
+
+        .logo-entrance {
+          animation: logo-entrance 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes speech-bubble-in {
+          0% {
+            opacity: 0;
+            transform: scale(0.7) translateY(10px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        .speech-bubble-in {
+          animation: speech-bubble-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
 
@@ -158,17 +216,18 @@ export default function Index() {
           </div>
 
           <div className="relative mx-auto max-w-[1600px] min-h-[900px] px-4 pt-8 md:min-h-[1020px] md:px-8 lg:min-h-[1100px]">
+            {/* Logo + hero text — centered prominent */}
             <div className="relative z-20 mx-auto flex max-w-3xl flex-col items-center pt-6 pb-[310px] text-center md:pt-10 md:pb-[390px] lg:pb-[450px]">
               <img
                 src={logoLight}
                 alt="Toby Music"
-                className="mb-4 h-[62px] object-contain drop-shadow-lg dark:hidden md:h-[84px] lg:h-[98px]"
+                className="logo-entrance mb-6 h-[80px] object-contain drop-shadow-[0_6px_28px_rgba(0,0,0,0.30)] dark:hidden md:h-[110px] lg:h-[130px]"
               />
 
               <img
                 src={logoDark}
                 alt="Toby Music"
-                className="mb-4 hidden h-[62px] object-contain drop-shadow-lg dark:block md:h-[84px] lg:h-[98px]"
+                className="logo-entrance mb-6 hidden h-[80px] object-contain drop-shadow-[0_6px_28px_rgba(0,0,0,0.30)] dark:block md:h-[110px] lg:h-[130px]"
               />
 
               <h1 className="text-[clamp(36px,5vw,72px)] font-black leading-tight text-foreground drop-shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
@@ -249,6 +308,7 @@ export default function Index() {
               </p>
             </div>
 
+            {/* Stage characters */}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[360px] md:h-[470px] lg:h-[560px]">
               {STAGE_CHARACTERS.map((char) => (
                 <Link
@@ -267,12 +327,16 @@ export default function Index() {
                     <img
                       src={SIGN_CHARACTER_MAP[char.character]}
                       alt={char.title}
-                      className="block w-full drop-shadow-[0_14px_30px_rgba(0,0,0,0.22)]"
+                      className="block w-full"
+                      style={{
+                        filter:
+                          "drop-shadow(0 22px 48px rgba(0,0,0,0.52)) drop-shadow(0 6px 14px rgba(0,0,0,0.36)) drop-shadow(0 2px 4px rgba(0,0,0,0.22))",
+                      }}
                     />
 
                     {char.labelMode === "badge" ? (
                       <div className="absolute inset-x-[10%] bottom-[8%] flex justify-center">
-                        <span className="rounded-full bg-background/78 px-4 py-2 text-center text-[clamp(10px,0.9vw,15px)] font-bold leading-tight text-foreground shadow-lg ring-1 ring-border backdrop-blur-sm transition-colors group-hover:text-accent">
+                        <span className="rounded-full bg-background/78 px-4 py-2 text-center text-[clamp(11px,1vw,17px)] font-bold leading-tight text-foreground shadow-lg ring-1 ring-border backdrop-blur-sm transition-colors group-hover:text-accent">
                           {char.title}
                         </span>
                       </div>
@@ -286,7 +350,9 @@ export default function Index() {
                           height: char.signBox.height,
                         }}
                       >
-                        <span className="text-center text-[clamp(9px,0.95vw,16px)] font-bold leading-tight text-foreground drop-shadow-sm transition-colors group-hover:text-accent">
+                        <span className="text-center font-black leading-tight text-foreground drop-shadow-sm transition-colors group-hover:text-accent"
+                          style={{ fontSize: "clamp(13px,1.45vw,23px)" }}
+                        >
                           {char.title}
                         </span>
                       </div>
@@ -294,6 +360,38 @@ export default function Index() {
                   </div>
                 </Link>
               ))}
+
+              {/* Speech bubble from presenter on scroll */}
+              {showSpeechBubble && !bubbleDismissed && presenterChar && (
+                <div
+                  className="speech-bubble-in pointer-events-auto absolute z-30"
+                  style={{
+                    left: `calc(${presenterChar.stage.left} + ${presenterChar.stage.width} + 0.5%)`,
+                    bottom: "72%",
+                  }}
+                  dir="rtl"
+                >
+                  <div className="relative max-w-[210px] rounded-2xl border border-border/70 bg-card/95 px-4 py-3 text-sm font-semibold leading-6 text-card-foreground shadow-2xl backdrop-blur-sm md:max-w-[260px] md:text-base">
+                    <span>ברוכים הבאים ל</span>
+                    <span className="text-accent">Toby music</span>
+                    {/* Tail pointing left toward presenter */}
+                    <div
+                      className="absolute top-4 h-3 w-3 rotate-45 border-b border-l border-border/70 bg-card/95"
+                      style={{ left: "-7px" }}
+                    />
+                    <button
+                      onClick={() => {
+                        setBubbleDismissed(true);
+                        setShowSpeechBubble(false);
+                      }}
+                      className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      aria-label="סגור"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
