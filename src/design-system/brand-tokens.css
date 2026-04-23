@@ -1,0 +1,130 @@
+/*
+  Toby Music — Brand Tokens v2.0
+  קובץ נייד לפלטפורמות חיצוניות (Webflow, Framer, Notion וכו')
+  הדבק ב-Custom CSS של הפלטפורמה והוסף class="dark" ל-<html>
+*/
+
+:root {
+  /* ── Fire — הצבע הראשי ── */
+  --tm-fire-bright: #F3921E;   /* CTA ראשי, הדגשות */
+  --tm-fire-core:   #CF4112;   /* עיקר הגרדיאנט */
+  --tm-fire-deep:   #8E1B08;   /* עומק, צל, גבולות */
+
+  /* ── Gold — הצבע המשני ── */
+  --tm-gold-light:  #ECC84E;   /* זוהר, highlight, ניצוץ */
+  --tm-gold-main:   #D9A22A;   /* תוכן פרמיום, כוכבים */
+  --tm-gold-dark:   #AD7C1F;   /* טקסט על רקע בהיר */
+
+  /* ── Wine — הצבע השלישי ── */
+  --tm-wine-deep:   #63101E;   /* רקעים כהים, אקורד עמוק */
+  --tm-wine-main:   #9E2E3F;   /* כפתור "צרי קשר" */
+  --tm-wine-light:  #A8485A;   /* hover, אקצנטים משניים */
+
+  /* ── Neutrals — תמיד חמים ── */
+  --tm-neutral-950: #150E09;   /* רקע ראשי dark mode */
+  --tm-neutral-900: #1E1510;   /* כרטיסים, פאנלים */
+  --tm-neutral-800: #272018;   /* modals, dropdowns */
+  --tm-neutral-700: #3A2D24;   /* גבולות */
+  --tm-neutral-500: #8A7A72;   /* placeholder, inactive */
+  --tm-neutral-200: #CEBFB0;   /* גבולות light mode */
+  --tm-neutral-100: #EDE4D9;   /* כרטיסים light mode */
+  --tm-neutral-50:  #F8F4EE;   /* רקע ראשי light mode */
+
+  /* ── Typography ── */
+  --tm-font-heading: 'Frank Ruhl Libre', 'Playfair Display', Georgia, serif;
+  --tm-font-display: 'Cormorant Garamond', 'Frank Ruhl Libre', Georgia, serif;
+  --tm-font-body:    'Assistant', system-ui, -apple-system, sans-serif;
+
+  /* ── Spacing ── */
+  --tm-card-padding: 1.5rem;
+  --tm-radius-card:  1rem;
+  --tm-radius-pill:  9999px;
+
+  /* ── Animation timing ── */
+  --tm-fast:   0.18s ease-out;
+  --tm-normal: 0.32s cubic-bezier(0.16, 1, 0.30, 1);
+  --tm-slow:   0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  --tm-hero:   1.4s  cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Dark mode defaults */
+.dark,
+[data-theme="dark"] {
+  background-color: var(--tm-neutral-950);
+  color: #EAE0D3;
+}
+
+/* ── Utility classes ── */
+
+.tm-gradient-fire {
+  background: linear-gradient(90deg, var(--tm-fire-bright), var(--tm-fire-core));
+}
+
+.tm-gradient-fire-full {
+  background: linear-gradient(90deg, var(--tm-fire-bright) 0%, var(--tm-fire-core) 50%, var(--tm-fire-deep) 100%);
+}
+
+.tm-gradient-divider {
+  height: 2px;
+  background: linear-gradient(90deg, var(--tm-fire-bright), var(--tm-fire-deep));
+}
+
+.tm-text-fire {
+  color: var(--tm-fire-bright);
+}
+
+.tm-text-gold {
+  color: var(--tm-gold-main);
+}
+
+.tm-btn-primary {
+  background: linear-gradient(90deg, var(--tm-fire-bright), var(--tm-fire-core));
+  color: white;
+  border-radius: var(--tm-radius-pill);
+  padding: 0.65rem 1.75rem;
+  font-family: var(--tm-font-body);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: filter var(--tm-fast), transform var(--tm-fast);
+}
+
+.tm-btn-primary:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.tm-btn-contact {
+  background: var(--tm-wine-main);
+  color: white;
+  border-radius: var(--tm-radius-pill);
+  padding: 0.65rem 1.75rem;
+  font-family: var(--tm-font-body);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--tm-fast), transform var(--tm-fast);
+}
+
+.tm-btn-contact:hover {
+  background-color: var(--tm-wine-light);
+  transform: translateY(-1px);
+}
+
+@keyframes tm-breathe {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(243, 146, 30, 0.3)); }
+  50%       { filter: drop-shadow(0 0 18px rgba(243, 146, 30, 0.65)); }
+}
+
+@keyframes tm-slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tm-enter {
+  animation: tm-slide-up var(--tm-slow) both;
+}
+
+.tm-fire-breathe {
+  animation: tm-breathe 5s ease-in-out infinite;
+}

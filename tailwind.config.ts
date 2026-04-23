@@ -15,7 +15,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Assistant"', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+        serif: ['"Frank Ruhl Libre"', '"Playfair Display"', 'Georgia', 'serif'],
+        display: ['"Cormorant Garamond"', '"Frank Ruhl Libre"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -61,14 +62,20 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        fire: {
+          bright: "hsl(var(--fire-bright))",
+          core: "hsl(var(--fire-core))",
+          deep: "hsl(var(--fire-deep))",
+        },
         gold: {
-          DEFAULT: "hsl(var(--primary))",
-          dark: "hsl(var(--gold-dark))",
+          DEFAULT: "hsl(var(--gold-main))",
           light: "hsl(var(--gold-light))",
+          dark: "hsl(var(--gold-dark))",
         },
         wine: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "hsl(var(--wine-main))",
           light: "hsl(var(--wine-light))",
+          deep: "hsl(var(--wine-deep))",
         },
       },
       boxShadow: {
