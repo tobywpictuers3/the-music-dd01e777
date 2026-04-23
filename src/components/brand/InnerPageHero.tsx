@@ -50,10 +50,17 @@ export default function InnerPageHero({
         <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background/30 to-transparent" />
 
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 hidden dark:block"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 50%, rgba(255,255,255,0) 72%, hsl(var(--background)) 100%)",
+              "linear-gradient(to bottom, transparent 0%, transparent 38%, rgba(21,14,9,0.40) 60%, rgba(21,14,9,0.85) 76%, hsl(21,31%,6%) 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 dark:hidden"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent 0%, transparent 38%, rgba(248,244,238,0.42) 60%, rgba(248,244,238,0.88) 76%, hsl(30,29%,95%) 100%)",
           }}
         />
       </div>

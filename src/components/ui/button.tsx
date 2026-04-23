@@ -11,9 +11,9 @@ const buttonVariants = cva(
       variant: {
         // אש — CTA ראשי
         default:
-          "bg-gradient-to-r from-[#F3921E] to-[#CF4112] text-white shadow-md hover:brightness-110 hover:-translate-y-px active:translate-y-0",
+          "bg-gradient-to-r from-[#E69E33] to-[#CA5F21] text-white shadow-md hover:brightness-110 hover:-translate-y-px active:translate-y-0",
         fire:
-          "bg-gradient-to-r from-[#F3921E] via-[#CF4112] to-[#8E1B08] text-white shadow-md hover:brightness-110 hover:-translate-y-px active:translate-y-0",
+          "bg-gradient-to-r from-[#E69E33] via-[#CA5F21] to-[#882E1C] text-white shadow-md hover:brightness-110 hover:-translate-y-px active:translate-y-0",
         // יין — כפתור "צור קשר"
         wine:
           "bg-gradient-to-r from-[#A8485A] via-[#9E2E3F] to-[#63101E] text-white shadow-md hover:brightness-110 hover:-translate-y-px active:translate-y-0",
@@ -21,7 +21,7 @@ const buttonVariants = cva(
         gold:
           "bg-gradient-to-r from-[#ECC84E] via-[#D9A22A] to-[#AD7C1F] text-[#150E09] shadow-md hover:brightness-105 hover:-translate-y-px active:translate-y-0",
         destructive:
-          "bg-gradient-to-r from-[#CF4112] to-[#8E1B08] text-white hover:brightness-110",
+          "bg-gradient-to-r from-[#CA5F21] to-[#882E1C] text-white hover:brightness-110",
         outline:
           "border-2 border-[#F3921E] bg-transparent text-foreground hover:bg-[#F3921E]/10 hover:text-[#F3921E]",
         secondary:
