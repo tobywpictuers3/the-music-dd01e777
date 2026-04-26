@@ -399,14 +399,14 @@ export default function Index() {
         <GuidePresenter />
 
         <AppearOnScroll>
-          <section className="px-4 py-12 md:px-8 md:py-20" dir="rtl">
+          <section className="border-y border-black/10 bg-white px-4 py-12 dark:border-border dark:bg-card md:px-8 md:py-20" dir="rtl">
             <div className="mx-auto max-w-7xl">
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
                 {STAGE_CHARACTERS.map((char) => (
                   <Link
                     key={char.href}
                     to={char.href}
-                    className="group relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl md:p-8"
+                    className="group relative overflow-hidden rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-border dark:bg-card md:p-8"
                   >
                     <img
                       src={texStarsLight}
