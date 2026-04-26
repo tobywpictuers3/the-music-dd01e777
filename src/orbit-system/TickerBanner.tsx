@@ -6,12 +6,16 @@ type TickerBannerProps = {
   themeMode: ThemeMode;
   config: TickerBannerConfig;
   visible: boolean;
+  dockOffsetPx?: number;
+  pauseMotion?: boolean;
 };
 
 export default function TickerBanner({
   themeMode,
   config,
   visible,
+  dockOffsetPx = 0,
+  pauseMotion = false,
 }: TickerBannerProps) {
   if (!config.enabled) return null;
 
@@ -37,7 +41,7 @@ export default function TickerBanner({
       <div
         className="pointer-events-none fixed inset-x-0 z-[60]"
         style={{
-          bottom: `${config.bottomOffsetPx}px`,
+          bottom: `${config.bottomOffsetPx + dockOffsetPx}px`,
           opacity: visible ? config.opacity : 0,
           transform: visible ? "translateY(0)" : "translateY(20px)",
           transition: `opacity ${transitionMs}ms ease, transform ${transitionMs}ms ease`,
@@ -104,7 +108,7 @@ export default function TickerBanner({
                 animationDuration: `${config.loopDurationSec}s`,
                 animationTimingFunction: "linear",
                 animationIterationCount: "infinite",
-                animationPlayState: "running",
+                animationPlayState: pauseMotion ? "paused" : "running",
                 width: "max-content",
               }}
             >
