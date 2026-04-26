@@ -336,7 +336,7 @@ export default function Index() {
 
                     {char.labelMode === "badge" ? (
                       <div className="absolute inset-x-[10%] bottom-[8%] flex justify-center">
-                        <span className="rounded-full bg-background/78 px-4 py-2 text-center text-[clamp(11px,1vw,17px)] font-bold leading-tight text-foreground shadow-lg ring-1 ring-border backdrop-blur-sm transition-colors group-hover:text-accent">
+                        <span className="rounded-full bg-background/78 px-4 py-2 text-center text-[clamp(11px,1vw,16px)] font-bold leading-tight text-foreground shadow-lg ring-1 ring-border backdrop-blur-sm transition-colors group-hover:text-accent">
                           {char.title}
                         </span>
                       </div>
