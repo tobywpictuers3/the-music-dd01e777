@@ -1,13 +1,23 @@
-// Toby Music — Figma Design Builder
-// Creates clean, design-ready screens for manual editing in Figma
+// Toby Music — Figma Homepage Builder v2.0
+// Creates Light + Dark homepage frames for visual editing
+// Run via: Plugins → Development → Import plugin from manifest
 
-// ── Colours ──────────────────────────────────────────────
-const C = {
-  bg:         { r: 0.973, g: 0.957, b: 0.933 },
-  fg:         { r: 0.137, g: 0.090, b: 0.063 },
-  card:       { r: 0.929, g: 0.894, b: 0.851 },
-  border:     { r: 0.808, g: 0.749, b: 0.690 },
-  muted:      { r: 0.541, g: 0.478, b: 0.447 },
+// ── Theme colors ──────────────────────────────────────────────────
+const LT = {
+  bg:    { r: 0.973, g: 0.957, b: 0.933 },
+  fg:    { r: 0.137, g: 0.090, b: 0.063 },
+  card:  { r: 0.929, g: 0.894, b: 0.851 },
+  brd:   { r: 0.808, g: 0.749, b: 0.690 },
+  muted: { r: 0.541, g: 0.478, b: 0.447 },
+};
+const DK = {
+  bg:    { r: 0.082, g: 0.055, b: 0.035 },
+  fg:    { r: 0.918, g: 0.878, b: 0.827 },
+  card:  { r: 0.118, g: 0.082, b: 0.063 },
+  brd:   { r: 0.227, g: 0.176, b: 0.141 },
+  muted: { r: 0.541, g: 0.478, b: 0.447 },
+};
+const B = {
   fireBright: { r: 0.953, g: 0.573, b: 0.118 },
   fireCore:   { r: 0.812, g: 0.255, b: 0.071 },
   fireDeep:   { r: 0.557, g: 0.106, b: 0.031 },
@@ -18,661 +28,478 @@ const C = {
   wineMain:   { r: 0.620, g: 0.180, b: 0.247 },
   wineLight:  { r: 0.659, g: 0.282, b: 0.353 },
   white:      { r: 1,     g: 1,     b: 1     },
-  darkBg:     { r: 0.082, g: 0.055, b: 0.035 },
-  stageBg:    { r: 0.060, g: 0.038, b: 0.022 },
+  ink:        { r: 0.082, g: 0.055, b: 0.035 },
 };
 
-// ── Fonts ─────────────────────────────────────────────────
-const F   = { family: "Inter", style: "Regular"  };
-const FB  = { family: "Inter", style: "Bold"      };
-const FSB = { family: "Inter", style: "SemiBold"  };
+// ── Fonts (reassigned to Inter if unavailable) ────────────────────
+let FHR = { family: "Frank Ruhl Libre", style: "Regular" };
+let FHB = { family: "Frank Ruhl Libre", style: "Bold"    };
+let FHK = { family: "Frank Ruhl Libre", style: "Black"   };
+let FAR = { family: "Assistant",        style: "Regular" };
+let FSB = { family: "Assistant",        style: "SemiBold"};
+const IR  = { family: "Inter", style: "Regular"  };
+const IB  = { family: "Inter", style: "Bold"     };
+const ISB = { family: "Inter", style: "SemiBold" };
 
-// ── Primitives ────────────────────────────────────────────
-function mkRect(name, w, h, color, radius) {
-  const r = figma.createRectangle();
-  r.name = name;
-  r.resize(w, h);
-  r.fills = [{ type: "SOLID", color }];
-  if (radius) r.cornerRadius = radius;
-  return r;
+// ── Primitives ────────────────────────────────────────────────────
+function mkR(name, w, h, col, r) {
+  const x = figma.createRectangle();
+  x.name = name;
+  x.resize(Math.max(1, w), Math.max(1, h));
+  x.fills = col ? [{ type: "SOLID", color: col }] : [];
+  if (r) x.cornerRadius = r;
+  return x;
 }
-
-function mkText(content, size, color, font, align) {
+function mkT(str, sz, col, font, align) {
   const t = figma.createText();
-  t.fontName = font || F;
-  t.characters = content;
-  t.fontSize = size;
-  t.fills = [{ type: "SOLID", color }];
+  t.fontName = font || IR;
+  t.characters = String(str);
+  t.fontSize = sz;
+  t.fills = col ? [{ type: "SOLID", color: col }] : [];
   if (align) t.textAlignHorizontal = align;
   return t;
 }
-
-function mkFrame(name, w, h, color) {
+function mkF(name, w, h, col) {
   const f = figma.createFrame();
   f.name = name;
-  f.resize(w, h);
-  f.fills = color ? [{ type: "SOLID", color }] : [];
+  f.resize(Math.max(1, w), Math.max(1, h));
+  f.fills = col ? [{ type: "SOLID", color: col }] : [];
   f.clipsContent = true;
   return f;
 }
 
-// ── Layout helpers ────────────────────────────────────────
-function hFixed(f, gap, pt, pb, pl, pr) {
+// ── Layout helpers ────────────────────────────────────────────────
+function hSB(f, pl, pr, pt, pb) {
   f.layoutMode = "HORIZONTAL";
-  f.primaryAxisSizingMode   = "FIXED";
-  f.counterAxisSizingMode   = "FIXED";
-  if (gap != null) f.itemSpacing    = gap;
-  if (pt  != null) f.paddingTop     = pt;
-  if (pb  != null) f.paddingBottom  = pb;
-  if (pl  != null) f.paddingLeft    = pl;
-  if (pr  != null) f.paddingRight   = pr;
-}
-
-function vAuto(f, gap, pt, pb, pl, pr) {
-  f.layoutMode = "VERTICAL";
-  f.primaryAxisSizingMode   = "AUTO";
-  f.counterAxisSizingMode   = "FIXED";
-  if (gap != null) f.itemSpacing    = gap;
-  if (pt  != null) f.paddingTop     = pt;
-  if (pb  != null) f.paddingBottom  = pb;
-  if (pl  != null) f.paddingLeft    = pl;
-  if (pr  != null) f.paddingRight   = pr;
-}
-
-function vFixed(f, gap, pt, pb, pl, pr) {
-  f.layoutMode = "VERTICAL";
-  f.primaryAxisSizingMode   = "FIXED";
-  f.counterAxisSizingMode   = "FIXED";
-  if (gap != null) f.itemSpacing    = gap;
-  if (pt  != null) f.paddingTop     = pt;
-  if (pb  != null) f.paddingBottom  = pb;
-  if (pl  != null) f.paddingLeft    = pl;
-  if (pr  != null) f.paddingRight   = pr;
-}
-
-function centered(f) {
-  f.primaryAxisAlignItems = "CENTER";
+  f.primaryAxisSizingMode = "FIXED";
+  f.counterAxisSizingMode = "FIXED";
+  f.primaryAxisAlignItems = "SPACE_BETWEEN";
   f.counterAxisAlignItems = "CENTER";
+  f.paddingLeft = pl || 0; f.paddingRight = pr || 0;
+  f.paddingTop = pt || 0;  f.paddingBottom = pb || 0;
+  f.itemSpacing = 0;
 }
-
-function spaceBetween(f) {
-  f.primaryAxisAlignItems  = "SPACE_BETWEEN";
-  f.counterAxisAlignItems  = "CENTER";
+function hAuto(f, gap, pl, pr, pt, pb) {
+  f.layoutMode = "HORIZONTAL";
+  f.primaryAxisSizingMode = "AUTO";
+  f.counterAxisSizingMode = "AUTO";
+  f.itemSpacing = gap || 0;
+  f.paddingLeft = pl || 0; f.paddingRight = pr || 0;
+  f.paddingTop = pt || 0;  f.paddingBottom = pb || 0;
+  f.primaryAxisAlignItems = "MIN";
+  f.counterAxisAlignItems = "CENTER";
+  f.clipsContent = false;
 }
-
-function addShadow(f) {
+function hAutoCenter(f, gap, pl, pr, pt, pb) {
+  hAuto(f, gap, pl, pr, pt, pb);
+  f.primaryAxisAlignItems = "CENTER";
+}
+function dropShadow(f, a, y, blur) {
   f.effects = [{
-    type: "DROP_SHADOW",
-    color: { r: 0.08, g: 0.05, b: 0.03, a: 0.12 },
-    offset: { x: 0, y: 8 },
-    radius: 24,
-    spread: 0,
-    visible: true,
-    blendMode: "NORMAL",
+    type: "DROP_SHADOW", visible: true, blendMode: "NORMAL",
+    color: { r: 0.08, g: 0.05, b: 0.03, a: a || 0.10 },
+    offset: { x: 0, y: y || 8 }, radius: blur || 24, spread: 0,
   }];
 }
-
-// ── Button ────────────────────────────────────────────────
-function mkBtn(label, bgColor, txtColor, w) {
-  const b = mkFrame("Button — " + label, w || 160, 48, bgColor);
+function imgBox(name, w, h, col) {
+  const f = mkF("📷 " + name, w, h, col || { r:.5, g:.45, b:.40 });
+  f.opacity = 0.38;
+  const lbl = mkT(name, Math.min(12, Math.max(9, w / 9)), B.white, IR, "CENTER");
+  lbl.textAutoResize = "HEIGHT";
+  try { lbl.resize(w - 8, 14); } catch (_) {}
+  lbl.x = 4; lbl.y = h / 2 - 7;
+  f.appendChild(lbl);
+  return f;
+}
+function mkBtn(label, bg, fg, w, h) {
+  const b = mkF("Btn · " + label, w || 140, h || 44, bg);
   b.cornerRadius = 999;
-  b.layoutMode = "HORIZONTAL";
+  hAutoCenter(b, 0, 24, 24, 0, 0);
   b.primaryAxisSizingMode = "FIXED";
   b.counterAxisSizingMode = "FIXED";
-  b.paddingLeft = 28; b.paddingRight = 28;
-  centered(b);
-  b.appendChild(mkText(label, 15, txtColor, FB, "CENTER"));
+  b.appendChild(mkT(label, 14, fg, FSB, "CENTER"));
   return b;
 }
+// ── Header (H=72) ────────────────────────────────────────────────
+function buildHeader(W, T) {
+  const wrap = mkF("Header", W, 72, null);
+  wrap.fills = [];
 
-// ── Header ────────────────────────────────────────────────
-function buildHeader(W) {
-  const h = mkFrame("Header", W, 80, C.bg);
-  hFixed(h, 0, 0, 0, 48, 48);
-  spaceBetween(h);
+  const pillW = 1100, pillH = 64;
+  const pill = mkF("Header/Pill-nav", pillW, pillH, T.card);
+  pill.cornerRadius = 999;
+  pill.x = (W - pillW) / 2; pill.y = 4;
+  pill.strokes = [{ type: "SOLID", color: T.brd }];
+  pill.strokeWeight = 1; pill.strokeAlign = "INSIDE";
+  dropShadow(pill, 0.07, 4, 16);
+  hSB(pill, 24, 24, 0, 0);
 
-  // Logo
-  const logo = mkFrame("Logo", 160, 80, null);
-  hFixed(logo, 10, 0, 0, 0, 0);
-  logo.counterAxisAlignItems = "CENTER";
-  logo.fills = [];
-  logo.appendChild(mkRect("LogoIcon", 36, 36, C.fireBright, 8));
-  logo.appendChild(mkText("Toby Music", 16, C.fg, FB));
-  logo.layoutAlign = "CENTER";
+  // Left: toggle + logo
+  const left = mkF("Left", 0, 0, null);
+  left.fills = []; left.clipsContent = false;
+  hAuto(left, 12, 0, 0, 0, 0);
 
-  // Nav
-  const nav = mkFrame("Nav", 0, 0, null);
-  nav.layoutMode = "HORIZONTAL";
-  nav.primaryAxisSizingMode = "AUTO";
-  nav.counterAxisSizingMode = "AUTO";
-  nav.itemSpacing = 4;
-  nav.counterAxisAlignItems = "CENTER";
-  nav.fills = [];
-  nav.clipsContent = false;
+  const toggle = mkF("ThemeToggle", 36, 36, T.bg);
+  toggle.cornerRadius = 18;
+  toggle.strokes = [{ type: "SOLID", color: T.brd }];
+  toggle.strokeWeight = 1;
+  hAutoCenter(toggle, 0, 0, 0, 0, 0);
+  toggle.primaryAxisSizingMode = "FIXED";
+  toggle.counterAxisSizingMode = "FIXED";
+  toggle.appendChild(mkT(T === LT ? "☾" : "☀", 15, T.fg, IR, "CENTER"));
+  left.appendChild(toggle);
 
-  const navItems = ["בית", "תזמורות", "הופעות", "תלמידות", "תווים", "אודות", "בלוג"];
-  navItems.forEach((label, i) => {
-    const pill = mkFrame("nav-" + label, 0, 36, i === 0 ? C.card : null);
-    pill.layoutMode = "HORIZONTAL";
-    pill.primaryAxisSizingMode = "AUTO";
-    pill.counterAxisSizingMode = "FIXED";
-    pill.paddingLeft = 16; pill.paddingRight = 16;
-    pill.cornerRadius = 999;
-    centered(pill);
-    if (i !== 0) pill.fills = [];
-    pill.appendChild(mkText(label, 14, i === 0 ? C.fg : C.muted, i === 0 ? FSB : F));
-    nav.appendChild(pill);
+  const li = imgBox(T === LT ? "logo-black.jpg" : "whitelogo.png", 88, 34,
+    T === LT ? B.fireDeep : B.goldMain);
+  li.opacity = 1.0;
+  left.appendChild(li);
+  pill.appendChild(left);
+
+  // Center: nav
+  const nav = mkF("Nav", 0, 0, null);
+  nav.fills = []; nav.clipsContent = false;
+  hAuto(nav, 2, 0, 0, 0, 0);
+  ["בית","תזמורות","הופעות","תלמידות","תווים","אודות","בלוג"].forEach((lbl, i) => {
+    const p = mkF("Nav·" + lbl, 0, 36, null);
+    p.fills = i === 0 ? [{ type:"SOLID", color:B.fireBright, opacity:0.18 }] : [];
+    p.clipsContent = false; p.cornerRadius = 999;
+    hAutoCenter(p, 0, 16, 16, 0, 0);
+    p.appendChild(mkT(lbl, 14, i === 0 ? T.fg : T.muted, i === 0 ? FSB : FAR));
+    nav.appendChild(p);
   });
-  nav.layoutAlign = "CENTER";
+  pill.appendChild(nav);
 
-  const ctaBtn = mkBtn("צור קשר", C.wineMain, C.white, 120);
-  ctaBtn.layoutAlign = "CENTER";
+  // Right: CTA
+  const right = mkF("Right", 0, 0, null);
+  right.fills = []; right.clipsContent = false;
+  hAuto(right, 0, 0, 0, 0, 0);
+  right.appendChild(mkBtn("צור קשר", B.wineMain, B.white, 108, 40));
+  pill.appendChild(right);
 
-  h.appendChild(logo);
-  h.appendChild(nav);
-  h.appendChild(ctaBtn);
-  return h;
+  wrap.appendChild(pill);
+  return wrap;
 }
 
-// ── Hero ──────────────────────────────────────────────────
-function buildHero(W) {
-  const hero = mkFrame("Hero", W, 600, C.darkBg);
-  vFixed(hero, 28, 140, 80, 0, 0);
-  centered(hero);
+// ── Hero (H=850) ─────────────────────────────────────────────────
+const CHARS = [
+  { name:"צור קשר",  img:"presenter.png", lx:.07, by:.38, wt:.124, col:B.wineMain   },
+  { name:"תלמידות",  img:"piano.png",     lx:.20, by:.425,wt:.220, col:B.goldMain   },
+  { name:"תזמורות",  img:"eguitar.png",   lx:.33, by:.50, wt:.174, col:B.fireBright },
+  { name:"אודות",    img:"guitar.png",    lx:.46, by:.555,wt:.176, col:B.fireCore   },
+  { name:"תווים",    img:"drums.png",     lx:.59, by:.605,wt:.240, col:B.goldDark   },
+  { name:"בלוג",     img:"saxophone.png", lx:.74, by:.525,wt:.164, col:B.wineLight  },
+  { name:"הופעות",   img:"violin.png",    lx:.87, by:.445,wt:.154, col:B.fireDeep   },
+];
+
+function buildHero(W, T, isLight) {
+  const H = 850;
+  const hero = mkF("Hero — Stage", W, H,
+    isLight ? { r:.61,g:.54,b:.45 } : { r:.04,g:.03,b:.02 });
+
+  const bg = mkR(isLight ? "📷 lightstage.png" : "📷 darkstage.png",
+    W, H, isLight ? { r:.62,g:.55,b:.46 } : { r:.06,g:.04,b:.02 });
+  bg.opacity = 0.82; hero.appendChild(bg);
+
+  const grad = mkR("Gradient overlay", W, H, { r:.05,g:.03,b:.02 });
+  grad.opacity = isLight ? 0.22 : 0.52; hero.appendChild(grad);
+
+  // Logo
+  const lw = 140, lh = 54;
+  const li = imgBox(isLight ? "logo-toby.png" : "whitelogo.png",
+    lw, lh, isLight ? B.fireDeep : B.white);
+  li.opacity = 1; li.x = (W - lw) / 2; li.y = 52;
+  hero.appendChild(li);
 
   // Badge
-  const badge = mkFrame("Badge", 0, 36, C.goldMain);
-  badge.layoutMode = "HORIZONTAL";
-  badge.primaryAxisSizingMode = "AUTO";
-  badge.counterAxisSizingMode = "FIXED";
-  badge.paddingLeft = 20; badge.paddingRight = 20;
-  badge.cornerRadius = 999;
-  centered(badge);
-  badge.appendChild(mkText("אומנות ואמינות — זו יצירה", 13, C.darkBg, FSB, "CENTER"));
-  badge.layoutAlign = "CENTER";
-
-  // Title — two lines, large
-  const title = mkText("המוזיקה מתחילה כאן", 76, C.white, FB, "CENTER");
-  title.layoutAlign = "CENTER";
-  title.textAutoResize = "HEIGHT";
-  title.resize(860, 100);
-
-  // Sub-title
-  const sub = mkText(
-    "הופעות, תזמורות, תלמידות, תווים ותוכן — במקום אחד.",
-    22, { r: 0.82, g: 0.79, b: 0.74 }, F, "CENTER"
-  );
-  sub.layoutAlign = "CENTER";
-  sub.textAutoResize = "HEIGHT";
-  sub.resize(680, 40);
-
-  // CTA buttons row
-  const ctaRow = mkFrame("HeroCTA", 0, 48, null);
-  ctaRow.layoutMode = "HORIZONTAL";
-  ctaRow.primaryAxisSizingMode = "AUTO";
-  ctaRow.counterAxisSizingMode = "FIXED";
-  ctaRow.itemSpacing = 16;
-  ctaRow.counterAxisAlignItems = "CENTER";
-  ctaRow.fills = [];
-  ctaRow.clipsContent = false;
-  ctaRow.layoutAlign = "CENTER";
-  ctaRow.appendChild(mkBtn("גלי עכשיו",  C.fireBright, C.darkBg, 160));
-  ctaRow.appendChild(mkBtn("צרי קשר",    { r: 0.2, g: 0.2, b: 0.2 }, C.white, 140));
-
+  const bw = 340, bh = 36;
+  const badge = mkF("Badge", bw, bh, B.fireBright);
+  badge.cornerRadius = 999; badge.opacity = 0.92;
+  badge.x = (W - bw) / 2; badge.y = 126;
+  hSB(badge, 20, 20, 0, 0);
+  badge.counterAxisAlignItems = "CENTER";
+  badge.appendChild(mkT("אומנות ואמינות — ", 13, B.ink, FSB, "CENTER"));
+  badge.appendChild(mkT("זו יצירה", 13, B.wineDeep, FHB, "CENTER"));
   hero.appendChild(badge);
-  hero.appendChild(title);
+
+  // Title
+  const tf = mkF("Title", 960, 96, null);
+  tf.fills = []; tf.x = (W - 960) / 2; tf.y = 178;
+  hSB(tf, 0, 0, 0, 0); tf.counterAxisAlignItems = "CENTER";
+  const mt = mkT("המוזיקה מתחילה", 76, B.white, FHK, "RIGHT");
+  mt.textAutoResize = "HEIGHT";
+  try { mt.resize(720, 92); } catch (_) {}
+  tf.appendChild(mt);
+  const at = mkT("כאן", 76, B.fireBright, FHK, "LEFT");
+  at.textAutoResize = "HEIGHT";
+  try { at.resize(220, 92); } catch (_) {}
+  tf.appendChild(at);
+  hero.appendChild(tf);
+
+  // Subtitle
+  const sw = 600, sh = 44;
+  const sub = mkF("Subtitle", sw, sh, null);
+  sub.fills = [{ type:"SOLID", color:{ r:1,g:1,b:1 }, opacity:0.07 }];
+  sub.cornerRadius = 999; sub.x = (W - sw) / 2; sub.y = 288;
+  hSB(sub, 28, 28, 0, 0); sub.counterAxisAlignItems = "CENTER";
+  sub.appendChild(mkT("הופעות, תזמורות, תלמידות, תווים ותוכן — במקום אחד.",
+    16, { r:.85,g:.82,b:.76 }, FAR, "CENTER"));
   hero.appendChild(sub);
-  hero.appendChild(ctaRow);
+
+  // Characters
+  CHARS.forEach(c => {
+    const cw = Math.round(W * c.wt);
+    const ch = Math.round(cw * 1.45);
+    const cx = Math.round(W * c.lx - cw / 2);
+    const cy = Math.max(310, Math.round(H - H * c.by - ch));
+
+    const ci = imgBox(c.img, cw, ch, c.col);
+    ci.opacity = 0.68; ci.x = cx; ci.y = cy;
+    hero.appendChild(ci);
+
+    const sw2 = Math.round(cw * 0.78), sh2 = 34;
+    const sign = mkF("Sign·" + c.name, sw2, sh2, null);
+    sign.fills = [{ type:"SOLID", color:{ r:1,g:1,b:1 }, opacity:0.10 }];
+    sign.strokes = [{ type:"SOLID", color:B.goldMain }];
+    sign.strokeWeight = 1.5; sign.strokeAlign = "INSIDE";
+    sign.cornerRadius = 9;
+    sign.x = cx + (cw - sw2) / 2;
+    sign.y = Math.max(268, cy - sh2 - 10);
+    hSB(sign, 8, 8, 0, 0); sign.counterAxisAlignItems = "CENTER";
+    sign.appendChild(mkT(c.name, 13, B.white, FSB, "CENTER"));
+    hero.appendChild(sign);
+  });
+
   return hero;
 }
 
-// ── Stage Characters section ──────────────────────────────
-function buildStageSection(W) {
-  const SIDE_PAD = 80;
-  const GAP      = 28;
-  const COUNT    = 7;
-  const charW    = Math.floor((W - SIDE_PAD * 2 - GAP * (COUNT - 1)) / COUNT);
+// ── Marquee (H=48) ───────────────────────────────────────────────
+function buildMarquee(W) {
+  const strip = mkF("Marquee Strip", W, 48, B.fireBright);
+  const items = ["הופעות","✦","תזמורות","✦","תלמידות","✦","תווים","✦",
+    "בלוג","✦","צור קשר","✦","מוזיקה • תוכן • חוויה","✦","Toby Music","✦",
+    "אירועים • לימוד • השראה","✦","הופעות","✦","תזמורות"];
+  const row = mkF("Ticker", 0, 0, null);
+  row.fills = []; row.clipsContent = false;
+  hAuto(row, 22, 0, 0, 0, 0);
+  items.forEach(t => row.appendChild(mkT(t, 14, B.ink, FSB)));
+  row.x = 44; row.y = 14;
+  strip.appendChild(row);
+  return strip;
+}
+// ── Guide Presenter (H=380) ──────────────────────────────────────
+const WELCOME = "ברוכים הבאים לאתר של טובי. אני אלווה אתכם כאן בסיור באתר. " +
+  "בלחיצה עלי תוכלו לשאול כל מה שתצטרכו אודות הנכתב באתר, אשתדל לענות לכם " +
+  "ככל יכולתי. ניתן גם לבקש הסבר באופן קולי. לשירותכם!";
 
-  const sec = mkFrame("Stage Characters", W, 420, C.stageBg);
-  hFixed(sec, GAP, 0, 0, SIDE_PAD, SIDE_PAD);
-  sec.counterAxisAlignItems = "FLEX_END";
+function buildGuide(W, T) {
+  const sec = mkF("Guide Presenter", W, 380, T.bg);
 
-  const chars = [
-    { name: "צור קשר",  color: C.wineMain,   h: 200 },
-    { name: "תלמידות",  color: C.goldMain,   h: 260 },
-    { name: "תזמורות",  color: C.fireBright, h: 300 },
-    { name: "אודות",    color: C.fireCore,   h: 340 },
-    { name: "תווים",    color: C.goldDark,   h: 310 },
-    { name: "בלוג",     color: C.wineLight,  h: 270 },
-    { name: "הופעות",   color: C.fireDeep,   h: 220 },
-  ];
+  const pi = imgBox("presenter.png", 180, 220, B.goldMain);
+  pi.opacity = 0.82; pi.x = (W - 180) / 2; pi.y = 18;
+  sec.appendChild(pi);
 
-  chars.forEach(c => {
-    const col = mkFrame(c.name, charW, c.h, null);
-    col.fills = [{ type: "SOLID", color: c.color, opacity: 0.85 }];
-    col.cornerRadius = 14;
-    vFixed(col, 0, 0, 20, 12, 12);
-    col.primaryAxisAlignItems = "MAX";
-    col.counterAxisAlignItems = "CENTER";
-    const lbl = mkText(c.name, 13, C.white, FB, "CENTER");
-    lbl.layoutAlign = "CENTER";
-    col.appendChild(lbl);
-    sec.appendChild(col);
-  });
+  const tri = mkR("▼ connector", 22, 12, T.card, 2);
+  tri.x = (W - 22) / 2; tri.y = 244;
+  sec.appendChild(tri);
 
+  const bub = mkF("Speech Bubble", 560, 124, T.card);
+  bub.cornerRadius = 20; bub.x = (W - 560) / 2; bub.y = 258;
+  dropShadow(bub, 0.09, 12, 36);
+  const bt = mkT(WELCOME, 14, T.fg, FAR, "RIGHT");
+  bt.textAutoResize = "HEIGHT";
+  try { bt.resize(512, 96); } catch (_) {}
+  bt.x = 24; bt.y = 18;
+  bub.appendChild(bt);
+  sec.appendChild(bub);
   return sec;
 }
 
-// ── Categories Bar ────────────────────────────────────────
-function buildCategoriesBar(W) {
-  const bar = mkFrame("Categories Bar", W, 72, C.bg);
-  hFixed(bar, 10, 0, 0, 80, 80);
-  bar.counterAxisAlignItems = "CENTER";
-  bar.strokes = [{ type: "SOLID", color: C.border }];
-  bar.strokeWeight = 1;
-  bar.strokeAlign  = "INSIDE";
+// ── Cards Grid (H=780) ───────────────────────────────────────────
+const CARDS = [
+  { name:"צור קשר",  img:"presenter.png", col:B.wineMain,
+    desc:"רוצה לשאול, להתייעץ או להזמין? כאן מתחילים שיחה פשוטה ונעימה." },
+  { name:"תלמידות",  img:"piano.png",     col:B.goldMain,
+    desc:"מרחב שמחבר בין לימוד, תרגול, התקדמות וקשר אישי — בצורה חיה ונעימה." },
+  { name:"תזמורות",  img:"eguitar.png",   col:B.fireBright,
+    desc:"הרכבים, סגנונות ואפשרויות שמתאימים לאירוע שלכם — בלי להסתבך." },
+  { name:"אודות",    img:"guitar.png",    col:B.fireCore,
+    desc:"הסיפור, הדרך והאני מאמין של Toby Music — במקום אחד, ברור ומדויק." },
+  { name:"תווים",    img:"drums.png",     col:B.goldDark,
+    desc:"ספריית תווים מסודרת, נוחה ונעימה לעין — כדי להגיע מהר למה שצריך." },
+  { name:"בלוג",     img:"saxophone.png", col:B.wineLight,
+    desc:"טיפים, מחשבות, רעיונות והשראה מוזיקלית שנעים לחזור אליה שוב." },
+  { name:"הופעות",   img:"violin.png",    col:B.fireDeep,
+    desc:"יומן הופעות, חוויה מוסיקלית והזמנה מסודרת — במקום אחד ברור." },
+];
 
-  const cats = ["הכל", "הופעות", "תזמורות", "תלמידות", "תווים", "בלוג", "אודות"];
-  cats.forEach((label, i) => {
-    const pill = mkFrame("cat-" + label, 0, 40, i === 0 ? C.fg : C.card);
-    pill.layoutMode = "HORIZONTAL";
-    pill.primaryAxisSizingMode = "AUTO";
-    pill.counterAxisSizingMode = "FIXED";
-    pill.paddingLeft = 20; pill.paddingRight = 20;
-    pill.cornerRadius = 999;
-    centered(pill);
-    pill.appendChild(
-      mkText(label, 14, i === 0 ? C.white : C.muted, i === 0 ? FSB : F, "CENTER")
-    );
-    bar.appendChild(pill);
-  });
+function mkCard(item, cw, T) {
+  const ch = 300;
+  const f = mkF("Card · " + item.name, cw, ch, T.card);
+  f.cornerRadius = 24;
+  f.strokes = [{ type:"SOLID", color:T.brd }];
+  f.strokeWeight = 1; f.strokeAlign = "INSIDE";
+  dropShadow(f, 0.08, 8, 24);
 
-  return bar;
-}
+  const iw = Math.round(cw * 0.62);
+  const ci = imgBox(item.img, iw, 152, item.col);
+  ci.opacity = 0.72; ci.x = (cw - iw) / 2; ci.y = 10;
+  f.appendChild(ci);
 
-// ── Card (single) ─────────────────────────────────────────
-function mkCard(name, w, h, thumbColor) {
-  const card = mkFrame("Card — " + name, w, h, C.card);
-  card.cornerRadius = 20;
-  vFixed(card, 0, 0, 24, 0, 0);
-  card.counterAxisAlignItems = "CENTER";
-  addShadow(card);
+  const stars = mkR("⭐ stars-texture overlay", cw, 166, T.brd);
+  stars.opacity = 0.05; f.appendChild(stars);
 
-  // Image placeholder — clipped by card corner radius
-  const thumb = mkRect("Image", w, Math.round(h * 0.53), thumbColor || C.border, 0);
-  card.appendChild(thumb);
+  const title = mkT(item.name, 20, T.fg, FHB, "RIGHT");
+  title.textAutoResize = "HEIGHT";
+  try { title.resize(cw - 28, 28); } catch (_) {}
+  title.x = 14; title.y = 172;
+  f.appendChild(title);
 
-  const content = mkFrame("Content", w - 48, 0, null);
-  content.fills = [];
-  vAuto(content, 8, 16, 0, 0, 0);
-  content.layoutAlign = "CENTER";
-  content.appendChild(mkText(name, 18, C.fg, FB, "RIGHT"));
-  card.appendChild(content);
+  const desc = mkT(item.desc, 13, T.muted, FAR, "RIGHT");
+  desc.textAutoResize = "HEIGHT";
+  try { desc.resize(cw - 28, 80); } catch (_) {}
+  desc.x = 14; desc.y = 206;
+  f.appendChild(desc);
 
-  return card;
-}
-
-// ── Cards Grid Section ────────────────────────────────────
-function buildCardsGrid(W, items) {
-  const SIDE_PAD = 80;
-  const GAP      = 28;
-  const COLS     = 3;
-  const cardW    = Math.floor((W - SIDE_PAD * 2 - GAP * (COLS - 1)) / COLS);
-  const cardH    = 300;
-
-  const sec = mkFrame("Cards Grid", W, 0, C.bg);
-  vAuto(sec, 40, 80, 80, SIDE_PAD, SIDE_PAD);
-
-  const secTitle = mkText("מה תמצאי כאן", 40, C.fg, FB, "RIGHT");
-  secTitle.layoutAlign = "STRETCH";
-  secTitle.textAutoResize = "HEIGHT";
-  sec.appendChild(secTitle);
-
-  // Split items into rows of 3
-  for (let row = 0; row < Math.ceil(items.length / COLS); row++) {
-    const rowFrame = mkFrame("Row " + (row + 1), W - SIDE_PAD * 2, cardH, null);
-    hFixed(rowFrame, GAP, 0, 0, 0, 0);
-    rowFrame.counterAxisAlignItems = "STRETCH";
-    rowFrame.fills = [];
-    rowFrame.clipsContent = false;
-
-    for (let col = 0; col < COLS; col++) {
-      const item = items[row * COLS + col];
-      if (!item) break;
-      rowFrame.appendChild(mkCard(item.name, cardW, cardH, item.color));
-    }
-    sec.appendChild(rowFrame);
-  }
-
-  return sec;
-}
-
-// ── CTA Banner ────────────────────────────────────────────
-function buildCTABanner(W) {
-  const sec = mkFrame("CTA Banner", W, 260, C.wineDeep);
-  vFixed(sec, 24, 0, 0, 0, 0);
-  centered(sec);
-
-  const t = mkText("מוכנה להתחיל?", 52, C.white, FB, "CENTER");
-  t.layoutAlign = "CENTER";
-
-  const sub = mkText(
-    "הצטרפי לאלפי תלמידות ולקוחות מרוצים ברחבי הארץ",
-    18, { r: 0.90, g: 0.80, b: 0.75 }, F, "CENTER"
-  );
-  sub.layoutAlign = "CENTER";
-  sub.textAutoResize = "HEIGHT";
-  sub.resize(600, 30);
-
-  const btn = mkBtn("צרי קשר עכשיו", C.fireBright, C.darkBg, 200);
-  btn.layoutAlign = "CENTER";
-
-  sec.appendChild(t);
-  sec.appendChild(sub);
-  sec.appendChild(btn);
-  return sec;
-}
-
-// ── Footer ────────────────────────────────────────────────
-function buildFooter(W) {
-  const f = mkFrame("Footer", W, 220, C.fireDeep);
-  vFixed(f, 20, 44, 36, 80, 80);
-  centered(f);
-
-  // Top row: logo + links
-  const top = mkFrame("FooterTop", W - 160, 48, null);
-  hFixed(top, 0, 0, 0, 0, 0);
-  spaceBetween(top);
-  top.fills = [];
-  top.clipsContent = false;
-
-  const fLogo = mkText("Toby Music", 28, C.goldMain, FB, "LEFT");
-  fLogo.layoutAlign = "CENTER";
-
-  const fLinks = mkFrame("FooterLinks", 0, 0, null);
-  fLinks.layoutMode = "HORIZONTAL";
-  fLinks.primaryAxisSizingMode = "AUTO";
-  fLinks.counterAxisSizingMode = "AUTO";
-  fLinks.itemSpacing = 24;
-  fLinks.counterAxisAlignItems = "CENTER";
-  fLinks.fills = [];
-  fLinks.clipsContent = false;
-  fLinks.layoutAlign = "CENTER";
-  ["הופעות", "תזמורות", "תלמידות", "תווים", "בלוג"].forEach(label => {
-    fLinks.appendChild(mkText(label, 13, { r: 0.9, g: 0.85, b: 0.78 }, F));
-  });
-
-  top.appendChild(fLogo);
-  top.appendChild(fLinks);
-
-  // Divider
-  const div = mkRect("Divider", W - 160, 1, { r: 1, g: 1, b: 1 }, 0);
-  div.opacity = 0.12;
-  div.layoutAlign = "STRETCH";
-
-  // Copyright
-  const copy = mkText("© 2025 Toby Music. כל הזכויות שמורות.", 12, C.white, F, "CENTER");
-  copy.opacity = 0.4;
-  copy.layoutAlign = "CENTER";
-
-  f.appendChild(top);
-  f.appendChild(div);
-  f.appendChild(copy);
   return f;
 }
 
-// ── Homepage ──────────────────────────────────────────────
-function buildHomepage() {
-  const W = 1440;
-  const page = mkFrame("🏠 Homepage", W, 0, C.bg);
-  vAuto(page, 0, 0, 0, 0, 0);
-
-  const cardItems = [
-    { name: "הופעות",  color: C.fireCore   },
-    { name: "תזמורות", color: C.fireBright },
-    { name: "תלמידות", color: C.goldMain   },
-    { name: "תווים",   color: C.goldDark   },
-    { name: "בלוג",    color: C.wineLight  },
-    { name: "אודות",   color: C.wineMain   },
-  ];
-
-  page.appendChild(buildHeader(W));
-  page.appendChild(buildHero(W));
-  page.appendChild(buildStageSection(W));
-  page.appendChild(buildCategoriesBar(W));
-  page.appendChild(buildCardsGrid(W, cardItems));
-  page.appendChild(buildCTABanner(W));
-  page.appendChild(buildFooter(W));
-  return page;
+function buildCardsGrid(W, T) {
+  const PAD = 80, GAP = 28, COLS = 4;
+  const cw = Math.floor((W - PAD * 2 - GAP * (COLS - 1)) / COLS);
+  const sec = mkF("Cards Grid", W, 780, T.bg);
+  CARDS.forEach((item, i) => {
+    const card = mkCard(item, cw, T);
+    card.x = PAD + (i % COLS) * (cw + GAP);
+    card.y = 72 + Math.floor(i / COLS) * (300 + GAP);
+    sec.appendChild(card);
+  });
+  return sec;
 }
 
-// ── Inner page cards row ──────────────────────────────────
-function mkCardsRow(W, count, cardH) {
-  const SIDE_PAD = 80;
-  const GAP      = 28;
-  const cardW    = Math.floor((W - SIDE_PAD * 2 - GAP * (count - 1)) / count);
-  const row = mkFrame("Cards", W - SIDE_PAD * 2, cardH || 280, null);
-  hFixed(row, GAP, 0, 0, 0, 0);
-  row.counterAxisAlignItems = "STRETCH";
-  row.fills = [];
-  row.clipsContent = false;
-  for (let i = 0; i < count; i++) {
-    const c = mkFrame("Card " + (i + 1), cardW, cardH || 280, C.card);
-    c.cornerRadius = 20;
-    c.primaryAxisSizingMode = "FIXED";
-    c.counterAxisSizingMode = "FIXED";
-    addShadow(c);
-    row.appendChild(c);
-  }
-  return row;
-}
+// ── Footer (H=370) ───────────────────────────────────────────────
+function buildFooter(W) {
+  const f = mkF("Footer", W, 370, B.wineDeep);
+  const grd = mkR("Gradient overlay", W, 370, { r:.05,g:.02,b:.01 });
+  grd.opacity = 0.55; f.appendChild(grd);
 
-// ── Inner Page Template ───────────────────────────────────
-function buildInnerPage(name, title, accentColor, sections) {
-  const W = 1440;
-  const page = mkFrame(name, W, 0, C.bg);
-  vAuto(page, 0, 0, 0, 0, 0);
-  page.appendChild(buildHeader(W));
+  const PAD = 80;
 
-  // Banner
-  const banner = mkFrame("Banner", W, 280, accentColor || C.fireDeep);
-  vFixed(banner, 16, 0, 0, 0, 0);
-  centered(banner);
-  const bc = mkText("בית / " + title, 13, C.white, F, "CENTER");
-  bc.opacity = 0.5;
-  bc.layoutAlign = "CENTER";
-  const bt = mkText(title, 56, C.white, FB, "CENTER");
-  bt.layoutAlign = "CENTER";
-  banner.appendChild(bc);
-  banner.appendChild(bt);
-  page.appendChild(banner);
+  // Brand col (right in RTL)
+  const c1x = PAD;
+  const li = imgBox("whitelogo.png", 100, 42, B.goldMain);
+  li.opacity = 0.95; li.x = c1x + 310; li.y = 44;
+  f.appendChild(li);
+  const tg = mkT("אומנות ואמינות. זו יצירה.", 18, B.white, FHB, "RIGHT");
+  tg.textAutoResize = "HEIGHT";
+  try { tg.resize(400, 26); } catch (_) {}
+  tg.x = c1x; tg.y = 100; f.appendChild(tg);
+  const tgsub = mkT("מוזיקה, יצירה ושירות מקצועי בשפה נקייה, מדויקת ומכובדת.",
+    13, { r:.9,g:.85,b:.78 }, FAR, "RIGHT");
+  tgsub.textAutoResize = "HEIGHT";
+  try { tgsub.resize(380, 42); } catch (_) {}
+  tgsub.x = c1x + 20; tgsub.y = 136; f.appendChild(tgsub);
 
-  sections.forEach(sec => {
-    const s = mkFrame(sec.name, W, 0, sec.bg || C.bg);
-    vAuto(s, 32, 72, 72, 80, 80);
+  const joinBtn = mkF("Btn · להצטר התפוצה", 168, 44, null);
+  joinBtn.cornerRadius = 999;
+  joinBtn.fills = [];
+  joinBtn.strokes = [{ type:"SOLID", color:{ r:1,g:1,b:1 } }];
+  joinBtn.strokeWeight = 1;
+  joinBtn.x = c1x + (410 - 168); joinBtn.y = 192;
+  hAutoCenter(joinBtn, 0, 20, 20, 0, 0);
+  joinBtn.primaryAxisSizingMode = "FIXED";
+  joinBtn.counterAxisSizingMode = "FIXED";
+  joinBtn.appendChild(mkT("להצטר התפוצה", 13, B.white, FSB, "CENTER"));
+  f.appendChild(joinBtn);
 
-    if (sec.title) {
-      const st = mkText(sec.title, 36, C.fg, FB, "RIGHT");
-      st.layoutAlign = "STRETCH";
-      st.textAutoResize = "HEIGHT";
-      s.appendChild(st);
-    }
-    if (sec.text) {
-      const sb = mkText(sec.text, 17, C.muted, F, "RIGHT");
-      sb.layoutAlign = "STRETCH";
-      sb.textAutoResize = "HEIGHT";
-      s.appendChild(sb);
-    }
-
-    if (sec.type === "cards") {
-      s.appendChild(mkCardsRow(W, sec.count || 3, 280));
-    }
-
-    if (sec.type === "form") {
-      const form = mkFrame("Form", 760, 0, null);
-      vAuto(form, 16, 0, 0, 0, 0);
-      form.fills = [];
-      form.clipsContent = false;
-      ["שם מלא", "אימייל", "טלפון", "נושא"].forEach(label => {
-        const field = mkFrame("Field — " + label, 760, 56, C.white);
-        field.cornerRadius = 12;
-        field.strokes = [{ type: "SOLID", color: C.border }];
-        field.strokeWeight = 1;
-        hFixed(field, 0, 0, 0, 20, 20);
-        field.counterAxisAlignItems = "CENTER";
-        field.appendChild(mkText(label, 14, C.muted, F, "RIGHT"));
-        form.appendChild(field);
-      });
-      const msg = mkFrame("Field — הודעה", 760, 140, C.white);
-      msg.cornerRadius = 12;
-      msg.strokes = [{ type: "SOLID", color: C.border }];
-      msg.strokeWeight = 1;
-      vFixed(msg, 0, 16, 0, 20, 20);
-      msg.appendChild(mkText("הודעה", 14, C.muted, F, "RIGHT"));
-      form.appendChild(msg);
-      form.appendChild(mkBtn("שלח הודעה", C.wineMain, C.white, 200));
-      s.appendChild(form);
-    }
-
-    if (sec.type === "blog-grid") {
-      const featured = mkFrame("Featured", W - 160, 420, C.card);
-      featured.cornerRadius = 24;
-      featured.primaryAxisSizingMode = "FIXED";
-      featured.counterAxisSizingMode = "FIXED";
-      addShadow(featured);
-      s.appendChild(featured);
-      s.appendChild(mkCardsRow(W, 4, 280));
-    }
-
-    page.appendChild(s);
+  // Nav col 2 — ניווט מהיר
+  const c2x = W / 2 - 60;
+  f.appendChild(mkT("ניווט מהיר", 15, B.white, FHB, "RIGHT")).x = c2x;
+  const n1h = f.children[f.children.length - 1]; n1h.y = 44;
+  ["דף הבית","אודות","תזמורות","הופעות","תלמידות","יצירת קשר"].forEach((l, i) => {
+    const t = mkT(l, 13, { r:.85,g:.78,b:.70 }, FAR, "RIGHT");
+    t.x = c2x; t.y = 76 + i * 28; f.appendChild(t);
   });
 
-  page.appendChild(buildCTABanner(W));
-  page.appendChild(buildFooter(W));
-  return page;
-}
-
-// ── Mobile Homepage ───────────────────────────────────────
-function buildMobileHomepage() {
-  const W = 390;
-  const page = mkFrame("📱 Homepage — Mobile", W, 0, C.bg);
-  vAuto(page, 0, 0, 0, 0, 0);
-
-  // Mobile Header
-  const mh = mkFrame("Header", W, 64, C.bg);
-  hFixed(mh, 0, 0, 0, 20, 20);
-  spaceBetween(mh);
-  const mLogo = mkRect("Logo", 88, 32, C.fireBright, 6);
-  mLogo.layoutAlign = "CENTER";
-  const burger = mkRect("Menu", 24, 18, C.fg, 3);
-  burger.layoutAlign = "CENTER";
-  mh.appendChild(mLogo);
-  mh.appendChild(burger);
-  page.appendChild(mh);
-
-  // Mobile Hero
-  const hero = mkFrame("Hero", W, 500, C.darkBg);
-  vFixed(hero, 20, 100, 60, 24, 24);
-  centered(hero);
-  const ht = mkText("המוזיקה מתחילה כאן", 40, C.white, FB, "CENTER");
-  ht.layoutAlign = "CENTER";
-  ht.textAutoResize = "HEIGHT";
-  ht.resize(320, 100);
-  const hs = mkText("הופעות, תזמורות, תלמידות — במקום אחד.", 16,
-    { r: 0.82, g: 0.79, b: 0.74 }, F, "CENTER");
-  hs.layoutAlign = "CENTER";
-  hs.textAutoResize = "HEIGHT";
-  hs.resize(300, 40);
-  const hBtn = mkBtn("גלי עכשיו", C.fireBright, C.darkBg, 160);
-  hBtn.layoutAlign = "CENTER";
-  hero.appendChild(ht);
-  hero.appendChild(hs);
-  hero.appendChild(hBtn);
-  page.appendChild(hero);
-
-  // Mobile category cards
-  const cats = mkFrame("Categories", W, 0, C.bg);
-  vAuto(cats, 12, 24, 24, 20, 20);
-  const mobileItems = [
-    { name: "הופעות",  color: C.fireCore   },
-    { name: "תזמורות", color: C.fireBright },
-    { name: "תלמידות", color: C.goldMain   },
-    { name: "תווים",   color: C.goldDark   },
-    { name: "בלוג",    color: C.wineLight  },
-    { name: "אודות",   color: C.wineMain   },
-  ];
-  mobileItems.forEach(item => {
-    const card = mkFrame(item.name, W - 40, 80, C.card);
-    card.cornerRadius = 16;
-    hFixed(card, 0, 0, 0, 20, 20);
-    spaceBetween(card);
-    const icon = mkRect("Icon", 44, 44, item.color, 10);
-    icon.layoutAlign = "CENTER";
-    const lbl = mkText(item.name, 17, C.fg, FSB, "RIGHT");
-    lbl.layoutAlign = "CENTER";
-    const arrow = mkText("←", 18, C.muted, F, "LEFT");
-    arrow.layoutAlign = "CENTER";
-    card.appendChild(arrow);
-    card.appendChild(lbl);
-    card.appendChild(icon);
-    cats.appendChild(card);
+  // Nav col 3 — עוד באתר
+  const c3x = W - PAD - 170;
+  f.appendChild(mkT("עוד באתר", 15, B.white, FHB, "RIGHT")).x = c3x;
+  const n2h = f.children[f.children.length - 1]; n2h.y = 44;
+  ["בלוג","יצירה","צמיחה","נסיעות","וולנס","מחברים"].forEach((l, i) => {
+    const t = mkT(l, 13, { r:.85,g:.78,b:.70 }, FAR, "RIGHT");
+    t.x = c3x; t.y = 76 + i * 28; f.appendChild(t);
   });
-  page.appendChild(cats);
 
-  page.appendChild(buildFooter(W));
+  // Divider + copyright
+  const div = mkR("Divider", W - PAD * 2, 1, { r:1,g:1,b:1 });
+  div.opacity = 0.10; div.x = PAD; div.y = 320; f.appendChild(div);
+
+  const legal = mkT("פרטיות  •  תנאים", 12, { r:.85,g:.78,b:.70 }, FAR);
+  legal.opacity = 0.55; legal.x = W - PAD - 150; legal.y = 337; f.appendChild(legal);
+
+  const copy = mkT("© 2025 Toby Music. כל הזכויות שמורות.", 12, B.white, FAR);
+  copy.opacity = 0.48; copy.x = PAD; copy.y = 337; f.appendChild(copy);
+
+  return f;
+}
+
+// ── Page assembler ────────────────────────────────────────────────
+function buildPage(themeKey, label) {
+  const W = 1440;
+  const T = themeKey === "light" ? LT : DK;
+  const isLight = themeKey === "light";
+  const sections = [
+    buildHeader(W, T),
+    buildHero(W, T, isLight),
+    buildMarquee(W),
+    buildGuide(W, T),
+    buildCardsGrid(W, T),
+    buildFooter(W),
+  ];
+  const totalH = sections.reduce((s, f) => s + f.height, 0);
+  const page = mkF(label, W, totalH, T.bg);
+  let y = 0;
+  sections.forEach(sec => { sec.x = 0; sec.y = y; page.appendChild(sec); y += sec.height; });
   return page;
 }
 
-// ── Main ──────────────────────────────────────────────────
+// ── Main ─────────────────────────────────────────────────────────
+const FONT_LIST = [
+  { family: "Frank Ruhl Libre", style: "Regular" },
+  { family: "Frank Ruhl Libre", style: "Bold"    },
+  { family: "Frank Ruhl Libre", style: "Black"   },
+  { family: "Assistant",        style: "Regular" },
+  { family: "Assistant",        style: "SemiBold"},
+  { family: "Inter",            style: "Regular" },
+  { family: "Inter",            style: "Bold"    },
+  { family: "Inter",            style: "SemiBold"},
+];
+
 async function main() {
-  await figma.loadFontAsync(F);
-  await figma.loadFontAsync(FB);
-  await figma.loadFontAsync(FSB);
+  for (const fnt of FONT_LIST) {
+    try { await figma.loadFontAsync(fnt); } catch (_) {
+      if (fnt.family === "Frank Ruhl Libre") {
+        if (fnt.style === "Regular") FHR = IR;
+        if (fnt.style === "Bold")    FHB = IB;
+        if (fnt.style === "Black")   FHK = IB;
+      }
+      if (fnt.family === "Assistant") {
+        if (fnt.style === "Regular")  FAR = IR;
+        if (fnt.style === "SemiBold") FSB = ISB;
+      }
+    }
+  }
 
-  figma.currentPage.name = "🎵 Toby Music — Screens";
+  figma.currentPage.name = "🎵 Toby Music — Homepage";
 
-  const frames = [
-    buildHomepage(),
-    buildMobileHomepage(),
-    buildInnerPage("📖 אודות",   "אודות",   C.wineDeep, [
-      { name: "Story",    title: "הסיפור של Toby Music",
-        text: "הסיפור, הדרך והאני מאמין של Toby Music — במקום אחד, ברור ומדויק." },
-      { name: "Values",   type: "cards", count: 3 },
-    ]),
-    buildInnerPage("👩‍🎓 תלמידות", "תלמידות", C.goldDark, [
-      { name: "Intro",    title: "תוכנית הלימודים",
-        text: "מרחב שמחבר בין לימוד, תרגול, התקדמות וקשר אישי — בצורה חיה ונעימה." },
-      { name: "Programs", type: "cards", count: 3 },
-    ]),
-    buildInnerPage("🎻 תזמורות", "תזמורות", C.fireCore, [
-      { name: "Intro",    title: "הרכבים לאירועים",
-        text: "הרכבים, סגנונות ואפשרויות שמתאימים לאירוע שלכם — בלי להסתבך." },
-      { name: "Groups",   type: "cards", count: 4 },
-    ]),
-    buildInnerPage("🎵 בלוג",    "בלוג",    C.wineMain, [
-      { name: "Articles", title: "מאמרים אחרונים", type: "blog-grid" },
-    ]),
-    buildInnerPage("📞 צור קשר", "צור קשר", C.fireDeep, [
-      { name: "Form",     title: "נשמח לשמוע ממך",  type: "form" },
-    ]),
-    buildInnerPage("🎭 הופעות",  "הופעות",  C.fireBright, [
-      { name: "Events",   title: "יומן הופעות",      type: "cards", count: 3 },
-    ]),
-    buildInnerPage("🎼 תווים",   "תווים",   C.goldMain, [
-      { name: "Library",  title: "ספריית תווים",     type: "cards", count: 6 },
-    ]),
-  ];
+  const lightPage = buildPage("light", "☀️ מצב יום — Light");
+  const darkPage  = buildPage("dark",  "🌙 מצב לילה — Dark");
+  lightPage.x = 0;    lightPage.y = 0;
+  darkPage.x  = 1640; darkPage.y  = 0;
+  figma.currentPage.appendChild(lightPage);
+  figma.currentPage.appendChild(darkPage);
 
-  let x = 0;
-  frames.forEach(p => {
-    p.x = x;
-    p.y = 0;
-    figma.currentPage.appendChild(p);
-    x += p.width + 200;
-  });
-
-  figma.viewport.scrollAndZoomIntoView(frames);
-  figma.notify("✅ Toby Music — כל המסכים נוצרו!", { timeout: 4000 });
+  figma.viewport.scrollAndZoomIntoView([lightPage, darkPage]);
+  figma.notify("✅ שני מסכי הבית נוצרו!", { timeout: 5000 });
   figma.closePlugin();
 }
 
