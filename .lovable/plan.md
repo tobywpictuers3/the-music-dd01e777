@@ -1,58 +1,76 @@
+# ייבוא דף הבית מ-Figma ל-Lovable
 
-מטרת התיקון: להחזיר תצוגה מקדימה פעילה, לא רק build תקין.
+## מה מצאתי בקובץ ה-Figma שלך
 
-מה מצאתי עכשיו:
-1. הבעיה המרכזית שעדיין שוברת את ה-preview היא ב-`src/pages/StudentsDemo.tsx`.
-   הקומפוננטה `InnerPageLayout` מקבלת רק:
-   `title`, `description`, `children`, `className`, `hidePresenter`
-   אבל ב-`StudentsDemo` עדיין מועברים אליה props לא חוקיים:
-   `eyebrow`, `intro`, `presenter`, `circle`.
-   זה תואם בדיוק לסוג השגיאה שיכול להפיל את Vite/TypeScript ולכן גם את התצוגה המקדימה.
+בדקתי את הקובץ דרך ה-Figma REST API עם הטוקן ששלחת. המצב:
 
-2. נתיבי התמונות כרגע נראים תקינים לפי התיקיות שקראתי:
-   `src/assets/students-demo/light`
-   `src/assets/students-demo/dark`
-   והשמות הקיימים תואמים לגרסה הנוכחית של ה-imports.
+- **Frame ראשי:** `41:2` בשם "1920w default", רוחב 1905×3327px
+- **מבנה פנימי:** רק שני ילדים — `Background` (41:3) ו-`Container` (41:146 — 250×897 בלבד, חלקי)
+- **המקור:** ייבוא של `localhost:4173` עם הפלאגין החינמי `html.to.design` ❤️ FREE
+- **משמעות:** הגרסה החינמית של html.to.design **משטחת את העץ** ונועלת חלק מהשכבות. אין כאן Auto Layout, אין קומפוננטות, ואין tokens — זו בעצם תמונה עם כמה שכבות שטוחות
 
-3. `CircleOrbit` כבר כולל `center?: ReactNode` בטיפוס, לכן זו כבר לא נראית כסיבת הכשל הראשית כרגע.
-   עם זאת, ה-prop עדיין לא נשלף מה-destructuring ולא מוצג בפועל, אז זה תיקון משלים ולא blocker לבנייה.
+לכן ייבוא 1:1 של מבנה ה-Figma הזה לקוד **לא יביא ערך** — הקוד שלך כבר עשיר ומובנה הרבה יותר ממה שיש שם.
 
-תוכנית תיקון:
-1. לתקן את `StudentsDemo.tsx`
-   - להסיר מ-`InnerPageLayout` את כל ה-props הלא נתמכים.
-   - להשאיר רק props חוקיים.
-   - להעביר את תוכן ההירו לאחד משני מסלולים:
-     - או לבנות אותו כ-children רגילים בתוך `InnerPageLayout`
-     - או להשתמש ב-`InnerPageOrbitHero` לפני שאר תוכן הדף, לפי הדפוס שכבר קיים בדפים אחרים כמו `Students.tsx` ו-`Orchestras.tsx`.
+## הדרך המיטבית לייבא — שלוש שכבות במקביל
 
-2. ליישר את מבנה הדף עם הפטרן הקיים בפרויקט
-   - להשתמש במבנה:
-     `InnerPageLayout` -> hero component -> sections/content
-   - כך נמנע props מומצאים ונחזור למבנה שכבר עובד בשאר הדפים.
+### שכבה 1 — ייבוא ויזואלי כרפרנס (אוטומטי, מיידי)
 
-3. להשלים את `CircleOrbit`
-   - להוסיף destructuring של `center`
-   - ואם צריך, גם לרנדר אותו במרכז המעגל
-   - זה לא כנראה שובר build כרגע, אבל יסגור חוסר עקביות בין `InnerPageOrbitHero` ל-`CircleOrbit`.
+אני מוריד את הרינדור המלא של ה-Frame כ-PNG ברזולוציה גבוהה ושומר אותו ב-`/mnt/documents/` כקובץ רפרנס. את תוכלי לפתוח אותו ולהשוות ויזואלית מול הקוד החי.
 
-4. לבצע בדיקת שאריות לשגיאות preview
-   - לחפש עוד שימושים דומים של props לא חוקיים
-   - לבדוק שאין עוד import שבור או mismatch של extensions/שמות קבצים
-   - לוודא שאין מנגנון cache/service worker שמפריע; כרגע לא מצאתי שום registration של service worker בפרויקט, לכן זה פחות חשוד מהשגיאה ב-`StudentsDemo`.
+```text
+GET /v1/images?ids=41:2&format=png&scale=2
+→ /mnt/documents/figma-home-light.png
+```
 
-תוצאה צפויה אחרי היישום:
-- שרת הפיתוח יחזור להיטען
-- ה-live preview יחזור להתעדכן
-- דף `StudentsDemo` יעבוד בלי לשבור את כל סביבת התצוגה המקדימה
+### שכבה 2 — חילוץ Design Tokens מ-Figma (אוטומטי)
 
-פרטים טכניים:
-- קבצים עיקריים:
-  - `src/pages/StudentsDemo.tsx`
-  - `src/components/InnerPageLayout.tsx`
-  - `src/components/orbit/CircleOrbit.tsx`
-  - להשוואת דפוס עבודה:
-    - `src/pages/Students.tsx`
-    - `src/pages/Orchestras.tsx`
+אני סורק את כל הצמתים תחת `41:2` עם `/v1/files/.../nodes?ids=41:2&depth=∞` ומחלץ:
+- **צבעים** (כל ה-`fills` הייחודיים) → השוואה מול `src/design-system/tokens.json`
+- **טיפוגרפיה** (font family, size, weight בכל TEXT node) → השוואה מול הטוקנים
+- **רדיוסים, צללים, מרווחים** של ה-Frames
 
-הערה חשובה:
-מהבדיקה הנוכחית, אני כן יודע מה הבעיה העיקרית: `StudentsDemo` עדיין משתמש ב-API לא קיים של `InnerPageLayout`, וזה כרגע החשוד מספר 1 לכשל התצוגה המקדימה.
+הפלט: דוח `/mnt/documents/figma-vs-code-tokens.md` שמראה איפה הקוד והעיצוב חופפים ואיפה לא — זו הרשימה המדויקת לפעולה.
+
+### שכבה 3 — מיפוי מבני Frame → Component (ידני, מודרך)
+
+מאחר שעץ ה-Figma שטוח, אני אזהה אזורים ב-PNG (Header / Hero Stage / Marquee / Footer) ואצמיד כל אזור לקומפוננטה הקיימת בקוד:
+
+| אזור ב-Figma (ויזואלי) | קומפוננטה בקוד |
+|------------------------|----------------|
+| העליון (לוגו + ניווט) | `src/components/Header.tsx` |
+| הסטייג' עם הדמויות | `src/components/HeroSection.tsx` + `STAGE_CHARACTERS` ב-`src/config/homepage.ts` |
+| המגיש המרכזי | `src/components/GuidePresenter.tsx` |
+| ה-Marquee הזורם | `MARQUEE_ITEMS` ב-`src/config/homepage.ts` |
+| הפוטר | `src/components/Footer.tsx` |
+
+עבור כל אזור — אם זיהיתי שינוי מול הקוד הנוכחי (צבע/טקסט/מיקום), אכתוב אותו כפעולה קונקרטית.
+
+## מה אני אעשה ברגע שתאשרי
+
+1. **משוך את ה-PNG** ברזולוציה ×2 לתוך `/mnt/documents/figma-home-light.png` ואציג לך תצוגה מקדימה.
+2. **משוך את עץ הצמתים המלא** של `41:2` (depth מקסימלי) ואחלץ ממנו את כל ה-tokens הייחודיים.
+3. **צור דוח השוואה** `/mnt/documents/figma-vs-code-tokens.md`:
+   - צבעים שב-Figma ולא בקוד / להפך
+   - גופנים ומשקלים
+   - הפרשי גדלי טיפוגרפיה
+   - הפרשי רדיוסים/צללים
+4. **צור תוכנית פעולה ממוקדת** במסמך `/mnt/documents/home-light-action-plan.md`:
+   - רשימת שינויים מומלצת עם מיקום מדויק בקוד (קובץ + שורה)
+   - לכל שינוי: ערך נוכחי → ערך מוצע מה-Figma
+5. **לא משנה כלום בקוד** עד שתאשרי שינוי-שינוי, או תגידי "תיישם הכל".
+
+## למה לא ייבוא ישיר Frame → JSX?
+
+כי המקור ב-Figma הוא ייבוא חוזר של האתר עצמו דרך פלאגין חינמי שמשטח את כל המבנה. כל ייבוא JSX מהעץ הזה ייצר קוד גרוע יותר ממה שכבר קיים (divs מקוננים בלי סמנטיקה, מיקומים מוחלטים בפיקסלים, בלי responsive). הדרך הנכונה היא לקחת את ה-Figma כ**מקור ויזואלי וכמקור ל-tokens**, ולהמשיך לערוך את הקומפוננטות הקיימות.
+
+## אם בעתיד תרצי ייבוא Frame → JSX איכותי
+
+צריך לעצב את הדף ב-Figma מאפס עם:
+- Auto Layout בכל Frame
+- Components + Variants לכל אלמנט חוזר
+- Variables (Color/Number/String) במקום ערכים קשיחים
+
+ואז דרך **Lovable Desktop + Figma MCP** (לא REST API), אני יכול לקרוא את ה-Frame המסומן ולממש אותו בקוד. את הנתיב הזה אפשר להפעיל בכל שלב.
+
+## מה את צריכה לעשות
+רק לאשר את התוכנית. כל השאר אוטומטי בצד שלי, באמצעות ה-API token ששלחת. הטוקן יישאר בשימוש רק לקריאות read-only (קריאת קובץ + רינדור תמונות) ולא יישמר בקוד.
