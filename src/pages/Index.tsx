@@ -296,15 +296,8 @@ export default function Index() {
                 </a>
               </h1>
 
-              <p className="mt-4 rounded-full bg-foreground/5 px-6 py-2 text-[clamp(14px,1.4vw,22px)] text-foreground/80 backdrop-blur-sm">
-                {HERO_TEXT.supportLine}
-              </p>
-
-              <p className="mt-3 text-[clamp(16px,1.6vw,26px)] font-bold text-foreground/90">
-                {HERO_TEXT.sloganPrefix}{" "}
-                <span className="bg-gradient-to-l from-accent via-primary to-accent bg-clip-text text-transparent">
-                  {HERO_TEXT.sloganAccent}
-                </span>
+              <p className="mt-3 text-[clamp(15px,1.5vw,24px)] font-semibold text-foreground/75">
+                {HERO_TEXT.sloganPrefix} {HERO_TEXT.sloganAccent}
               </p>
             </div>
 
@@ -401,45 +394,55 @@ export default function Index() {
         <AppearOnScroll>
           <section className="border-y border-black/10 bg-white px-4 py-12 dark:border-border dark:bg-card md:px-8 md:py-20" dir="rtl">
             <div className="mx-auto max-w-7xl">
+              {/* שורה עליונה — 4 כרטיסים */}
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
-                {STAGE_CHARACTERS.map((char) => (
+                {STAGE_CHARACTERS.slice(0, 4).map((char) => (
                   <Link
                     key={char.href}
                     to={char.href}
                     className="group relative overflow-hidden rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-border dark:bg-card md:p-8"
                   >
-                    <img
-                      src={texStarsLight}
-                      alt=""
-                      className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.12] dark:hidden"
-                    />
-
-                    <img
-                      src={texStarsDark}
-                      alt=""
-                      className="pointer-events-none absolute inset-0 hidden h-full w-full object-cover opacity-[0.15] dark:block"
-                    />
-
+                    <img src={texStarsLight} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.12] dark:hidden" />
+                    <img src={texStarsDark} alt="" className="pointer-events-none absolute inset-0 hidden h-full w-full object-cover opacity-[0.15] dark:block" />
                     <div className="relative z-10">
                       <img
                         src={PRESENTER_MAP[char.character]}
                         alt={char.title}
                         className={`mx-auto mb-4 drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)] ${
-                          char.character === "drums"
-                            ? "w-36 md:w-44 xl:w-52"
-                            : char.character === "presenter"
-                            ? "w-28 md:w-32 xl:w-36"
-                            : "w-24 md:w-28 xl:w-32"
+                          char.character === "drums" ? "w-36 md:w-44 xl:w-52"
+                          : char.character === "presenter" ? "w-28 md:w-32 xl:w-36"
+                          : "w-24 md:w-28 xl:w-32"
                         }`}
                       />
+                      <h3 className="mb-2 text-xl font-bold text-foreground transition-colors group-hover:text-accent">{char.title}</h3>
+                      <p className="text-sm leading-7 text-muted-foreground">{char.quote}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
 
-                      <h3 className="mb-2 text-xl font-bold text-foreground transition-colors group-hover:text-accent">
-                        {char.title}
-                      </h3>
-
-                      <p className="text-sm leading-7 text-muted-foreground">
-                        {char.quote}
-                      </p>
+              {/* שורה תחתונה — 3 כרטיסים ממורכזים */}
+              <div className="mx-auto mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 xl:max-w-[calc(75%-8px)] xl:grid-cols-3">
+                {STAGE_CHARACTERS.slice(4).map((char) => (
+                  <Link
+                    key={char.href}
+                    to={char.href}
+                    className="group relative overflow-hidden rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-border dark:bg-card md:p-8"
+                  >
+                    <img src={texStarsLight} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.12] dark:hidden" />
+                    <img src={texStarsDark} alt="" className="pointer-events-none absolute inset-0 hidden h-full w-full object-cover opacity-[0.15] dark:block" />
+                    <div className="relative z-10">
+                      <img
+                        src={PRESENTER_MAP[char.character]}
+                        alt={char.title}
+                        className={`mx-auto mb-4 drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)] ${
+                          char.character === "drums" ? "w-36 md:w-44 xl:w-52"
+                          : char.character === "presenter" ? "w-28 md:w-32 xl:w-36"
+                          : "w-24 md:w-28 xl:w-32"
+                        }`}
+                      />
+                      <h3 className="mb-2 text-xl font-bold text-foreground transition-colors group-hover:text-accent">{char.title}</h3>
+                      <p className="text-sm leading-7 text-muted-foreground">{char.quote}</p>
                     </div>
                   </Link>
                 ))}
