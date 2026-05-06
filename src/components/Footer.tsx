@@ -43,7 +43,7 @@ const footerSections: FooterSection[] = [
 ];
 
 const newsletterLink: FooterLink = {
-  label: "להצטר התפוצה",
+  label: "להצטרף לתפוצה",
   href: "/contact",
 };
 
