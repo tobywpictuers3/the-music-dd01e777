@@ -12,133 +12,144 @@
 
 @layer base {
   :root {
-    /* ── TOBY music — Brand Palette v2.0 — Light Mode ── */
-    --background: 40 29% 94%;        /* #F5F1EA Cream */
-    --foreground: 240 7% 7%;         /* #0F0F12 */
+    /* ── TOBY music Brand Palette v2.0 ── */
+    /* Background & surfaces — dark warm (light mode) */
+    --background: 40 33% 95%;        /* #F5F1EA Cream */
+    --foreground: 240 7% 7%;         /* #0F0F12 Primary Dark */
 
-    --card: 38 28% 90%;
+    --card: 35 30% 90%;
     --card-foreground: 240 7% 7%;
 
-    --popover: 38 28% 90%;
+    --popover: 35 30% 90%;
     --popover-foreground: 240 7% 7%;
 
-    --primary: 41 47% 57%;           /* #C9A961 Gold */
+    /* Primary — Matte Gold */
+    --primary: 41 47% 57%;           /* #C9A961 Gold Flat */
     --primary-foreground: 240 7% 7%;
 
-    --secondary: 40 22% 84%;
+    --secondary: 40 25% 82%;
     --secondary-foreground: 240 7% 12%;
 
-    --muted: 38 18% 86%;
-    --muted-foreground: 20 10% 46%;
+    --muted: 38 20% 86%;
+    --muted-foreground: 20 10% 48%;
 
-    --accent: 349 55% 27%;           /* #6B1F2A Burgundy */
-    --accent-foreground: 40 29% 94%;
+    /* Accent — Signature Burgundy */
+    --accent: 350 55% 27%;           /* #6B1F2A Burgundy */
+    --accent-foreground: 40 33% 95%;
 
-    --destructive: 349 62% 36%;      /* #8B2A37 */
+    --destructive: 349 62% 36%;      /* #8B2A37 Wine Light */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 349 40% 38%;
-    --input: 38 18% 82%;
+    --border: 350 42% 40%;           /* #6B1F2A soft */
+    --input: 38 20% 82%;
     --ring: 41 47% 57%;
 
     --radius: 0.9rem;
 
-    --fire-bright: 41 47% 57%;
-    --fire-core:   349 62% 36%;
-    --fire-deep:   349 55% 27%;
+    /* Fire brand tokens */
+    --fire-bright: 41 47% 57%;       /* #C9A961 */
+    --fire-core: 349 62% 36%;        /* #8B2A37 */
+    --fire-deep: 350 55% 27%;        /* #6B1F2A */
 
-    --gold-light: 47 91% 81%;
-    --gold-main:  41 47% 57%;
-    --gold-dark:  41 40% 42%;
+    /* Gold brand tokens */
+    --gold-light: 47 91% 81%;        /* #FFE5A0 */
+    --gold-main: 41 47% 57%;         /* #C9A961 */
+    --gold-dark: 41 40% 42%;
 
-    --wine-deep:  349 55% 27%;
-    --wine-main:  349 62% 36%;
-    --wine-light: 349 50% 42%;
+    /* Wine brand tokens */
+    --wine-deep: 350 55% 27%;        /* #6B1F2A */
+    --wine-main: 349 62% 36%;        /* #8B2A37 */
+    --wine-light: 349 55% 42%;
 
-    --sidebar-background: 40 29% 94%;
+    --sidebar-background: 40 33% 95%;
     --sidebar-foreground: 240 7% 7%;
     --sidebar-primary: 41 47% 57%;
     --sidebar-primary-foreground: 240 7% 7%;
-    --sidebar-accent: 40 22% 84%;
+    --sidebar-accent: 40 25% 82%;
     --sidebar-accent-foreground: 240 7% 12%;
-    --sidebar-border: 38 18% 82%;
+    --sidebar-border: 38 20% 82%;
     --sidebar-ring: 41 47% 57%;
 
     --tag-financing: 40 74% 84%;
     --tag-lifestyle: 42 34% 84%;
-    --tag-community: 349 34% 82%;
-    --tag-wellness:  140 22% 80%;
-    --tag-travel:    196 34% 80%;
-    --tag-creativity:349 28% 82%;
-    --tag-growth:    50 38% 80%;
+    --tag-community: 350 34% 82%;
+    --tag-wellness: 140 22% 80%;
+    --tag-travel: 196 34% 80%;
+    --tag-creativity: 349 28% 82%;
+    --tag-growth: 50 38% 80%;
 
-    --shadow-soft:  0 14px 36px rgba(107,31,42,0.08);
-    --shadow-hover: 0 22px 46px rgba(107,31,42,0.14);
-    --glow-gold:    0 0 0 1px rgba(201,169,97,0.22), 0 12px 42px rgba(201,169,97,0.18);
+    --shadow-soft: 0 14px 36px rgba(107, 31, 42, 0.08);
+    --shadow-hover: 0 22px 46px rgba(107, 31, 42, 0.14);
+    --glow-gold: 0 0 0 1px rgba(201, 169, 97, 0.22), 0 12px 42px rgba(201, 169, 97, 0.18);
   }
 
   .dark {
-    /* ── TOBY music — Brand Palette v2.0 — Dark Mode (DEFAULT) ── */
+    /* Background & surfaces — dark mode (TOBY primary) */
     --background: 240 7% 7%;         /* #0F0F12 Primary Dark */
-    --foreground: 40 29% 94%;        /* #F5F1EA Cream */
+    --foreground: 40 33% 95%;        /* #F5F1EA Cream */
 
-    --card: 345 22% 9%;              /* ~#140D10 */
-    --card-foreground: 40 29% 94%;
+    --card: 345 20% 9%;              /* #140D10 deep card */
+    --card-foreground: 40 33% 95%;
 
-    --popover: 345 22% 9%;
-    --popover-foreground: 40 29% 94%;
+    --popover: 345 20% 9%;
+    --popover-foreground: 40 33% 95%;
 
-    --primary: 41 47% 57%;           /* #C9A961 Gold */
+    /* Primary — Matte Gold */
+    --primary: 41 47% 57%;           /* #C9A961 */
     --primary-foreground: 240 7% 7%;
 
-    --secondary: 345 18% 13%;
-    --secondary-foreground: 40 29% 94%;
+    --secondary: 345 18% 12%;
+    --secondary-foreground: 40 33% 95%;
 
-    --muted: 345 14% 15%;
-    --muted-foreground: 38 20% 58%;
+    --muted: 345 15% 14%;
+    --muted-foreground: 38 18% 60%;
 
-    --accent: 349 55% 27%;           /* #6B1F2A Burgundy */
-    --accent-foreground: 40 29% 94%;
+    /* Accent — Signature Burgundy */
+    --accent: 350 55% 27%;           /* #6B1F2A */
+    --accent-foreground: 40 33% 95%;
 
     --destructive: 349 62% 36%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 349 55% 27%;           /* #6B1F2A */
-    --input: 345 18% 15%;
+    --border: 350 55% 27%;           /* #6B1F2A */
+    --input: 345 18% 14%;
     --ring: 41 47% 57%;
 
+    /* Fire brand tokens */
     --fire-bright: 41 47% 57%;
-    --fire-core:   349 62% 36%;
-    --fire-deep:   349 55% 27%;
+    --fire-core: 349 62% 36%;
+    --fire-deep: 350 55% 27%;
 
+    /* Gold brand tokens */
     --gold-light: 47 91% 81%;        /* #FFE5A0 */
-    --gold-main:  41 47% 57%;        /* #C9A961 */
-    --gold-dark:  41 40% 42%;
+    --gold-main: 41 47% 57%;         /* #C9A961 */
+    --gold-dark: 41 40% 42%;
 
-    --wine-deep:  349 55% 27%;       /* #6B1F2A */
-    --wine-main:  349 62% 36%;       /* #8B2A37 */
-    --wine-light: 349 50% 42%;
+    /* Wine brand tokens */
+    --wine-deep: 350 55% 27%;
+    --wine-main: 349 62% 36%;
+    --wine-light: 349 55% 42%;
 
     --sidebar-background: 240 7% 7%;
-    --sidebar-foreground: 40 29% 94%;
+    --sidebar-foreground: 40 33% 95%;
     --sidebar-primary: 41 47% 57%;
     --sidebar-primary-foreground: 240 7% 7%;
-    --sidebar-accent: 345 18% 13%;
-    --sidebar-accent-foreground: 40 29% 94%;
-    --sidebar-border: 349 55% 27%;
+    --sidebar-accent: 345 18% 12%;
+    --sidebar-accent-foreground: 40 33% 95%;
+    --sidebar-border: 350 55% 27%;
     --sidebar-ring: 41 47% 57%;
 
     --tag-financing: 39 46% 29%;
     --tag-lifestyle: 41 20% 24%;
-    --tag-community: 349 28% 28%;
-    --tag-wellness:  140 16% 24%;
-    --tag-travel:    196 24% 24%;
-    --tag-creativity:349 22% 26%;
-    --tag-growth:    50 24% 24%;
+    --tag-community: 350 28% 28%;
+    --tag-wellness: 140 16% 24%;
+    --tag-travel: 196 24% 24%;
+    --tag-creativity: 349 22% 26%;
+    --tag-growth: 50 24% 24%;
 
-    --shadow-soft:  0 18px 48px rgba(0,0,0,0.55);
-    --shadow-hover: 0 24px 60px rgba(0,0,0,0.7);
-    --glow-gold:    0 0 0 1px rgba(201,169,97,0.28), 0 14px 50px rgba(201,169,97,0.22);
+    --shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 24px 60px rgba(0, 0, 0, 0.65);
+    --glow-gold: 0 0 0 1px rgba(201, 169, 97, 0.28), 0 14px 50px rgba(201, 169, 97, 0.22);
   }
 }
 
@@ -195,7 +206,6 @@
   .pill-nav {
     @apply rounded-full border bg-card;
     box-shadow: var(--shadow-soft);
-    border-color: hsl(var(--border)) !important;
   }
 
   .floating-button {
@@ -586,152 +596,5 @@
     border-image: linear-gradient(110deg, #8B2A37, #C9A961, #FFE5A0, #C9A961, #6B1F2A) 1;
   }
 
-
-  /* ═══════════════════════════════════════════
-     TOBY music — Brand Utilities v2.0
-     פלטת: #0F0F12 · #6B1F2A · #8B2A37 · #C9A961 · #FFE5A0 · #F5F1EA
-  ═══════════════════════════════════════════ */
-
-  /* Fire gradient — the signature TOBY motion */
-  .toby-gradient-fire {
-    background: linear-gradient(110deg,
-      #8B2A37 0%,
-      #C9A961 30%,
-      #FFE5A0 50%,
-      #C9A961 70%,
-      #6B1F2A 100%
-    );
-  }
-
-  .toby-text-fire {
-    background: linear-gradient(110deg, #8B2A37, #C9A961, #FFE5A0, #C9A961, #6B1F2A);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Primary CTA — fire gradient pill */
-  .toby-btn-primary {
-    background: linear-gradient(110deg, #8B2A37, #C9A961, #FFE5A0, #C9A961, #6B1F2A);
-    color: #0F0F12;
-    font-family: 'Heebo', sans-serif;
-    font-weight: 700;
-    border-radius: 9999px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(201,169,97,0.3);
-    transition: opacity 0.2s, transform 0.2s;
-  }
-  .toby-btn-primary:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-  }
-
-  /* Stage theatrical elements */
-  .toby-stage-curtain-l {
-    position: absolute; top: 0; left: 0;
-    width: 11%; height: 100%;
-    background: linear-gradient(90deg, #3D0A0A 0%, #6B1818 50%, transparent 100%);
-    z-index: 3; pointer-events: none;
-  }
-  .toby-stage-curtain-r {
-    position: absolute; top: 0; right: 0;
-    width: 11%; height: 100%;
-    background: linear-gradient(-90deg, #3D0A0A 0%, #6B1818 50%, transparent 100%);
-    z-index: 3; pointer-events: none;
-  }
-  .toby-stage-arch-l {
-    position: absolute; top: 0; left: 0;
-    width: 8.5%; height: 60%;
-    background: linear-gradient(135deg, #8B2020 0%, #6B1818 100%);
-    clip-path: ellipse(100% 100% at 0% 0%);
-    z-index: 4; pointer-events: none;
-  }
-  .toby-stage-arch-r {
-    position: absolute; top: 0; right: 0;
-    width: 8.5%; height: 60%;
-    background: linear-gradient(-135deg, #8B2020 0%, #6B1818 100%);
-    clip-path: ellipse(100% 100% at 100% 0%);
-    z-index: 4; pointer-events: none;
-  }
-  .toby-stage-trim-l {
-    position: absolute; top: 0; left: 8.5%;
-    width: 2px; height: 60%;
-    background: linear-gradient(180deg, #C9A961 0%, #6B1F2A 100%);
-    z-index: 5; pointer-events: none;
-  }
-  .toby-stage-trim-r {
-    position: absolute; top: 0; right: 8.5%;
-    width: 2px; height: 60%;
-    background: linear-gradient(180deg, #C9A961 0%, #6B1F2A 100%);
-    z-index: 5; pointer-events: none;
-  }
-  .toby-stage-rim {
-    position: absolute; bottom: 68px; left: 9%; right: 9%;
-    height: 3px;
-    background: linear-gradient(90deg,
-      transparent,
-      #C9A961 10%,
-      #FFE5A0 50%,
-      #C9A961 90%,
-      transparent
-    );
-    border-radius: 50%; z-index: 6; pointer-events: none;
-  }
-  .toby-stage-floor {
-    position: absolute; bottom: 0; left: 9%; right: 9%;
-    height: 70px;
-    background: linear-gradient(180deg, #2A1408 0%, #150A04 100%);
-    border-radius: 50% 50% 0 0 / 20px 20px 0 0;
-    z-index: 6; pointer-events: none;
-  }
-
-  @keyframes toby-spotlight-pulse {
-    0%, 100% { opacity: 0.12; }
-    50%       { opacity: 0.22; }
-  }
-  .toby-spotlight {
-    position: absolute; top: 0;
-    width: 2px;
-    transform-origin: top center;
-    background: linear-gradient(180deg, rgba(201,169,97,0.18) 0%, transparent 100%);
-    animation: toby-spotlight-pulse 4s ease-in-out infinite;
-    pointer-events: none; z-index: 2;
-  }
-
-  /* Character hover — used in card grid */
-  .toby-char-hover {
-    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), filter 0.35s ease;
-  }
-  .toby-char-hover:hover {
-    transform: translateY(-14px) scale(1.07);
-    filter: drop-shadow(0 0 20px rgba(201,169,97,0.6));
-  }
-
-  /* Cards */
-  .toby-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-radius: var(--radius);
-    position: relative; overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-  }
-  .toby-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, #6B1F2A, #C9A961, #6B1F2A);
-    opacity: 0; transition: opacity 0.2s;
-  }
-  .toby-card:hover { border-color: #C9A961; transform: translateY(-3px); box-shadow: var(--shadow-hover); }
-  .toby-card:hover::before { opacity: 1; }
-
-  /* Footer fire border */
-  .toby-footer-border {
-    border-top: 3px solid transparent;
-    border-image: linear-gradient(110deg,#8B2A37,#C9A961,#FFE5A0,#C9A961,#6B1F2A) 1;
-  }
-
-  /* Heebo body font override */
-  .toby-body { font-family: 'Heebo', 'Assistant', sans-serif; }
 
 }
