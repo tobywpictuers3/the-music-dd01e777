@@ -238,78 +238,6 @@ export default function Index() {
           animation: stage-spotlight 4s ease-in-out infinite;
           pointer-events: none; z-index: 2;
         }
-
-        /* ── TOBY Stage Overlays ── */
-        @keyframes toby-spot-pulse {
-          0%, 100% { opacity: 0.13; }
-          50%       { opacity: 0.24; }
-        }
-        .toby-stage-curtain-l {
-          position:absolute;top:0;left:0;width:11%;height:100%;
-          background:linear-gradient(90deg,#3D0A0A 0%,#6B1818 55%,transparent 100%);
-          z-index:3;pointer-events:none;
-        }
-        .toby-stage-curtain-r {
-          position:absolute;top:0;right:0;width:11%;height:100%;
-          background:linear-gradient(-90deg,#3D0A0A 0%,#6B1818 55%,transparent 100%);
-          z-index:3;pointer-events:none;
-        }
-        .toby-stage-arch-l {
-          position:absolute;top:0;left:0;width:8.5%;height:60%;
-          background:linear-gradient(135deg,#8B2020,#6B1818);
-          clip-path:ellipse(100% 100% at 0% 0%);
-          z-index:4;pointer-events:none;
-        }
-        .toby-stage-arch-r {
-          position:absolute;top:0;right:0;width:8.5%;height:60%;
-          background:linear-gradient(-135deg,#8B2020,#6B1818);
-          clip-path:ellipse(100% 100% at 100% 0%);
-          z-index:4;pointer-events:none;
-        }
-        .toby-stage-trim-l {
-          position:absolute;top:0;left:8.5%;width:2px;height:60%;
-          background:linear-gradient(180deg,#C9A961,#6B1F2A);
-          z-index:5;pointer-events:none;
-        }
-        .toby-stage-trim-r {
-          position:absolute;top:0;right:8.5%;width:2px;height:60%;
-          background:linear-gradient(180deg,#C9A961,#6B1F2A);
-          z-index:5;pointer-events:none;
-        }
-        .toby-stage-rim {
-          position:absolute;bottom:68px;left:9%;right:9%;height:3px;
-          background:linear-gradient(90deg,transparent,#C9A961 10%,#FFE5A0 50%,#C9A961 90%,transparent);
-          border-radius:50%;z-index:6;pointer-events:none;
-        }
-        .toby-stage-floor {
-          position:absolute;bottom:0;left:9%;right:9%;height:70px;
-          background:linear-gradient(180deg,#2A1408 0%,#150A04 100%);
-          border-radius:50% 50% 0 0 / 20px 20px 0 0;
-          z-index:6;pointer-events:none;
-        }
-        .toby-stage-dots {
-          position:absolute;bottom:16px;left:11%;right:11%;
-          display:flex;justify-content:space-evenly;
-          z-index:7;pointer-events:none;
-        }
-        .toby-dot {
-          width:8px;height:8px;border-radius:50%;
-          background:#C9A961;box-shadow:0 0 6px rgba(201,169,97,0.9);
-        }
-        .toby-spotlight {
-          position:absolute;top:0;width:2px;
-          transform-origin:top center;
-          background:linear-gradient(180deg,rgba(201,169,97,0.18) 0%,transparent 100%);
-          animation:toby-spot-pulse 4s ease-in-out infinite;
-          pointer-events:none;z-index:2;
-        }
-        .toby-char-hover {
-          transition:transform 0.35s cubic-bezier(0.16,1,0.3,1),filter 0.35s ease;
-        }
-        .toby-char-hover:hover {
-          transform:translateY(-14px) scale(1.07);
-          filter:drop-shadow(0 0 20px rgba(201,169,97,0.6));
-        }
       `}</style>
 
       <div className="min-h-screen bg-background text-foreground">
@@ -350,30 +278,6 @@ export default function Index() {
               className="hidden h-full w-full object-cover dark:block"
             />
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
-
-          {/* ── TOBY Stage Theatrical Overlays ── */}
-          <div className="toby-stage-curtain-l" aria-hidden="true" />
-          <div className="toby-stage-curtain-r" aria-hidden="true" />
-          <div className="toby-stage-arch-l" aria-hidden="true" />
-          <div className="toby-stage-arch-r" aria-hidden="true" />
-          <div className="toby-stage-trim-l" aria-hidden="true" />
-          <div className="toby-stage-trim-r" aria-hidden="true" />
-          {[
-            {left:"21%",rot:-20,delay:"0s",h:"270px"},
-            {left:"33%",rot:-7, delay:"0.7s",h:"290px"},
-            {left:"50%",rot:0,  delay:"1.4s",h:"300px"},
-            {left:"67%",rot:7,  delay:"0.7s",h:"290px"},
-            {left:"79%",rot:20, delay:"0s",h:"270px"},
-          ].map((s,i) => (
-            <div key={i} className="toby-spotlight" aria-hidden="true"
-              style={{left:s.left, height:s.h, transform:`rotate(${s.rot}deg)`, animationDelay:s.delay}} />
-          ))}
-          <div className="toby-stage-rim" aria-hidden="true" />
-          <div className="toby-stage-floor" aria-hidden="true" />
-          <div className="toby-stage-dots" aria-hidden="true">
-            {Array.from({length:9}).map((_,i) => <div key={i} className="toby-dot" />)}
-          </div>
-
 
           {/* Stage theatrical overlays */}
           <div className="stage-curtain-left" aria-hidden="true" />
