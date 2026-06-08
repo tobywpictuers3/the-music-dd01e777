@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;700&display=swap');
+
+
 /*
   Toby Music – Brand Design System v2.0
   פלטת אש-זהב-יין | Frank Ruhl Libre + Cormorant Garamond + Assistant
@@ -9,143 +12,144 @@
 
 @layer base {
   :root {
-    /* Background & surfaces — Neutral warm (light mode) */
-    --background: 38 38% 95%;        /* #F8F4EE Neutral 50 */
-    --foreground: 20 28% 12%;        /* #231710 dark warm */
+    /* ── TOBY music Brand Palette v2.0 ── */
+    /* Background & surfaces — dark warm (light mode) */
+    --background: 40 33% 95%;        /* #F5F1EA Cream */
+    --foreground: 240 7% 7%;         /* #0F0F12 Primary Dark */
 
-    --card: 30 29% 89%;              /* #EDE4D9 Neutral 100 */
-    --card-foreground: 20 28% 12%;
+    --card: 35 30% 90%;
+    --card-foreground: 240 7% 7%;
 
-    --popover: 30 29% 89%;
-    --popover-foreground: 20 28% 12%;
+    --popover: 35 30% 90%;
+    --popover-foreground: 240 7% 7%;
 
-    /* Primary — Fire */
-    --primary: 32 92% 54%;           /* #F3921E Fire Bright */
-    --primary-foreground: 20 28% 12%;
+    /* Primary — Matte Gold */
+    --primary: 41 47% 57%;           /* #C9A961 Gold Flat */
+    --primary-foreground: 240 7% 7%;
 
-    --secondary: 27 20% 78%;
-    --secondary-foreground: 20 20% 18%;
+    --secondary: 40 25% 82%;
+    --secondary-foreground: 240 7% 12%;
 
-    --muted: 30 18% 85%;
-    --muted-foreground: 19 9% 49%;   /* #8A7A72 Neutral 500 */
+    --muted: 38 20% 86%;
+    --muted-foreground: 20 10% 48%;
 
-    /* Accent — Wine */
-    --accent: 351 55% 40%;           /* #9E2E3F Wine Main */
-    --accent-foreground: 0 0% 100%;
+    /* Accent — Signature Burgundy */
+    --accent: 350 55% 27%;           /* #6B1F2A Burgundy */
+    --accent-foreground: 40 33% 95%;
 
-    --destructive: 20 88% 44%;       /* #CF4112 Fire Core */
+    --destructive: 349 62% 36%;      /* #8B2A37 Wine Light */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 27 20% 74%;            /* #CEBFB0 Neutral 200 */
-    --input: 27 20% 74%;
-    --ring: 32 92% 54%;              /* Fire Bright */
+    --border: 350 42% 40%;           /* #6B1F2A soft */
+    --input: 38 20% 82%;
+    --ring: 41 47% 57%;
 
     --radius: 0.9rem;
 
     /* Fire brand tokens */
-    --fire-bright: 36 78% 55%;       /* #E69E33 */
-    --fire-core: 22 72% 46%;         /* #CA5F21 */
-    --fire-deep: 10 66% 32%;         /* #882E1C */
+    --fire-bright: 41 47% 57%;       /* #C9A961 */
+    --fire-core: 349 62% 36%;        /* #8B2A37 */
+    --fire-deep: 350 55% 27%;        /* #6B1F2A */
 
     /* Gold brand tokens */
-    --gold-light: 46 80% 62%;        /* #ECC84E */
-    --gold-main: 41 70% 51%;         /* #D9A22A */
-    --gold-dark: 39 70% 40%;         /* #AD7C1F */
+    --gold-light: 47 91% 81%;        /* #FFE5A0 */
+    --gold-main: 41 47% 57%;         /* #C9A961 */
+    --gold-dark: 41 40% 42%;
 
     /* Wine brand tokens */
-    --wine-deep: 350 59% 23%;        /* #63101E */
-    --wine-main: 351 55% 40%;        /* #9E2E3F */
-    --wine-light: 349 40% 47%;       /* #A8485A */
+    --wine-deep: 350 55% 27%;        /* #6B1F2A */
+    --wine-main: 349 62% 36%;        /* #8B2A37 */
+    --wine-light: 349 55% 42%;
 
-    --sidebar-background: 30 29% 89%;
-    --sidebar-foreground: 20 28% 12%;
-    --sidebar-primary: 32 92% 54%;
-    --sidebar-primary-foreground: 20 28% 12%;
-    --sidebar-accent: 27 20% 78%;
-    --sidebar-accent-foreground: 20 20% 18%;
-    --sidebar-border: 27 20% 74%;
-    --sidebar-ring: 32 92% 54%;
+    --sidebar-background: 40 33% 95%;
+    --sidebar-foreground: 240 7% 7%;
+    --sidebar-primary: 41 47% 57%;
+    --sidebar-primary-foreground: 240 7% 7%;
+    --sidebar-accent: 40 25% 82%;
+    --sidebar-accent-foreground: 240 7% 12%;
+    --sidebar-border: 38 20% 82%;
+    --sidebar-ring: 41 47% 57%;
 
     --tag-financing: 40 74% 84%;
     --tag-lifestyle: 42 34% 84%;
-    --tag-community: 8 34% 82%;
+    --tag-community: 350 34% 82%;
     --tag-wellness: 140 22% 80%;
     --tag-travel: 196 34% 80%;
-    --tag-creativity: 328 28% 82%;
+    --tag-creativity: 349 28% 82%;
     --tag-growth: 50 38% 80%;
 
-    --shadow-soft: 0 14px 36px rgba(21, 14, 9, 0.08);
-    --shadow-hover: 0 22px 46px rgba(21, 14, 9, 0.13);
-    --glow-gold: 0 0 0 1px rgba(243, 146, 30, 0.22), 0 12px 42px rgba(243, 146, 30, 0.18);
+    --shadow-soft: 0 14px 36px rgba(107, 31, 42, 0.08);
+    --shadow-hover: 0 22px 46px rgba(107, 31, 42, 0.14);
+    --glow-gold: 0 0 0 1px rgba(201, 169, 97, 0.22), 0 12px 42px rgba(201, 169, 97, 0.18);
   }
 
   .dark {
-    /* Background & surfaces — Neutral warm (dark mode) */
-    --background: 25 31% 6%;         /* #150E09 Neutral 950 */
-    --foreground: 33 28% 86%;        /* #EAE0D3 warm white */
+    /* Background & surfaces — dark mode (TOBY primary) */
+    --background: 240 7% 7%;         /* #0F0F12 Primary Dark */
+    --foreground: 40 33% 95%;        /* #F5F1EA Cream */
 
-    --card: 22 27% 9%;               /* #1E1510 Neutral 900 */
-    --card-foreground: 33 28% 86%;
+    --card: 345 20% 9%;              /* #140D10 deep card */
+    --card-foreground: 40 33% 95%;
 
-    --popover: 22 27% 9%;
-    --popover-foreground: 33 28% 86%;
+    --popover: 345 20% 9%;
+    --popover-foreground: 40 33% 95%;
 
-    /* Primary — Fire */
-    --primary: 32 92% 54%;           /* #F3921E Fire Bright */
-    --primary-foreground: 25 31% 6%;
+    /* Primary — Matte Gold */
+    --primary: 41 47% 57%;           /* #C9A961 */
+    --primary-foreground: 240 7% 7%;
 
-    --secondary: 30 20% 12%;         /* #272018 Neutral 800 */
-    --secondary-foreground: 33 28% 86%;
+    --secondary: 345 18% 12%;
+    --secondary-foreground: 40 33% 95%;
 
-    --muted: 24 22% 14%;
-    --muted-foreground: 19 9% 49%;   /* #8A7A72 Neutral 500 */
+    --muted: 345 15% 14%;
+    --muted-foreground: 38 18% 60%;
 
-    /* Accent — Fire Core (dark mode CTAs) */
-    --accent: 20 88% 44%;            /* #CF4112 Fire Core */
-    --accent-foreground: 0 0% 100%;
+    /* Accent — Signature Burgundy */
+    --accent: 350 55% 27%;           /* #6B1F2A */
+    --accent-foreground: 40 33% 95%;
 
-    --destructive: 20 88% 44%;
+    --destructive: 349 62% 36%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 24 22% 18%;            /* #3A2D24 Neutral 700 */
-    --input: 24 22% 18%;
-    --ring: 32 92% 54%;
+    --border: 350 55% 27%;           /* #6B1F2A */
+    --input: 345 18% 14%;
+    --ring: 41 47% 57%;
 
     /* Fire brand tokens */
-    --fire-bright: 36 78% 55%;
-    --fire-core: 22 72% 46%;
-    --fire-deep: 10 66% 32%;
+    --fire-bright: 41 47% 57%;
+    --fire-core: 349 62% 36%;
+    --fire-deep: 350 55% 27%;
 
     /* Gold brand tokens */
-    --gold-light: 46 80% 62%;
-    --gold-main: 41 70% 51%;
-    --gold-dark: 39 70% 40%;
+    --gold-light: 47 91% 81%;        /* #FFE5A0 */
+    --gold-main: 41 47% 57%;         /* #C9A961 */
+    --gold-dark: 41 40% 42%;
 
     /* Wine brand tokens */
-    --wine-deep: 350 59% 23%;
-    --wine-main: 351 55% 40%;
-    --wine-light: 349 40% 47%;
+    --wine-deep: 350 55% 27%;
+    --wine-main: 349 62% 36%;
+    --wine-light: 349 55% 42%;
 
-    --sidebar-background: 22 27% 9%;
-    --sidebar-foreground: 33 28% 86%;
-    --sidebar-primary: 32 92% 54%;
-    --sidebar-primary-foreground: 25 31% 6%;
-    --sidebar-accent: 30 20% 12%;
-    --sidebar-accent-foreground: 33 28% 86%;
-    --sidebar-border: 24 22% 18%;
-    --sidebar-ring: 32 92% 54%;
+    --sidebar-background: 240 7% 7%;
+    --sidebar-foreground: 40 33% 95%;
+    --sidebar-primary: 41 47% 57%;
+    --sidebar-primary-foreground: 240 7% 7%;
+    --sidebar-accent: 345 18% 12%;
+    --sidebar-accent-foreground: 40 33% 95%;
+    --sidebar-border: 350 55% 27%;
+    --sidebar-ring: 41 47% 57%;
 
     --tag-financing: 39 46% 29%;
     --tag-lifestyle: 41 20% 24%;
-    --tag-community: 8 28% 28%;
+    --tag-community: 350 28% 28%;
     --tag-wellness: 140 16% 24%;
     --tag-travel: 196 24% 24%;
-    --tag-creativity: 328 22% 26%;
+    --tag-creativity: 349 22% 26%;
     --tag-growth: 50 24% 24%;
 
-    --shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.4);
-    --shadow-hover: 0 24px 60px rgba(0, 0, 0, 0.55);
-    --glow-gold: 0 0 0 1px rgba(243, 146, 30, 0.25), 0 14px 50px rgba(243, 146, 30, 0.2);
+    --shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 24px 60px rgba(0, 0, 0, 0.65);
+    --glow-gold: 0 0 0 1px rgba(201, 169, 97, 0.28), 0 14px 50px rgba(201, 169, 97, 0.22);
   }
 }
 
@@ -160,7 +164,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Assistant', system-ui, -apple-system, sans-serif;
+    font-family: 'Heebo', 'Assistant', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
   }
 
@@ -550,4 +554,47 @@
     mask-composite: exclude;
     pointer-events: none;
   }
+  /* ── TOBY music fire gradient ── */
+  .gradient-fire {
+    background: linear-gradient(110deg, #8B2A37 0%, #C9A961 30%, #FFE5A0 50%, #C9A961 70%, #6B1F2A 100%);
+  }
+
+  .fire-text {
+    background: linear-gradient(110deg, #8B2A37 0%, #C9A961 30%, #FFE5A0 50%, #C9A961 70%, #6B1F2A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .btn-fire {
+    background: linear-gradient(110deg, #8B2A37, #C9A961, #FFE5A0, #C9A961, #6B1F2A);
+    color: #0F0F12;
+    font-weight: 700;
+    border-radius: 24px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(201, 169, 97, 0.28);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-fire:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+
+  /* Stage character hover glow */
+  .char-hover {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+  }
+  .char-hover:hover {
+    transform: translateY(-14px) scale(1.07);
+    filter: drop-shadow(0 0 20px rgba(201, 169, 97, 0.6));
+  }
+
+  /* Footer fire border-top */
+  .footer-fire-border {
+    border-top: 3px solid transparent;
+    border-image: linear-gradient(110deg, #8B2A37, #C9A961, #FFE5A0, #C9A961, #6B1F2A) 1;
+  }
+
+
 }
