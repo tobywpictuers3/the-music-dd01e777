@@ -173,6 +173,71 @@ export default function Index() {
         .speech-bubble-in {
           animation: speech-bubble-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        @keyframes stage-spotlight {
+          0%, 100% { opacity: 0.12; }
+          50%       { opacity: 0.20; }
+        }
+        .stage-curtain-left {
+          position: absolute; top: 0; left: 0; width: 11%; height: 100%;
+          background: linear-gradient(90deg, #4A1010 0%, #7A1A1A 55%, transparent 100%);
+          z-index: 3; pointer-events: none;
+        }
+        .stage-curtain-right {
+          position: absolute; top: 0; right: 0; width: 11%; height: 100%;
+          background: linear-gradient(-90deg, #4A1010 0%, #7A1A1A 55%, transparent 100%);
+          z-index: 3; pointer-events: none;
+        }
+        .stage-curtain-arch-left {
+          position: absolute; top: 0; left: 0; width: 8%; height: 56%;
+          background: linear-gradient(135deg, #8B2020 0%, #6B1818 100%);
+          clip-path: ellipse(100% 100% at 0% 0%);
+          z-index: 4; pointer-events: none;
+        }
+        .stage-curtain-arch-right {
+          position: absolute; top: 0; right: 0; width: 8%; height: 56%;
+          background: linear-gradient(-135deg, #8B2020 0%, #6B1818 100%);
+          clip-path: ellipse(100% 100% at 100% 0%);
+          z-index: 4; pointer-events: none;
+        }
+        .stage-curtain-trim-left {
+          position: absolute; top: 0; left: 8%; width: 1.5px; height: 56%;
+          background: linear-gradient(180deg, #C9A961 0%, #6B1F2A 100%);
+          z-index: 5; pointer-events: none;
+        }
+        .stage-curtain-trim-right {
+          position: absolute; top: 0; right: 8%; width: 1.5px; height: 56%;
+          background: linear-gradient(180deg, #C9A961 0%, #6B1F2A 100%);
+          z-index: 5; pointer-events: none;
+        }
+        .stage-rim {
+          position: absolute; bottom: 68px; left: 9%; right: 9%; height: 3px;
+          background: linear-gradient(90deg, transparent, #C9A961 10%, #FFE5A0 50%, #C9A961 90%, transparent);
+          border-radius: 50%; z-index: 6; pointer-events: none;
+        }
+        .stage-floor-overlay {
+          position: absolute; bottom: 0; left: 9%; right: 9%; height: 68px;
+          background: linear-gradient(180deg, rgba(42,20,8,0.7) 0%, rgba(21,10,4,0.85) 100%);
+          border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+          z-index: 6; pointer-events: none;
+        }
+        .stage-dots-row {
+          position: absolute; bottom: 16px; left: 11%; right: 11%;
+          display: flex; justify-content: space-evenly; z-index: 7; pointer-events: none;
+        }
+        .stage-dot {
+          width: 8px; height: 8px; border-radius: 50%;
+          background: #C9A961;
+          box-shadow: 0 0 6px rgba(201,169,97,0.9);
+        }
+        .spotlight-beam {
+          position: absolute; top: 0;
+          width: 2px;
+          transform-origin: top center;
+          background: linear-gradient(180deg, rgba(201,169,97,0.16) 0%, transparent 100%);
+          animation: stage-spotlight 4s ease-in-out infinite;
+          pointer-events: none; z-index: 2;
+        }
       `}</style>
 
       <div className="min-h-screen bg-background text-foreground">
@@ -213,6 +278,36 @@ export default function Index() {
               className="hidden h-full w-full object-cover dark:block"
             />
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
+
+          {/* Stage theatrical overlays */}
+          <div className="stage-curtain-left" aria-hidden="true" />
+          <div className="stage-curtain-right" aria-hidden="true" />
+          <div className="stage-curtain-arch-left" aria-hidden="true" />
+          <div className="stage-curtain-arch-right" aria-hidden="true" />
+          <div className="stage-curtain-trim-left" aria-hidden="true" />
+          <div className="stage-curtain-trim-right" aria-hidden="true" />
+          {/* Spotlight beams */}
+          {[-20, -7, 0, 7, 20].map((deg, i) => (
+            <div
+              key={i}
+              className="spotlight-beam"
+              aria-hidden="true"
+              style={{
+                left: `${20 + i * 15}%`,
+                height: '260px',
+                transform: `rotate(${deg}deg)`,
+                animationDelay: `${i * 0.6}s`,
+              }}
+            />
+          ))}
+          <div className="stage-rim" aria-hidden="true" />
+          <div className="stage-floor-overlay" aria-hidden="true" />
+          <div className="stage-dots-row" aria-hidden="true">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <div key={i} className="stage-dot" />
+            ))}
+          </div>
+
           </div>
 
           <div className="relative mx-auto max-w-[1600px] min-h-[900px] px-4 pt-8 md:min-h-[1020px] md:px-8 lg:min-h-[1100px]">
@@ -406,7 +501,7 @@ export default function Index() {
                   <Link
                     key={char.href}
                     to={char.href}
-                    className="group relative overflow-hidden rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-border dark:bg-card md:p-8"
+                    className="group relative overflow-hidden rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-border dark:bg-card md:p-8 card-gold"
                   >
                     <img
                       src={texStarsLight}
@@ -424,7 +519,7 @@ export default function Index() {
                       <img
                         src={PRESENTER_MAP[char.character]}
                         alt={char.title}
-                        className={`mx-auto mb-4 drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)] ${
+                        className={`mx-auto mb-4 drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)] char-hover ${
                           char.character === "drums"
                             ? "w-36 md:w-44 xl:w-52"
                             : char.character === "presenter"
