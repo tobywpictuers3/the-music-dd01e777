@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
-import IndexNew from "./pages/IndexNew";
 import Article from "./pages/Article";
 import Wellness from "./pages/Wellness";
 import Travel from "./pages/Travel";
@@ -55,7 +54,6 @@ const App = () => (
         <ScrollToTopOnRouteChange />
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/new" element={<IndexNew />} />
           <Route path="/article/:id" element={<Article />} />
           <Route path="/wellness" element={<Wellness />} />
           <Route path="/travel" element={<Travel />} />
