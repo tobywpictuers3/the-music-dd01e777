@@ -509,6 +509,192 @@ export default function IndexNew() {
           </div>
         </section>
 
+
+        {/* ══ CHARACTER SHOWCASE — each instrument presents its page ══ */}
+        <section style={{
+          background: bg,
+          padding: "72px 24px 80px",
+        }}>
+          <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+
+            {/* Section heading */}
+            <div style={{ textAlign: "center", marginBottom: "56px" }}>
+              <p style={{
+                fontFamily: "'Heebo', sans-serif",
+                fontSize: "12px", fontWeight: 600,
+                letterSpacing: ".18em", color: P.gold,
+                opacity: .8, marginBottom: "10px",
+                textTransform: "uppercase",
+              }}>גלי את העולם שלנו</p>
+              <h2 style={{
+                fontFamily: "'Frank Ruhl Libre', serif",
+                fontSize: "clamp(26px, 3.5vw, 42px)",
+                fontWeight: 500, color: text, lineHeight: 1.15,
+              }}>
+                כל כלי מספר{" "}
+                <span style={{
+                  background: FIRE,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}>סיפור אחר</span>
+              </h2>
+              {/* Gold divider line */}
+              <div style={{
+                width: "60px", height: "2px",
+                background: FIRE,
+                margin: "16px auto 0",
+                borderRadius: "1px",
+              }} />
+            </div>
+
+            {/* Cards grid */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gap: "20px",
+            }}>
+              {STAGE_CHARACTERS.map((char) => {
+                const driveImg = DRIVE[char.character];
+                const fallbackImg = FALLBACK[char.character];
+                return (
+                  <Link
+                    key={char.href}
+                    to={char.href}
+                    className="tm-card"
+                    style={{
+                      background: cardBg,
+                      border: `1px solid ${border}`,
+                      borderRadius: "16px",
+                      padding: "28px 24px 24px",
+                      textDecoration: "none",
+                      color: text,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      textAlign: "center",
+                      gap: "0",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                    onMouseEnter={(e) => {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.borderColor = P.gold;
+                      el.style.boxShadow = dk
+                        ? "0 10px 32px rgba(107,31,42,.4)"
+                        : "0 10px 32px rgba(201,169,97,.22)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.borderColor = border;
+                      el.style.boxShadow = "none";
+                    }}
+                  >
+                    {/* Top accent line */}
+                    <div aria-hidden="true" style={{
+                      position: "absolute", top: 0, left: 0, right: 0,
+                      height: "2px",
+                      background: `linear-gradient(90deg, ${P.burg}, ${P.gold}, ${P.burg})`,
+                      opacity: 0,
+                      transition: "opacity .2s",
+                    }} />
+
+                    {/* Character image */}
+                    <div style={{
+                      width: "clamp(90px, 12vw, 140px)",
+                      marginBottom: "18px",
+                      flexShrink: 0,
+                      filter: "drop-shadow(0 10px 22px rgba(0,0,0,.28))",
+                      transition: "transform .35s cubic-bezier(.16,1,.3,1), filter .35s ease",
+                    }}
+                      onMouseEnter={(e) => {
+                        const el = e.currentTarget as HTMLElement;
+                        el.style.transform = "translateY(-10px) scale(1.06)";
+                        el.style.filter = "drop-shadow(0 0 18px rgba(201,169,97,.6))";
+                      }}
+                      onMouseLeave={(e) => {
+                        const el = e.currentTarget as HTMLElement;
+                        el.style.transform = "";
+                        el.style.filter = "drop-shadow(0 10px 22px rgba(0,0,0,.28))";
+                      }}
+                    >
+                      <img
+                        src={driveImg}
+                        alt={char.title}
+                        style={{ width: "100%", display: "block" }}
+                        onError={(e) => {
+                          const el = e.currentTarget as HTMLImageElement;
+                          if (el.src !== fallbackImg) el.src = fallbackImg;
+                        }}
+                      />
+                    </div>
+
+                    {/* Title */}
+                    <h3 style={{
+                      fontFamily: "'Frank Ruhl Libre', serif",
+                      fontSize: "clamp(18px, 2vw, 22px)",
+                      fontWeight: 500,
+                      color: P.gold,
+                      marginBottom: "10px",
+                      transition: "color .2s",
+                    }}>
+                      {char.title}
+                    </h3>
+
+                    {/* Quote — exact original text */}
+                    <p style={{
+                      fontFamily: "'Heebo', sans-serif",
+                      fontSize: "14px",
+                      lineHeight: "1.75",
+                      color: muted,
+                      flexGrow: 1,
+                      marginBottom: "20px",
+                    }}>
+                      {char.quote}
+                    </p>
+
+                    {/* CTA arrow link */}
+                    <div style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      color: P.gold,
+                      fontFamily: "'Heebo', sans-serif",
+                      padding: "7px 16px",
+                      border: `1px solid ${P.burg}`,
+                      borderRadius: "9999px",
+                      transition: "border-color .2s, background .2s",
+                    }}
+                      onMouseEnter={(e) => {
+                        const el = e.currentTarget as HTMLElement;
+                        el.style.borderColor = P.gold;
+                        el.style.background = dk
+                          ? "rgba(201,169,97,.08)"
+                          : "rgba(107,31,42,.06)";
+                      }}
+                      onMouseLeave={(e) => {
+                        const el = e.currentTarget as HTMLElement;
+                        el.style.borderColor = P.burg;
+                        el.style.background = "transparent";
+                      }}
+                    >
+                      לדף {char.title}
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+                        stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ transform: "rotate(180deg)" }}>
+                        <line x1="11" y1="7" x2="3" y2="7" />
+                        <polyline points="6,4 3,7 6,10" />
+                      </svg>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* ══ FOOTER ═════════════════════════════════════════════ */}
         <footer dir="rtl" style={{background:"#06040A",
           borderTop:"3px solid transparent",
