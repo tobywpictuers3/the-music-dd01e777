@@ -21,7 +21,7 @@ import logoLight from "@/assets/logo-toby.png";
 import logoDark from "@/assets/whitelogo.png";
 
 import signPiano from "@/assets/homepage/characters-signs/piano.png";
-import signEguitar from "@/assets/homepage/characters-signs/eguitar.png";
+import signFlute from "@/assets/homepage/characters-signs/flute.png";
 import signGuitar from "@/assets/homepage/characters-signs/guitar.png";
 import signDrums from "@/assets/homepage/characters-signs/drums.png";
 import signSaxophone from "@/assets/homepage/characters-signs/saxophone.png";
@@ -33,14 +33,14 @@ import piano from "@/assets/homepage/characters/piano.png";
 import saxophone from "@/assets/homepage/characters/saxophone.png";
 import violin from "@/assets/homepage/characters/violin.png";
 import guitarClassic from "@/assets/homepage/characters/guitar.png";
-import guitarElectric from "@/assets/homepage/characters/eguitar.png";
+import flute from "@/assets/homepage/characters/flute.png";
 
 import texStarsLight from "@/assets/homepage/textures/stars-light.png";
 import texStarsDark from "@/assets/homepage/textures/stars-dark.png";
 
 const SIGN_CHARACTER_MAP: Record<CharacterKey, string> = {
   piano: signPiano,
-  eguitar: signEguitar,
+  flute: signFlute,
   guitar: signGuitar,
   drums: signDrums,
   saxophone: signSaxophone,
@@ -50,7 +50,7 @@ const SIGN_CHARACTER_MAP: Record<CharacterKey, string> = {
 
 const PRESENTER_MAP: Record<CharacterKey, string> = {
   piano,
-  eguitar: guitarElectric,
+  flute,
   guitar: guitarClassic,
   drums,
   saxophone,
