@@ -31,6 +31,7 @@ import presenterGuide from "@/assets/homepage/presenter/presenter.png";
 
 import texStarsLight from "@/assets/homepage/textures/stars-light.png";
 import texStarsDark from "@/assets/homepage/textures/stars-dark.png";
+import StageNav from "@/components/StageNav";
 
 const PRESENTER_MAP: Record<CharacterKey, string> = {
   piano,
@@ -318,6 +319,9 @@ export default function Index() {
         </section>
 
         <GuidePresenter />
+
+        {/* Stage Navigation — instruments on empty stage */}
+        <StageNav />
 
         <AppearOnScroll>
           <section className="border-y border-black/10 bg-white px-4 py-12 dark:border-border dark:bg-card md:px-8 md:py-20" dir="rtl">
