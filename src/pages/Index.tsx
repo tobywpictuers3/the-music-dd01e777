@@ -93,10 +93,15 @@ export default function Index() {
           animation: logo-entrance 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Neon frame glow */
+        /* Neon frame glow — dark mode: orange-red neon */
         @keyframes frame-pulse {
           0%, 100% { box-shadow: 0 0 8px 1px rgba(218,130,40,0.35), 0 0 24px 4px rgba(180,60,20,0.18); }
           50%       { box-shadow: 0 0 14px 3px rgba(218,130,40,0.55), 0 0 36px 8px rgba(180,60,20,0.28); }
+        }
+        /* Light mode: wine/gold elegant glow */
+        @keyframes frame-pulse-light {
+          0%, 100% { box-shadow: 0 0 0 1px rgba(107,31,42,0.18), 0 4px 24px rgba(107,31,42,0.12), 0 0 0 3px rgba(201,169,97,0.12); }
+          50%       { box-shadow: 0 0 0 1px rgba(107,31,42,0.28), 0 6px 32px rgba(107,31,42,0.20), 0 0 0 3px rgba(201,169,97,0.20); }
         }
         .neon-frame {
           border: 2px solid rgba(218, 130, 40, 0.9);
@@ -107,6 +112,12 @@ export default function Index() {
           position: relative;
           overflow: hidden;
         }
+        /* Light mode overrides */
+        :root:not(.dark) .neon-frame {
+          border: 1.5px solid rgba(107, 31, 42, 0.55);
+          background: rgba(245, 241, 234, 0.82);
+          animation: frame-pulse-light 3s ease-in-out infinite;
+        }
         .neon-frame::before {
           content: '';
           position: absolute;
@@ -115,12 +126,18 @@ export default function Index() {
           border: 1px solid rgba(238, 185, 80, 0.35);
           pointer-events: none;
         }
+        :root:not(.dark) .neon-frame::before {
+          border: 1px solid rgba(201, 169, 97, 0.30);
+        }
         .neon-frame::after {
           content: '';
           position: absolute;
           top: 0; left: 10%; right: 10%; height: 1px;
           background: linear-gradient(90deg, transparent, rgba(218,130,40,0.6), transparent);
           pointer-events: none;
+        }
+        :root:not(.dark) .neon-frame::after {
+          background: linear-gradient(90deg, transparent, rgba(107,31,42,0.35), transparent);
         }
 
         /* Stage overlays */
