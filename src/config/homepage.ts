@@ -3,11 +3,11 @@ export const GUIDE_SECTION_ID = "guide-presenter";
 
 export type CharacterKey =
   | "piano"
-  | "eguitar"
   | "guitar"
   | "drums"
   | "saxophone"
   | "violin"
+  | "flute"
   | "presenter";
 
 export type StagePlacement = {
@@ -34,6 +34,9 @@ export type StageCharacter = {
   labelMode?: "overlay" | "badge";
 };
 
+// Stage layout — 7 characters (presenter left + 6 instruments arc on stage)
+// Presenter: far left, elevated (floating/hovering position)
+// Instruments: arc across stage floor, left→right, rising slightly toward center
 export const STAGE_CHARACTERS: StageCharacter[] = [
   {
     title: "צור קשר",
@@ -61,7 +64,7 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
     character: "piano",
     stage: {
       left: "20%",
-      bottom: "42.5%",
+      bottom: "40%",
       width: "22%",
       zIndex: 12,
     },
@@ -78,11 +81,11 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
   {
     title: "תזמורות",
     href: "/orchestras",
-    character: "eguitar",
+    character: "drums",
     stage: {
-      left: "33%",
-      bottom: "50%",
-      width: "17.4%",
+      left: "34%",
+      bottom: "48%",
+      width: "22%",
       zIndex: 15,
     },
     signBox: {
@@ -98,11 +101,11 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
   {
     title: "אודות",
     href: "/about",
-    character: "guitar",
+    character: "saxophone",
     stage: {
-      left: "46%",
-      bottom: "55.5%",
-      width: "17.6%",
+      left: "48%",
+      bottom: "53%",
+      width: "17%",
       zIndex: 16,
     },
     signBox: {
@@ -118,11 +121,11 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
   {
     title: "תווים",
     href: "/sheets",
-    character: "drums",
+    character: "guitar",
     stage: {
-      left: "59%",
-      bottom: "60.5%",
-      width: "24%",
+      left: "62%",
+      bottom: "48%",
+      width: "17%",
       zIndex: 11,
     },
     signBox: {
@@ -138,11 +141,11 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
   {
     title: "בלוג",
     href: "/blog",
-    character: "saxophone",
+    character: "violin",
     stage: {
-      left: "74%",
-      bottom: "52.5%",
-      width: "16.4%",
+      left: "75%",
+      bottom: "43%",
+      width: "16%",
       zIndex: 15,
     },
     signBox: {
@@ -158,11 +161,11 @@ export const STAGE_CHARACTERS: StageCharacter[] = [
   {
     title: "הופעות",
     href: "/performances",
-    character: "violin",
+    character: "flute",
     stage: {
-      left: "87%",
-      bottom: "44.5%",
-      width: "15.4%",
+      left: "88%",
+      bottom: "38%",
+      width: "13%",
       zIndex: 13,
     },
     signBox: {
