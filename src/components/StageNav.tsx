@@ -61,58 +61,7 @@ export default function StageNav() {
           object-position: center bottom;
         }
 
-        /* ── TOP SPOTLIGHT BAR — cards ── */
-        .snav-topbar {
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 28%;
-          display: flex;
-          align-items: flex-end;
-          justify-content: center;
-          padding-bottom: 10px;
-          gap: clamp(5px, 0.9vw, 12px);
-          z-index: 20;
-          padding-top: 72px; /* below fixed header */
-          background: linear-gradient(to bottom, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.18) 75%, transparent 100%);
-        }
-
-        /* Nav Card */
-        .snav-card {
-          display: flex; flex-direction: column; align-items: center; gap: 3px;
-          padding: 7px 9px 9px;
-          border-radius: 13px;
-          border: 1.5px solid hsl(var(--primary)/0.42);
-          background: hsl(var(--background)/0.60);
-          backdrop-filter: blur(10px);
-          cursor: pointer; text-decoration: none;
-          min-width: clamp(62px, 7.5vw, 100px);
-          transition: border-color .22s, background .22s, transform .22s, box-shadow .22s;
-          direction: rtl;
-        }
-        .snav-card:hover, .snav-card.active {
-          border-color: hsl(var(--primary));
-          background: hsl(var(--card)/0.92);
-          transform: translateY(-3px);
-          box-shadow: 0 0 0 1px hsl(var(--primary)/0.32), 0 0 16px 3px hsl(var(--primary)/0.18), 0 8px 22px rgba(0,0,0,0.28);
-        }
-        .snav-card-img {
-          width: clamp(26px,2.8vw,44px); height: clamp(30px,3.4vw,52px);
-          object-fit: contain; background: transparent;
-          transition: transform .26s ease;
-          /* glow so icon is visible on any bg */
-          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
-        }
-        .snav-card:hover .snav-card-img, .snav-card.active .snav-card-img {
-          transform: translateY(-5px) scale(1.10);
-          filter: drop-shadow(0 4px 10px hsl(var(--primary)/0.5)) drop-shadow(0 2px 6px rgba(0,0,0,0.45));
-        }
-        .snav-card-title {
-          font-size: clamp(.62rem,.76vw,.80rem); font-weight:700;
-          color: hsl(var(--foreground)/.82); transition: color .2s; white-space:nowrap;
-        }
-        .snav-card:hover .snav-card-title, .snav-card.active .snav-card-title {
-          color: hsl(var(--primary));
-        }
+        /* card styles moved to Header.tsx */
 
         /* ── FLOOR ── */
         .snav-floor {
@@ -124,7 +73,7 @@ export default function StageNav() {
         /* ── PRESENTER — below stage rim, left ── */
         .snav-presenter {
           position: absolute;
-          bottom: -2%;     /* slightly below the stage rim */
+          bottom: 2%;      /* just above stage rim */
           left: 4%;
           width: 16%;
           z-index: 15;
