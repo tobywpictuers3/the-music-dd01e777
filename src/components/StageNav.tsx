@@ -205,21 +205,7 @@ export default function StageNav() {
           <img src={stageEmptyLight} alt="" aria-hidden className="snav-bg block dark:hidden" />
           <img src={stageEmptyDark}  alt="" aria-hidden className="snav-bg hidden dark:block" />
 
-          {/* ── TOP BAR — cards ── */}
-          <div className="snav-topbar">
-            {CARDS.map(card => (
-              <Link
-                key={card.key}
-                to={card.href}
-                className={`snav-card${hovered===card.key?" active":""}`}
-                onMouseEnter={() => enter(card.key)}
-                onMouseLeave={leave}
-              >
-                <img src={card.img} alt={card.title} className="snav-card-img" />
-                <span className="snav-card-title">{card.title}</span>
-              </Link>
-            ))}
-          </div>
+          {/* cards in Header.tsx */}
 
           {/* ── FLOOR ── */}
           <div className="snav-floor">
