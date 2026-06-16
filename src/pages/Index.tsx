@@ -203,7 +203,7 @@ export default function Index() {
             className="absolute z-20"
             style={{
               left: "4%",
-              bottom: "-2%",
+              bottom: "2%",
               width: "16%",
               filter: "drop-shadow(0 14px 32px rgba(0,0,0,0.55))",
               animation: "presenter-float 3.5s ease-in-out infinite",
