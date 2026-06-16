@@ -198,26 +198,14 @@ export default function Index() {
           </div>
 
           {/* Presenter on hero — same position as StageNav, creates continuity illusion */}
+          {/* Presenter — big, below stage rim, matches StageNav position */}
           <div
-            className="absolute z-20 hidden dark:block"
+            className="absolute z-20"
             style={{
-              left: "5%",
-              bottom: "22%",
-              width: "11%",
-              filter: "drop-shadow(0 12px 28px rgba(0,0,0,0.5))",
-              animation: "presenter-float 3.5s ease-in-out infinite",
-            }}
-          >
-            <img src={imgPresenterHero} alt="" aria-hidden="true"
-                 className="w-full block" style={{ background: "transparent" }} />
-          </div>
-          <div
-            className="absolute z-20 block dark:hidden"
-            style={{
-              left: "5%",
-              bottom: "22%",
-              width: "11%",
-              filter: "drop-shadow(0 12px 28px rgba(0,0,0,0.3))",
+              left: "4%",
+              bottom: "-2%",
+              width: "16%",
+              filter: "drop-shadow(0 14px 32px rgba(0,0,0,0.55))",
               animation: "presenter-float 3.5s ease-in-out infinite",
             }}
           >
@@ -285,7 +273,6 @@ export default function Index() {
           </div>
         </section>
 
-        <GuidePresenter />
 
         {/* Stage Navigation — instruments on empty stage + bottom cards bar */}
         <StageNav />
