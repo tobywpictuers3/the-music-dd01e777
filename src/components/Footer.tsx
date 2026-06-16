@@ -82,6 +82,8 @@ export default function Footer() {
       dir="rtl"
       className="relative mt-24 overflow-hidden border-t text-white"
       style={{
+        position: "relative",
+        zIndex: 10,
         borderTopColor: "rgba(230, 182, 92, 0.18)",
         backgroundColor: "hsl(var(--background))",
         backgroundImage:
