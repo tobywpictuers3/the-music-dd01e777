@@ -32,6 +32,7 @@ import presenterGuide from "@/assets/homepage/presenter/presenter.png";
 import texStarsLight from "@/assets/homepage/textures/stars-light.png";
 import texStarsDark from "@/assets/homepage/textures/stars-dark.png";
 import StageNav from "@/components/StageNav";
+import imgPresenterHero from "@/assets/homepage/presenter/presenter.png";
 
 const PRESENTER_MAP: Record<CharacterKey, string> = {
   piano,
@@ -66,6 +67,11 @@ export default function Index() {
         .toby-marquee-track {
           animation: toby-marquee 26s linear infinite;
           width: max-content;
+        }
+
+        @keyframes presenter-float {
+          0%, 100% { transform: translateY(0); }
+          50%       { transform: translateY(-8px); }
         }
 
         /* Sparkle animation for "כאן" */
@@ -189,6 +195,34 @@ export default function Index() {
               <div key={i} className="spotlight-beam" aria-hidden="true"
                 style={{ left: `${30 + i * 20}%`, height: "200px", transform: `rotate(${deg}deg)`, animationDelay: `${i * 0.8}s` }} />
             ))}
+          </div>
+
+          {/* Presenter on hero — same position as StageNav, creates continuity illusion */}
+          <div
+            className="absolute z-20 hidden dark:block"
+            style={{
+              left: "5%",
+              bottom: "22%",
+              width: "11%",
+              filter: "drop-shadow(0 12px 28px rgba(0,0,0,0.5))",
+              animation: "presenter-float 3.5s ease-in-out infinite",
+            }}
+          >
+            <img src={imgPresenterHero} alt="" aria-hidden="true"
+                 className="w-full block" style={{ background: "transparent" }} />
+          </div>
+          <div
+            className="absolute z-20 block dark:hidden"
+            style={{
+              left: "5%",
+              bottom: "22%",
+              width: "11%",
+              filter: "drop-shadow(0 12px 28px rgba(0,0,0,0.3))",
+              animation: "presenter-float 3.5s ease-in-out infinite",
+            }}
+          >
+            <img src={imgPresenterHero} alt="" aria-hidden="true"
+                 className="w-full block" style={{ background: "transparent" }} />
           </div>
 
           {/* Hero content — logo + headline + neon frame — all above instruments */}
