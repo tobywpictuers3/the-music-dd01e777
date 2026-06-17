@@ -1,8 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import stageEmptyDark  from "@/assets/homepage/stage/stage-empty-dark.png";
-import stageEmptyLight from "@/assets/homepage/stage/stage-empty-light.png";
 import imgPresenter from "@/assets/homepage/presenter/presenter.png";
 import imgDrums     from "@/assets/homepage/characters/drums.png";
 import imgPiano     from "@/assets/homepage/characters/piano.png";
@@ -80,14 +78,11 @@ export default function StageNav({ scrollCards }: Props) {
           position: sticky;
           top: 0;
           height: 100vh;
-          overflow: hidden;
+          overflow: visible;
+          background: transparent !important;
         }
-        .snav5-bg {
-          position: absolute; inset: 0;
-          width: 100vw; height: 100vh;
-          max-width: none;
-          object-fit: cover; object-position: center center;
-        }
+        /* snav5-bg removed -- stage bg handled by fixed layer in Index.tsx */
+        .snav5-bg { display: none !important; }
 
         /* ── Spotlight beam per act ── */
         @keyframes spotlight-sweep {
@@ -226,9 +221,7 @@ export default function StageNav({ scrollCards }: Props) {
       <div ref={outerRef} className="snav5-outer">
         <div className="snav5-sticky" dir="rtl">
 
-          {/* Stage backgrounds */}
-          <img src={stageEmptyLight} alt="" aria-hidden className="snav5-bg block dark:hidden" />
-          <img src={stageEmptyDark}  alt="" aria-hidden className="snav5-bg hidden dark:block" />
+          {/* Stage bg handled by Index.tsx fixed layer -- no bg here */}
 
           {/* Presenter — always left */}
           <div className="snav5-presenter"
