@@ -99,31 +99,18 @@ export default function Header() {
         .hdr-nav-card.active {
           background: hsl(var(--primary)/0.12);
         }
-        /* small char image in header
-           mix-blend-mode removes baked-in white/gray background from PNG */
+        /* small char image in header — PNGs are now truly transparent */
         .hdr-char-img {
           width: clamp(20px, 2vw, 30px);
           height: clamp(24px, 2.4vw, 36px);
           object-fit: contain;
           display: block;
           background: transparent !important;
-          /* multiply removes white bg on light backgrounds */
-          mix-blend-mode: multiply;
-          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.40));
+          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
           transition: transform .22s ease, filter .22s ease;
-        }
-        /* dark mode: screen removes dark/gray bg on dark backgrounds */
-        .dark .hdr-char-img {
-          mix-blend-mode: screen;
-          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.55));
         }
         .hdr-nav-card:hover .hdr-char-img {
           transform: translateY(-4px) scale(1.15);
-          filter: drop-shadow(0 0 12px hsl(var(--primary)/0.60))
-                  drop-shadow(0 4px 8px rgba(0,0,0,0.45));
-        }
-        .dark .hdr-nav-card:hover .hdr-char-img {
-          mix-blend-mode: screen;
           filter: drop-shadow(0 0 12px hsl(var(--primary)/0.60))
                   drop-shadow(0 4px 8px rgba(0,0,0,0.45));
         }
