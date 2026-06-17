@@ -89,6 +89,7 @@ export default function Header() {
           text-decoration: none;
           cursor: pointer;
           position: relative;
+          background: transparent;
           transition: background .2s, transform .18s;
           min-width: 48px;
         }
