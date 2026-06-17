@@ -107,8 +107,18 @@ export default function Header() {
           object-fit: contain;
           display: block;
           background: transparent !important;
-          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
+          /* base glow — visible on both light and dark */
+          filter:
+            drop-shadow(0 0 5px rgba(201,169,97,.45))
+            drop-shadow(0 2px 6px rgba(0,0,0,0.45));
           transition: transform .22s ease, filter .22s ease;
+        }
+        /* stronger glow in dark mode */
+        .dark .hdr-char-img {
+          filter:
+            drop-shadow(0 0 8px rgba(201,169,97,.70))
+            drop-shadow(0 0 16px rgba(232,93,32,.30))
+            drop-shadow(0 3px 8px rgba(0,0,0,0.55));
         }
         .hdr-nav-card:hover .hdr-char-img {
           transform: translateY(-4px) scale(1.15);
