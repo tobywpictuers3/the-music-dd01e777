@@ -69,8 +69,8 @@ export default function StageNav({ scrollCards }: Props) {
         /* ══ OUTER — tall so scroll reveals each act ══ */
         .snav5-outer {
           position: relative;
-          /* 400px empty + 7 acts x 400px each = 3200px total scroll */
-          height: calc(100vh + 3200px);
+          /* 200px empty + 7 acts x 200px = 1600px total */
+          height: calc(100vh + 1600px);
           z-index: 0;
         }
 
