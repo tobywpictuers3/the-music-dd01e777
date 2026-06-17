@@ -62,12 +62,20 @@ export default function Index() {
   }, []);
 
   const vh = typeof window !== "undefined" ? window.innerHeight : 800;
-  const CARDS_START = vh * 0.15;
-  const CARDS_FULL  = vh * 0.65;
+  const CARDS_START   = vh * 0.15;  // cards + crossfade begin
+  const CARDS_FULL    = vh * 0.60;  // cards fully visible, stage empty
+  const CARDS_FADEOUT = vh * 0.80;  // cards start fading
+  const CARDS_GONE    = vh * 1.10;  // cards fully gone, instruments start
 
-  const crossfade   = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
-  const showCards   = scrollY > CARDS_START;
-  const showMarquee = crossfade > 0.25;
+  const crossfade    = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
+  // Cards opacity: fade in 0.15→0.60, stay full 0.60→0.80, fade out 0.80→1.10
+  const cardsFadeIn  = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
+  const cardsFadeOut = Math.max(0, Math.min(1, (scrollY - CARDS_FADEOUT) / (CARDS_GONE - CARDS_FADEOUT)));
+  const cardsOpacity = cardsFadeIn * (1 - cardsFadeOut);
+  const showCards    = scrollY > CARDS_START && cardsOpacity > 0.01;
+  const showMarquee  = crossfade > 0.25;
+  // Presenter fades out with cards
+  const presenterOpacity = Math.max(0, 1 - cardsFadeOut);
 
   /* Hover handlers with 3s+2s fadeout */
   const handleEnter = (key: string) => {
@@ -285,9 +293,11 @@ export default function Index() {
             left: presLeft,
             bottom: presBottom,
             width: presWidth,
-            transition: "left 0.7s cubic-bezier(.22,1,.36,1)",
+            opacity: presenterOpacity,
+            transition: "left 0.7s cubic-bezier(.22,1,.36,1), opacity 0.15s ease",
             filter:"drop-shadow(0 14px 32px rgba(0,0,0,.55))",
-            cursor:"pointer",
+            cursor: presenterOpacity > 0.05 ? "pointer" : "none",
+            pointerEvents: presenterOpacity > 0.05 ? "auto" : "none",
           }}
           onMouseEnter={handlePresenterEnter}
           onMouseLeave={handleLeave}
@@ -328,7 +338,7 @@ export default function Index() {
 
           {/* LEFT CARDS */}
           <div className={`side-cards-col left${showCards ? " active" : ""}`}
-            style={{ opacity:crossfade, transition:"opacity .4s ease" }}>
+            style={{ opacity:cardsOpacity, transition:"opacity .15s ease" }}>
             {LEFT_CARDS.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
                 style={{ animation:showCards ? `slide-from-left .55s ${i*140}ms cubic-bezier(.22,1,.36,1) both` : "none" }}
@@ -343,7 +353,7 @@ export default function Index() {
 
           {/* RIGHT CARDS */}
           <div className={`side-cards-col right${showCards ? " active" : ""}`}
-            style={{ opacity:crossfade, transition:"opacity .4s ease" }}>
+            style={{ opacity:cardsOpacity, transition:"opacity .15s ease" }}>
             {RIGHT_CARDS.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
                 style={{ animation:showCards ? `slide-from-right .55s ${i*160}ms cubic-bezier(.22,1,.36,1) both` : "none" }}
@@ -357,7 +367,7 @@ export default function Index() {
           </div>
 
           {/* CENTER hover char + bubble -- 3s timer */}
-          {activeCard && showCards && (
+          {activeCard && showCards && cardsOpacity > 0.3 && (
             <div className={`center-bubble-wrap${!bubbleVisible ? " bubble-fading" : ""}`}
               key={activeCard.key}>
               <img src={activeCard.img} alt={activeCard.title} className="center-char-img" />
