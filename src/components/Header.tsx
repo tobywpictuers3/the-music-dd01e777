@@ -148,17 +148,18 @@ export default function Header() {
         }
         /* small char image in header — PNGs are now truly transparent */
         .hdr-char-img {
-          width: clamp(28px, 2.8vw, 42px);
-          height: clamp(34px, 3.4vw, 50px);
+          width: clamp(36px, 3.6vw, 54px);
+          height: clamp(44px, 4.4vw, 64px);
           object-fit: contain;
           display: block;
           background: transparent !important;
           /* base glow — visible on both light and dark */
           filter:
-            drop-shadow(0 0 14px rgba(201,169,97,.90))
-            drop-shadow(0 0 28px rgba(232,93,32,.55))
-            drop-shadow(0 0 42px rgba(201,169,97,.40))
-            drop-shadow(0 4px 10px rgba(0,0,0,0.55));
+            drop-shadow(0 0 20px rgba(255,210,80,1.0))
+            drop-shadow(0 0 40px rgba(232,93,32,.85))
+            drop-shadow(0 0 60px rgba(201,169,97,.70))
+            drop-shadow(0 0 80px rgba(255,180,30,.50))
+            drop-shadow(0 4px 12px rgba(0,0,0,0.60));
           transition: transform .22s ease, filter .22s ease;
         }
         /* stronger glow in dark mode */
