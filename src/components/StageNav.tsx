@@ -45,8 +45,7 @@ export default function StageNav({ scrollCards }: Props) {
   const outerRef = useRef<HTMLDivElement>(null);
   const [revealedCount, setRevealedCount] = useState(0);
   const [hovered, setHovered] = useState<ActKey | null>(null);
-  const [presenterHovered, setPresenterHovered] = useState(false);
-
+  
   /* Reveal instruments one-by-one as user scrolls */
   useEffect(() => {
     const onScroll = () => {
@@ -224,21 +223,8 @@ export default function StageNav({ scrollCards }: Props) {
           {/* Stage bg handled by Index.tsx fixed layer -- no bg here */}
 
           {/* Presenter — always left */}
-          <div className="snav5-presenter"
-            onMouseEnter={() => setPresenterHovered(true)}
-            onMouseLeave={() => setPresenterHovered(false)}>
-            {presenterHovered && (
-              <div className="snav5-bubble">
-                <div className="snav5-bubble-title">צור קשר</div>
-                <div className="snav5-bubble-quote">שיעורים, הופעה, סדנאות, הפקת תזמורת — מתחילים בפנייה קצרה.</div>
-                <Link to="/contact" className="snav5-bubble-btn" style={{pointerEvents:"auto"}}>כניסה לדף ←</Link>
-                <div className="snav5-bubble-tail" />
-              </div>
-            )}
-            <Link to="/contact" aria-label="צור קשר">
-              <img src={imgPresenter} alt="מגיש" />
-            </Link>
-          </div>
+   
+          {/* Presenter arrives as last ACT (contact) via ACTS scroll reveal */}
 
           {/* Acts — revealed by scroll */}
           {ACTS.map((act, idx) => {
