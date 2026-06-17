@@ -331,7 +331,7 @@ export default function Index() {
         </div>
 
         {/* SCROLL SPACER */}
-        <div id={HOME_HERO_ID} style={{ height:"115vh", position:"relative", zIndex:5 }}>
+        <div id={HOME_HERO_ID} style={{ height:"170vh", position:"relative", zIndex:5 }}>
 
           {/* Hero text */}
           <div className="fixed inset-0 z-10 flex flex-col items-center justify-start pt-20"
@@ -363,7 +363,12 @@ export default function Index() {
 
           {/* LEFT CARDS */}
           <div className={`side-cards-col left${showCards ? " active" : ""}`}
-            style={{ opacity:cardsOpacity, transition:"opacity .15s ease" }}>
+            style={{
+              opacity: cardsFadeIn,
+              transform: cardsScrolling ? `translateY(-${cardsScrollPx}px)` : "translateY(0)",
+              transition: cardsScrolling ? "none" : "opacity .25s ease",
+              pointerEvents: cardsInteractive ? "auto" : "none",
+            }}>
             {LEFT_CARDS.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
                 style={{ animation:showCards ? `slide-from-left .55s ${i*140}ms cubic-bezier(.22,1,.36,1) both` : "none" }}
@@ -378,7 +383,12 @@ export default function Index() {
 
           {/* RIGHT CARDS */}
           <div className={`side-cards-col right${showCards ? " active" : ""}`}
-            style={{ opacity:cardsOpacity, transition:"opacity .15s ease" }}>
+            style={{
+              opacity: cardsFadeIn,
+              transform: cardsScrolling ? `translateY(-${cardsScrollPx}px)` : "translateY(0)",
+              transition: cardsScrolling ? "none" : "opacity .25s ease",
+              pointerEvents: cardsInteractive ? "auto" : "none",
+            }}>
             {RIGHT_CARDS.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
                 style={{ animation:showCards ? `slide-from-right .55s ${i*160}ms cubic-bezier(.22,1,.36,1) both` : "none" }}
@@ -393,7 +403,7 @@ export default function Index() {
 
           
           {/* Card hover: BUBBLE ONLY */}
-          {hoveredCard && showCards && activeCard && (
+          {hoveredCard && showCards && activeCard && cardsInteractive && (
             <div className={`card-hover-bubble-wrap ${fadeClass}`} key={`b-${hoveredCard}`}>
               <div className="card-bubble">
                 <div className="bubble-title">{activeCard.title}</div>
@@ -403,7 +413,7 @@ export default function Index() {
             </div>
           )}
           {/* Large char at floor -- only when bubble is visible */}
-          {activeCard && showCards && bubbleVisible && (
+          {activeCard && showCards && bubbleVisible && cardsInteractive && (
             <div className="center-char-stage" key={`c-${activeCard.key}`}>
               <img src={activeCard.img} alt={activeCard.title} className="center-char-img" />
             </div>
