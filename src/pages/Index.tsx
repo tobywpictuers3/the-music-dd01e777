@@ -208,10 +208,12 @@ export default function Index() {
         /* CENTER hover -- bigger char, positioned at stage floor */
         .center-bubble-wrap{
           position:fixed;
-          bottom:28vh; /* feet at stage floor */
+          bottom:19vh; /* feet exactly on stage rim */
           left:50%; transform:translateX(-50%);
           z-index:30; pointer-events:none;
           display:flex; flex-direction:column; align-items:center;
+          /* bubble is child above char -- flex-direction column-reverse so bubble on top */
+          flex-direction: column-reverse;
         }
         @keyframes char-pop{
           from{ opacity:0; transform:translateY(40px) scale(.68); }
