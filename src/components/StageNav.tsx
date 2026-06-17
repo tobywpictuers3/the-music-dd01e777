@@ -84,8 +84,9 @@ export default function StageNav({ scrollCards }: Props) {
         }
         .snav5-bg {
           position: absolute; inset: 0;
-          width: 100%; height: 100%;
-          object-fit: cover; object-position: center bottom;
+          width: 100vw; height: 100vh;
+          max-width: none;
+          object-fit: cover; object-position: center center;
         }
 
         /* ── Spotlight beam per act ── */
