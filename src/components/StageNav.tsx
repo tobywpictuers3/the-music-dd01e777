@@ -247,7 +247,7 @@ export default function StageNav({ scrollCards }: Props) {
               <div
                 key={act.key}
                 id={act.id}
-                className={`snav5-act${isVisible ? " visible" : ""} ${isActive ? "active" : ""}`}
+                className={`snav5-act${revealed ? " visible" : ""} ${isActive ? " active" : ""}`}
                 style={{ left: act.stageLeft, width: act.stageW, bottom: (act as any).stageBottom ?? '19%' }}
                 onMouseEnter={() => {
                   if (hoverTimer.current) clearTimeout(hoverTimer.current);
