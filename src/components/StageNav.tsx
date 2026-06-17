@@ -11,27 +11,29 @@ import imgFlute     from "@/assets/homepage/characters/flute.png";
 
 /* Each instrument = one "act" revealed by scroll */
 const ACTS = [
+  /* Each act reveals at scroll = (index+1) * 400px after StageNav starts */
+  /* 4 "wheel turns" empty, then 4 turns per instrument */
   { key:"orchestras",   id:"stage-orchestras",   img:imgDrums,     href:"/orchestras",
-    title:"תזמורות", text:"הרכבים מותאמים לכל אירוע — מהרכב קטן, עד הפקה מלאה עם תאורה והגברה.",
-    stageLeft:"32%", stageW:"22%", spotlightX:"41%" },
+    title:"תזמורות", text:"הרכבים מותאמים לכל אירוע -- מהרכב קטן עד הפקה מלאה עם תאורה והגברה.",
+    stageLeft:"30%", stageW:"21%", stageBottom:"19%", spotlightX:"41%" },
   { key:"performances", id:"stage-performances", img:imgSaxophone, href:"/performances",
-    title:"הופעות",  text:"מופע קיץ, ערב במה אינטימי, אירוע חגיגי — מוזיקה חיה עם התאמה לקהל.",
-    stageLeft:"47%", stageW:"15%", spotlightX:"54%" },
+    title:"הופעות",  text:"מופע קיץ, ערב במה אינטימי, אירוע חגיגי -- מוזיקה חיה עם התאמה לקהל.",
+    stageLeft:"52%", stageW:"14%", stageBottom:"19%", spotlightX:"59%" },
   { key:"students",     id:"stage-students",     img:imgPiano,     href:"/students",
-    title:"תלמידות", text:"26 שנות הוראה — מסלול שמחזיק תלמידה לאורך זמן, עם ליווי ורגישות.",
-    stageLeft:"20%", stageW:"20%", spotlightX:"30%" },
+    title:"תלמידות", text:"26 שנות הוראה -- מסלול שמחזיק תלמידה לאורך זמן, עם ליווי ורגישות.",
+    stageLeft:"14%", stageW:"19%", stageBottom:"19%", spotlightX:"24%" },
   { key:"about",        id:"stage-about",        img:imgFlute,     href:"/about",
-    title:"אודות",   text:"אומנות ואמינות - שני דברים שאני לא מוכנה לוותר עליהם. 35 שנות למידה.",
-    stageLeft:"72%", stageW:"16%", spotlightX:"78%" },
+    title:"אודות",   text:"אומנות ואמינות -- שני דברים שאני לא מוכנה לוותר עליהם. 35 שנות למידה.",
+    stageLeft:"74%", stageW:"11%", stageBottom:"19%", spotlightX:"79%" },
   { key:"sheets",       id:"stage-sheets",       img:imgGuitar,    href:"/sheets",
-    title:"תווים",   text:"ספריית תווים מסודרת — רפרטואר קלאסי ומגוון, נוח ומהיר לשימוש.",
-    stageLeft:"60%", stageW:"15%", spotlightX:"67%" },
+    title:"תווים",   text:"ספריית תווים מסודרת -- רפרטואר קלאסי ומגוון, נוח ומהיר לשימוש.",
+    stageLeft:"65%", stageW:"12%", stageBottom:"19%", spotlightX:"71%" },
   { key:"blog",         id:"stage-blog",         img:imgViolin,    href:"/blog",
-    title:"בלוג",    text:"הקשבה, דיוק ורגישות — מחשבות על הוראה, הופעות וחיים מוזיקליים.",
-    stageLeft:"82%", stageW:"13%", spotlightX:"88%" },
+    title:"בלוג",    text:"מחשבות על הוראה, הופעות וחיים מוזיקליים -- השראה שנעים לחזור אליה.",
+    stageLeft:"85%", stageW:"11%", stageBottom:"19%", spotlightX:"90%" },
   { key:"contact",      id:"stage-contact",      img:imgPresenter, href:"/contact",
-    title:"צור קשר", text:"שיעורים, הופעה, סדנאות, הפקת תזמורת — מתחילים בפנייה קצרה.",
-    stageLeft:"4%",  stageW:"14%", spotlightX:"11%" },
+    title:"צור קשר", text:"שיעורים, הופעה, סדנאות, הפקת תזמורת -- מתחילים בפנייה קצרה.",
+    stageLeft:"4%",  stageW:"10%", stageBottom:"19%", spotlightX:"9%" },
 ] as const;
 
 type ActKey = typeof ACTS[number]["key"];
@@ -51,9 +53,10 @@ export default function StageNav({ scrollCards }: Props) {
     const onScroll = () => {
       const el = outerRef.current;
       if (!el) return;
-      const rect  = el.getBoundingClientRect();
+      const rect    = el.getBoundingClientRect();
       const scrolled = Math.max(0, -rect.top);
-      const count = Math.min(ACTS.length, Math.floor(scrolled / 160));
+      /* 400px empty buffer, then one instrument per 400px */
+      const count   = Math.min(ACTS.length, Math.floor(Math.max(0, scrolled - 400) / 400));
       setRevealedCount(count);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -68,7 +71,8 @@ export default function StageNav({ scrollCards }: Props) {
         /* ══ OUTER — tall so scroll reveals each act ══ */
         .snav5-outer {
           position: relative;
-          height: calc(100vh + ${ACTS.length * 160}px);
+          /* 400px empty + 7 acts x 400px each = 3200px total scroll */
+          height: calc(100vh + 3200px);
           z-index: 0;
         }
 
@@ -109,11 +113,12 @@ export default function StageNav({ scrollCards }: Props) {
         }
         .snav5-act {
           position: absolute;
-          bottom: 19%;
+          /* bottom set per-act via style prop */
           z-index: 12;
           cursor: pointer;
           animation: act-enter .55s cubic-bezier(.22,1,.36,1) forwards;
           transition: filter .3s ease;
+          /* NO float animation -- feet stay on stage */
         }
         .snav5-act.active {
           filter: drop-shadow(0 0 28px rgba(255,215,80,.90))
