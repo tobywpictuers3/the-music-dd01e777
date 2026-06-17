@@ -14,14 +14,14 @@ import imgGuitar    from "@/assets/homepage/characters/guitar.png";
 import imgFlute     from "@/assets/homepage/characters/flute.png";
 
 const NAV_ITEMS = [
-  { label: "בית",      href: "/",            img: null         },
-  { label: "תזמורות", href: "/orchestras",   img: imgDrums     },
-  { label: "הופעות",  href: "/performances", img: imgSaxophone },
-  { label: "תלמידות", href: "/students",     img: imgPiano     },
-  { label: "תווים",   href: "/sheets",       img: imgGuitar    },
-  { label: "אודות",   href: "/about",        img: imgFlute     },
-  { label: "בלוג",    href: "/blog",         img: imgViolin    },
-  { label: "צור קשר", href: "/contact",      img: imgPresenter },
+  { label: "בית",      href: "/",            img: null,         quote: null },
+  { label: "תזמורות", href: "/orchestras",   img: imgDrums,     quote: "הרכבים מותאמים לכל אירוע — מהרכב קטן עד הפקה מלאה." },
+  { label: "הופעות",  href: "/performances", img: imgSaxophone, quote: "מוזיקה חיה עם התאמה לקהל ולאופי האירוע." },
+  { label: "תלמידות", href: "/students",     img: imgPiano,     quote: "26 שנות הוראה — מסלול עם ליווי, דרישה ורגישות." },
+  { label: "תווים",   href: "/sheets",       img: imgGuitar,    quote: "ספריית תווים מסודרת — מהירה ונוחה לשימוש." },
+  { label: "אודות",   href: "/about",        img: imgFlute,     quote: "אומנות ואמינות — 35 שנות למידה רציפה." },
+  { label: "בלוג",    href: "/blog",         img: imgViolin,    quote: "מחשבות על הוראה, הופעות וחיים מוזיקליים." },
+  { label: "צור קשר", href: "/contact",      img: imgPresenter, quote: "שיעורים, הופעה, סדנאות, תזמורת — מתחילים בפנייה קצרה." },
 ] as const;
 
 type NavHref = typeof NAV_ITEMS[number]["href"];
@@ -79,19 +79,27 @@ export default function Header() {
     <>
       <style>{`
         /* ══ HEADER CARD NAV ══ */
+        /* fire gradient animated border on pill-nav */
+        @keyframes fire-border {
+          0%   { background-position: 0% 50%; }
+          50%  { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        /* pill-nav gets fire border via box-shadow trick injected in JSX */
+
         .hdr-nav-card {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 2px;
-          padding: 4px 8px 5px;
-          border-radius: 10px;
+          gap: 3px;
+          padding: 5px 10px 7px;
+          border-radius: 12px;
           text-decoration: none;
           cursor: pointer;
           position: relative;
           background: transparent;
           transition: background .2s, transform .18s;
-          min-width: 48px;
+          min-width: 54px;
         }
         .hdr-nav-card:hover {
           background: hsl(var(--primary)/0.10);
@@ -99,6 +107,44 @@ export default function Header() {
         }
         .hdr-nav-card.active {
           background: hsl(var(--primary)/0.12);
+        }
+        /* Hover tooltip */
+        .hdr-nav-card .hdr-tooltip {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 50%;
+          transform: translateX(-50%);
+          background: hsl(var(--card)/.96);
+          border: 1.5px solid hsl(var(--primary)/.80);
+          border-radius: 12px;
+          padding: 8px 14px;
+          width: max-content;
+          max-width: 200px;
+          font-size: .72rem;
+          color: hsl(var(--foreground)/.78);
+          line-height: 1.45;
+          text-align: center;
+          direction: rtl;
+          backdrop-filter: blur(10px);
+          pointer-events: none;
+          opacity: 0;
+          transform: translateX(-50%) translateY(-4px);
+          transition: opacity .2s ease, transform .2s ease;
+          z-index: 100;
+          box-shadow: 0 0 14px 3px hsl(var(--primary)/.20), 0 6px 18px rgba(0,0,0,.28);
+          white-space: normal;
+        }
+        .hdr-nav-card .hdr-tooltip::before {
+          content: '';
+          position: absolute;
+          bottom: 100%; left: 50%;
+          transform: translateX(-50%);
+          border: 6px solid transparent;
+          border-bottom-color: hsl(var(--primary)/.80);
+        }
+        .hdr-nav-card:hover .hdr-tooltip {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
         }
         /* small char image in header — PNGs are now truly transparent */
         .hdr-char-img {
@@ -129,26 +175,19 @@ export default function Header() {
           filter: drop-shadow(0 0 8px hsl(var(--primary)/0.45))
                   drop-shadow(0 3px 7px rgba(0,0,0,0.40));
         }
+        /* label always visible below icon */
         .hdr-nav-label {
-          font-size: clamp(0.58rem, 0.68vw, 0.73rem);
-          font-weight: 600;
+          font-size: clamp(0.58rem, 0.65vw, 0.72rem);
+          font-weight: 700;
           color: hsl(var(--muted-foreground));
           white-space: nowrap;
-          transition: color .2s, opacity .2s;
           line-height: 1;
-          /* hidden by default, shown on hover */
-          opacity: 0;
-          max-height: 0;
-          overflow: hidden;
-          transition: opacity .2s ease, max-height .2s ease, color .2s;
+          transition: color .2s;
         }
         .hdr-nav-card:hover .hdr-nav-label,
         .hdr-nav-card.active .hdr-nav-label {
           color: hsl(var(--primary));
-          opacity: 1;
-          max-height: 20px;
         }
-        /* active underline */
         .hdr-nav-card.active::after {
           content: '';
           position: absolute;
@@ -242,7 +281,14 @@ export default function Header() {
 
       <header className="fixed inset-x-0 top-0 z-50 py-3 sm:py-4" dir="rtl">
         <div className="mx-auto max-w-6xl px-3 sm:px-6 lg:px-8">
-          <div className="pill-nav flex h-14 items-center justify-between px-4 sm:h-16 sm:px-6">
+          <div className="pill-nav flex h-14 items-center justify-between px-4 sm:h-16 sm:px-6"
+                  style={{
+                    background: "linear-gradient(hsl(var(--background)), hsl(var(--background))) padding-box, linear-gradient(135deg, #C9A961, #E85D20, #C9202A, #E85D20, #C9A961) border-box",
+                    backgroundSize: "100% 100%, 300% 300%",
+                    border: "1.5px solid transparent",
+                    borderRadius: "9999px",
+                    animation: "fire-border 4s ease infinite",
+                  }}>
 
             {/* ── Logo ── */}
             <Link to="/" className="flex min-w-0 items-center gap-2 rounded-full focus-visible:outline-none flex-shrink-0">
