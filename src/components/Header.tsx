@@ -155,9 +155,10 @@ export default function Header() {
           background: transparent !important;
           /* base glow — visible on both light and dark */
           filter:
-            drop-shadow(0 0 10px rgba(201,169,97,.65))
-            drop-shadow(0 0 20px rgba(232,93,32,.30))
-            drop-shadow(0 3px 8px rgba(0,0,0,0.50));
+            drop-shadow(0 0 14px rgba(201,169,97,.90))
+            drop-shadow(0 0 28px rgba(232,93,32,.55))
+            drop-shadow(0 0 42px rgba(201,169,97,.40))
+            drop-shadow(0 4px 10px rgba(0,0,0,0.55));
           transition: transform .22s ease, filter .22s ease;
         }
         /* stronger glow in dark mode */
