@@ -23,8 +23,8 @@ const ACTS = [
     title:"תלמידות", text:"26 שנות הוראה — מסלול שמחזיק תלמידה לאורך זמן, עם ליווי ורגישות.",
     stageLeft:"20%", stageW:"20%", spotlightX:"30%" },
   { key:"about",        id:"stage-about",        img:imgFlute,     href:"/about",
-    title:"אודות",   text:"אומנות ואמינות — שני דברים שאני לא מוכנה לוותר עליהם. 35 שנות למידה.",
-    stageLeft:"72%", stageW:"12%", spotlightX:"78%" },
+    title:"אודות",   text:"אומנות ואמינות - שני דברים שאני לא מוכנה לוותר עליהם. 35 שנות למידה.",
+    stageLeft:"72%", stageW:"16%", spotlightX:"78%" },
   { key:"sheets",       id:"stage-sheets",       img:imgGuitar,    href:"/sheets",
     title:"תווים",   text:"ספריית תווים מסודרת — רפרטואר קלאסי ומגוון, נוח ומהיר לשימוש.",
     stageLeft:"60%", stageW:"15%", spotlightX:"67%" },
@@ -115,20 +115,22 @@ export default function StageNav({ scrollCards }: Props) {
         }
         .snav5-act {
           position: absolute;
-          bottom: 18%;
+          bottom: 19%;
           z-index: 12;
           cursor: pointer;
           animation: act-enter .55s cubic-bezier(.22,1,.36,1) forwards;
           transition: filter .3s ease;
         }
         .snav5-act.active {
-          filter: drop-shadow(0 0 24px hsl(var(--primary)/.7))
+          filter: drop-shadow(0 0 28px rgba(255,215,80,.90))
+                  drop-shadow(0 0 50px rgba(232,93,32,.60))
                   drop-shadow(0 14px 32px rgba(0,0,0,.45));
           z-index: 14;
         }
         .snav5-act:not(.active) {
-          filter: drop-shadow(0 8px 18px rgba(0,0,0,.30));
-          opacity: .82;
+          filter: drop-shadow(0 0 10px rgba(201,169,97,.40))
+                  drop-shadow(0 8px 18px rgba(0,0,0,.30));
+          opacity: .90;
         }
         .snav5-act img {
           width: 100%; display: block; background: transparent;
@@ -138,12 +140,13 @@ export default function StageNav({ scrollCards }: Props) {
 
         /* act label */
         .act-label {
-          text-align: center; margin-top: 4px;
-          font-size: clamp(9px,.85vw,13px); font-weight:700;
+          text-align: center; margin-top: 6px;
+          font-size: clamp(14px,1.4vw,20px); font-weight:800;
           color: hsl(var(--primary));
-          text-shadow: 0 1px 6px rgba(0,0,0,.5);
-          opacity: .72;
+          text-shadow: 0 2px 10px rgba(0,0,0,.6), 0 0 20px rgba(201,169,97,.4);
+          opacity: .80;
           transition: opacity .2s;
+          letter-spacing: .04em;
         }
         .snav5-act.active .act-label { opacity:1; }
 
@@ -182,7 +185,7 @@ export default function StageNav({ scrollCards }: Props) {
           padding: 14px 18px 16px;
           text-align: center; direction: rtl;
           backdrop-filter: blur(12px);
-          pointer-events: none;
+          pointer-events: none; /* allow btn inside */
           animation:
             bubble-pop .36s cubic-bezier(.22,1,.36,1) forwards,
             bubble-glow 2.8s ease-in-out .36s infinite;
@@ -208,8 +211,8 @@ export default function StageNav({ scrollCards }: Props) {
           border:8px solid transparent;
           border-top-color:hsl(var(--card));
         }
-        .snav5-bubble-title { font-weight:800; font-size:clamp(.9rem,1.05vw,1.12rem); color:hsl(var(--primary)); margin-bottom:6px; }
-        .snav5-bubble-quote { font-size:clamp(.70rem,.82vw,.86rem); color:hsl(var(--foreground)/.76); line-height:1.52; margin-bottom:12px; }
+        .snav5-bubble-title { font-weight:800; font-size:clamp(1.05rem,1.25vw,1.35rem); color:hsl(var(--primary)); margin-bottom:6px; }
+        .snav5-bubble-quote { font-size:clamp(.82rem,.95vw,1.02rem); color:hsl(var(--foreground)/.80); line-height:1.55; margin-bottom:12px; }
         .snav5-bubble-btn {
           display:inline-flex; align-items:center; gap:5px;
           background:hsl(var(--accent)); color:hsl(var(--accent-foreground));
@@ -255,8 +258,12 @@ export default function StageNav({ scrollCards }: Props) {
                 id={act.id}
                 className={`snav5-act${isActive ? " active" : ""}`}
                 style={{ left: act.stageLeft, width: act.stageW }}
-                onMouseEnter={() => setHovered(act.key as ActKey)}
-                onMouseLeave={() => setHovered(null)}
+                onMouseEnter={() => {
+                  if (hoverTimer.current) clearTimeout(hoverTimer.current);
+                  setHovered(act.key as ActKey);
+                  hoverTimer.current = setTimeout(() => setHovered(null), 3000);
+                }}
+                onMouseLeave={() => { /* let timer handle it */ }}
               >
                 {/* Spotlight */}
                 <div className="act-spotlight" aria-hidden
