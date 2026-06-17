@@ -107,9 +107,16 @@ export default function StageNav({ scrollCards }: Props) {
 
         /* ── Instrument ── */
         @keyframes act-enter {
-          0%  { opacity:0; transform:translateY(50%) scale(.72); }
-          55% { transform:translateY(-4%) scale(1.06); }
+          0%  { opacity:0; transform:translateY(60%) scale(.70); }
+          55% { transform:translateY(-5%) scale(1.07); }
           100%{ opacity:1; transform:translateY(0) scale(1); }
+        }
+        .snav5-act {
+          opacity: 0;
+          transform: translateY(60%) scale(.70);
+        }
+        .snav5-act.visible {
+          animation: act-enter .65s cubic-bezier(.22,1,.36,1) forwards;
         }
         .snav5-act {
           position: absolute;
@@ -240,8 +247,8 @@ export default function StageNav({ scrollCards }: Props) {
               <div
                 key={act.key}
                 id={act.id}
-                className={`snav5-act${isActive ? " active" : ""}`}
-                style={{ left: act.stageLeft, width: act.stageW }}
+                className={`snav5-act${isVisible ? " visible" : ""} ${isActive ? "active" : ""}`}
+                style={{ left: act.stageLeft, width: act.stageW, bottom: (act as any).stageBottom ?? '19%' }}
                 onMouseEnter={() => {
                   if (hoverTimer.current) clearTimeout(hoverTimer.current);
                   setHovered(act.key as ActKey);
