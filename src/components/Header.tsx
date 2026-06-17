@@ -148,15 +148,16 @@ export default function Header() {
         }
         /* small char image in header — PNGs are now truly transparent */
         .hdr-char-img {
-          width: clamp(20px, 2vw, 30px);
-          height: clamp(24px, 2.4vw, 36px);
+          width: clamp(28px, 2.8vw, 42px);
+          height: clamp(34px, 3.4vw, 50px);
           object-fit: contain;
           display: block;
           background: transparent !important;
           /* base glow — visible on both light and dark */
           filter:
-            drop-shadow(0 0 5px rgba(201,169,97,.45))
-            drop-shadow(0 2px 6px rgba(0,0,0,0.45));
+            drop-shadow(0 0 10px rgba(201,169,97,.65))
+            drop-shadow(0 0 20px rgba(232,93,32,.30))
+            drop-shadow(0 3px 8px rgba(0,0,0,0.50));
           transition: transform .22s ease, filter .22s ease;
         }
         /* stronger glow in dark mode */
@@ -323,6 +324,7 @@ export default function Header() {
                         />
                       )}
                       <span className="hdr-nav-label">{item.label}</span>
+                      {(item as any).quote && <span className="hdr-tooltip">{(item as any).quote}</span>}
                     </Link>
 
                     {/* Jump animation — only on home after hero scroll */}
