@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -22,31 +22,38 @@ import imgGuitar    from "@/assets/homepage/characters/guitar.png";
 import imgFlute     from "@/assets/homepage/characters/flute.png";
 import imgPresenter from "@/assets/homepage/presenter/presenter.png";
 
+/* 3 left + 3 right (no contact card -- presenter handles that on hover) */
 const LEFT_CARDS = [
   { key:"orchestras",   img:imgDrums,     href:"/orchestras",   stageId:"stage-orchestras",
-    title:"תזמורות", text:"הרכבים מותאמים לכל אירוע -- מהרכב קטן עד הפקה מלאה." },
+    title:"תזמורות", text:"הרכבים מותאמים לכל אירוע -- מהרכב קטן עד הפקה מלאה עם תאורה והגברה." },
   { key:"performances", img:imgSaxophone, href:"/performances", stageId:"stage-performances",
     title:"הופעות",  text:"מוזיקה חיה עם התאמה לקהל ולאופי האירוע." },
   { key:"students",     img:imgPiano,     href:"/students",     stageId:"stage-students",
-    title:"תלמידות", text:"26 שנות הוראה -- מסלול עם ליווי, דרישה ורגישות." },
-  { key:"sheets",       img:imgGuitar,    href:"/sheets",       stageId:"stage-sheets",
-    title:"תווים",   text:"ספריית תווים מסודרת -- מהירה ונוחה לשימוש." },
+    title:"תלמידות", text:"26 שנות הוראה -- מסלול שמחזיק תלמידה לאורך זמן, עם ליווי ורגישות." },
 ] as const;
 
 const RIGHT_CARDS = [
-  { key:"about",   img:imgFlute,     href:"/about",   stageId:"stage-about",
-    title:"אודות",    text:"אומנות ואמינות -- שני דברים שאני לא מוכנה לוותר עליהם." },
-  { key:"blog",    img:imgViolin,    href:"/blog",    stageId:"stage-blog",
-    title:"בלוג",     text:"מחשבות על הוראה, הופעות וחיים מוזיקליים." },
-  { key:"contact", img:imgPresenter, href:"/contact", stageId:"stage-contact",
-    title:"צור קשר",  text:"שיעורים, הופעה, סדנאות, תזמורת -- מתחילים בפנייה קצרה." },
+  { key:"about",   img:imgFlute,  href:"/about",   stageId:"stage-about",
+    title:"אודות",    text:"אומנות ואמינות -- שני דברים שאני לא מוכנה לוותר עליהם. 35 שנות למידה." },
+  { key:"blog",    img:imgViolin, href:"/blog",    stageId:"stage-blog",
+    title:"בלוג",     text:"מחשבות על הוראה, הופעות וחיים מוזיקליים -- השראה שנעים לחזור אליה." },
+  { key:"sheets",  img:imgGuitar, href:"/sheets",  stageId:"stage-sheets",
+    title:"תווים",    text:"ספריית תווים מסודרת -- רפרטואר קלאסי ומגוון, נוח ומהיר לשימוש." },
 ] as const;
+
+/* Presenter "card" data for hover */
+const PRESENTER_CARD = {
+  key:"contact", img:imgPresenter, href:"/contact", stageId:"stage-contact",
+  title:"צור קשר", text:"שיעורים, הופעה, סדנאות, תזמורת -- מתחילים בפנייה קצרה."
+};
 
 const ALL_CARDS = [...LEFT_CARDS, ...RIGHT_CARDS];
 
 export default function Index() {
-  const [scrollY, setScrollY] = useState(0);
-  const [hoveredCard, setHoveredCard] = useState<string|null>(null);
+  const [scrollY, setScrollY]     = useState(0);
+  const [hoveredCard, setHovered] = useState<string|null>(null);
+  const [bubbleVisible, setBubbleVisible] = useState(false);
+  const bubbleTimer = useRef<ReturnType<typeof setTimeout>|null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
@@ -55,41 +62,46 @@ export default function Index() {
   }, []);
 
   const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+  const CARDS_START = vh * 0.15;
+  const CARDS_FULL  = vh * 0.65;
 
-  // Phase thresholds (in px)
-  const CARDS_START  = vh * 0.15;   // cards + crossfade begin
-  const CARDS_FULL   = vh * 0.70;   // cards fully visible + stage empty
-  const SCROLL_END   = vh * 1.20;   // hero section ends, StageNav takes over
+  const crossfade   = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
+  const showCards   = scrollY > CARDS_START;
+  const showMarquee = crossfade > 0.25;
 
-  const crossfade    = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
-  const instrumentsOp = 1 - crossfade;
-  const emptyStageOp  = crossfade;
-  const showCards     = scrollY > CARDS_START;
-  const cardProgress  = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
-  const showMarquee   = crossfade > 0.3;
-
-  // Presenter moves forward when cards show:
-  // Fixed in viewport coords so zoom doesn't affect it
-  // Base: 4% from left, 28% from bottom of viewport
-  // When cards appear: moves to center-left (between cols) -- right of left column
-  const presenterLeft   = showCards ? "17vw" : "4vw";
-  const presenterBottom = "28vh";    // viewport units -- zoom-invariant
-  const presenterWidth  = "12vw";   // viewport units
-
-  const hovCard = ALL_CARDS.find(c => c.key === hoveredCard) ?? null;
+  /* Hover handlers with 3s+2s fadeout */
+  const handleEnter = (key: string) => {
+    if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
+    setHovered(key);
+    setBubbleVisible(true);
+    /* Auto-hide after 3s */
+    bubbleTimer.current = setTimeout(() => {
+      setBubbleVisible(false);
+    }, 3000);
+  };
+  const handleLeave = () => {
+    /* Don't immediately hide -- let the 3s timer run */
+  };
+  const handlePresenterEnter = () => handleEnter("contact");
 
   const scrollToStage = (stageId: string) => {
     const el = document.getElementById(stageId);
     if (el) el.scrollIntoView({ behavior:"smooth", block:"center" });
   };
 
+  const activeCard = hoveredCard === "contact"
+    ? PRESENTER_CARD
+    : ALL_CARDS.find(c => c.key === hoveredCard) ?? null;
+
+  /* Presenter X position: at stage bottom during hero, between cols during cards */
+  const presLeft   = showCards ? "22vw" : "3vw";
+  /* Feet at stage rim -- stage rim is at ~67% from top, so bottom = 33vh */
+  const presBottom = "33vh";
+  const presWidth  = "11vw";
+
   return (
     <>
       <style>{`
-        @keyframes presenter-float {
-          0%,100%{ transform:translateY(0); }
-          50%    { transform:translateY(-10px); }
-        }
         @keyframes sparkle-float {
           0%,100%{ opacity:0; transform:scale(0) rotate(0deg); }
           20%    { opacity:1; transform:scale(1) rotate(30deg); }
@@ -105,7 +117,7 @@ export default function Index() {
           background:linear-gradient(135deg,#C9A961 0%,#E85D20 35%,#C9202A 65%,#8B1A2B 100%);
           -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
           filter:drop-shadow(0 0 8px rgba(232,93,32,.35));
-          transition:filter .3s ease; cursor:pointer;
+          transition:filter .3s; cursor:pointer;
           text-decoration:underline; text-decoration-color:rgba(201,169,97,.35); text-underline-offset:8px;
         }
         .hero-kaan:hover{ filter:drop-shadow(0 0 20px rgba(232,93,32,.80)) drop-shadow(0 0 36px rgba(201,41,42,.60)); }
@@ -134,79 +146,82 @@ export default function Index() {
         @keyframes logo-entrance{
           0%{ opacity:0; transform:scale(.6) translateY(-28px); filter:blur(6px); }
           55%{ opacity:1; transform:scale(1.07) translateY(4px); filter:blur(0); }
-          75%{ transform:scale(.97) translateY(-2px); }
           100%{ opacity:1; transform:scale(1) translateY(0); filter:blur(0); }
         }
         .logo-entrance{ animation:logo-entrance 1.1s cubic-bezier(.16,1,.3,1) forwards; }
 
-        /* SIDE CARDS */
+        /* SIDE CARDS -- bigger, bolder text */
         .side-cards-col{
-          position:fixed;
-          top:0; bottom:0; width:20vw;
+          position:fixed; top:0; bottom:0; width:22vw;
           display:flex; flex-direction:column; justify-content:center;
-          gap:16px; z-index:25; padding:80px 8px 60px; pointer-events:none;
+          gap:18px; z-index:25; padding:88px 10px 60px; pointer-events:none;
         }
         .side-cards-col.left { left:0; }
         .side-cards-col.right{ right:0; }
         .side-cards-col.active{ pointer-events:auto; }
         @keyframes slide-from-left{
-          from{ opacity:0; transform:translateX(-52px) scale(.85); }
+          from{ opacity:0; transform:translateX(-55px) scale(.88); }
           to  { opacity:1; transform:translateX(0) scale(1); }
         }
         @keyframes slide-from-right{
-          from{ opacity:0; transform:translateX(52px) scale(.85); }
+          from{ opacity:0; transform:translateX(55px) scale(.88); }
           to  { opacity:1; transform:translateX(0) scale(1); }
         }
         .side-card{
-          display:flex; flex-direction:column; align-items:center; gap:8px;
-          padding:14px 12px 16px;
+          display:flex; flex-direction:column; align-items:center; gap:10px;
+          padding:16px 14px 18px;
           border-radius:18px;
           border:1.5px solid hsl(var(--primary)/.42);
           background:hsl(var(--background)/.65);
           backdrop-filter:blur(12px);
-          text-decoration:none; direction:rtl; cursor:pointer;
+          text-decoration:none; direction:rtl; cursor:pointer; width:100%;
           transition:border-color .22s, transform .22s, box-shadow .22s, background .22s;
-          width:100%;
         }
         .side-card:hover{
-          border-color:hsl(var(--primary));
-          background:hsl(var(--card)/.92);
+          border-color:hsl(var(--primary)); background:hsl(var(--card)/.92);
           transform:scale(1.04) translateY(-2px);
           box-shadow:0 0 0 1px hsl(var(--primary)/.30),0 0 22px 6px hsl(var(--primary)/.25),0 8px 24px rgba(0,0,0,.28);
         }
         .side-card-img{
-          width:clamp(64px,7vw,110px);
-          height:clamp(76px,8.5vw,130px);
+          width:clamp(72px,8vw,120px); height:clamp(86px,9.5vw,144px);
           object-fit:contain; background:transparent;
-          filter:drop-shadow(0 0 14px rgba(201,169,97,.75)) drop-shadow(0 0 28px rgba(232,93,32,.40)) drop-shadow(0 6px 14px rgba(0,0,0,.50));
+          filter:drop-shadow(0 0 16px rgba(201,169,97,.80)) drop-shadow(0 0 32px rgba(232,93,32,.45)) drop-shadow(0 6px 14px rgba(0,0,0,.50));
           transition:filter .28s ease, transform .28s ease;
         }
         .side-card:hover .side-card-img{
-          filter:drop-shadow(0 0 22px rgba(201,169,97,1.0)) drop-shadow(0 0 44px rgba(232,93,32,.65)) drop-shadow(0 8px 18px rgba(0,0,0,.55));
-          transform:translateY(-7px) scale(1.12);
+          filter:drop-shadow(0 0 24px rgba(201,169,97,1.0)) drop-shadow(0 0 48px rgba(232,93,32,.70)) drop-shadow(0 8px 18px rgba(0,0,0,.55));
+          transform:translateY(-8px) scale(1.12);
         }
         .side-card-title{
-          font-size:clamp(.72rem,.9vw,.98rem); font-weight:800;
+          font-size:clamp(1rem,1.2vw,1.4rem); font-weight:800;
           color:hsl(var(--primary)); white-space:nowrap;
         }
 
-        /* CENTER hover char */
+        /* CENTER hover -- bigger char, positioned at stage floor */
         .center-bubble-wrap{
           position:fixed;
-          bottom:30vh; left:50%;
-          transform:translateX(-50%);
+          bottom:28vh; /* feet at stage floor */
+          left:50%; transform:translateX(-50%);
           z-index:30; pointer-events:none;
           display:flex; flex-direction:column; align-items:center;
         }
         @keyframes char-pop{
-          from{ opacity:0; transform:translateY(36px) scale(.70); }
-          65% { transform:translateY(-6px) scale(1.07); }
+          from{ opacity:0; transform:translateY(40px) scale(.68); }
+          65% { transform:translateY(-7px) scale(1.06); }
           to  { opacity:1; transform:translateY(0) scale(1); }
         }
+        /* bubble fadeout after 3s */
+        @keyframes bubble-fadeout{
+          0%  { opacity:1; }
+          60% { opacity:1; }
+          100%{ opacity:0; }
+        }
+        .bubble-fading{ animation:bubble-fadeout 2s ease forwards; }
+
         .center-char-img{
-          width:clamp(80px,10vw,140px); display:block; background:transparent; margin:0 auto 6px;
+          width:clamp(90px,12vw,180px); display:block; background:transparent; margin:0 auto 6px;
           animation:char-pop .48s cubic-bezier(.22,1,.36,1) forwards;
-          filter:drop-shadow(0 0 24px rgba(201,169,97,.95)) drop-shadow(0 0 48px rgba(232,93,32,.55)) drop-shadow(0 10px 24px rgba(0,0,0,.55));
+          filter:drop-shadow(0 0 28px rgba(201,169,97,.95)) drop-shadow(0 0 56px rgba(232,93,32,.60)) drop-shadow(0 12px 28px rgba(0,0,0,.58));
         }
         @keyframes bubble-pop{
           from{ opacity:0; transform:translateX(-50%) scale(.84) translateY(14px); }
@@ -219,25 +234,27 @@ export default function Index() {
         }
         .center-bubble{
           background:hsl(var(--card)/.95); border:2px solid hsl(var(--primary)/.85);
-          border-radius:18px; padding:14px 20px 16px;
+          border-radius:18px; padding:16px 22px 18px;
           text-align:center; direction:rtl; backdrop-filter:blur(12px);
-          min-width:clamp(180px,22vw,300px);
+          min-width:clamp(200px,24vw,340px);
           animation:bubble-pop .36s cubic-bezier(.22,1,.36,1) forwards, bubble-glow 2.8s ease-in-out .36s infinite;
           position:relative; transform:translateX(-50%);
+          pointer-events:auto;
         }
         .center-bubble::before{ content:''; position:absolute; inset:5px; border-radius:14px; border:1px solid hsl(var(--primary)/.22); pointer-events:none; }
         .center-bubble::after{ content:''; position:absolute; bottom:100%; left:50%; transform:translateX(-50%); border:9px solid transparent; border-bottom-color:hsl(var(--primary)/.85); }
-        .bubble-title{ font-weight:800; font-size:clamp(.92rem,1.1vw,1.15rem); color:hsl(var(--primary)); margin-bottom:5px; }
-        .bubble-quote{ font-size:clamp(.70rem,.82vw,.88rem); color:hsl(var(--foreground)/.76); line-height:1.52; margin-bottom:10px; }
+        .bubble-title{ font-weight:800; font-size:clamp(1.1rem,1.3vw,1.4rem); color:hsl(var(--primary)); margin-bottom:6px; }
+        .bubble-quote{ font-size:clamp(.82rem,.95vw,1.05rem); color:hsl(var(--foreground)/.80); line-height:1.55; margin-bottom:12px; }
         .bubble-btn{
           display:inline-flex; align-items:center; gap:5px;
           background:hsl(var(--accent)); color:hsl(var(--accent-foreground));
-          font-size:.74rem; font-weight:700; padding:6px 18px; border-radius:999px;
+          font-size:.82rem; font-weight:700; padding:8px 22px; border-radius:999px;
           text-decoration:none; pointer-events:auto; transition:opacity .2s,transform .2s;
+          cursor:pointer;
         }
         .bubble-btn:hover{ opacity:.84; transform:scale(1.04); }
 
-        /* MARQUEE -- fire gradient, 50% opacity */
+        /* MARQUEE */
         @keyframes toby-marquee{ 0%{ transform:translateX(0); } 100%{ transform:translateX(-50%); } }
         .toby-marquee-track{ animation:toby-marquee 26s linear infinite; width:max-content; }
       `}</style>
@@ -245,19 +262,15 @@ export default function Index() {
       <div className="bg-background text-foreground">
         <Header />
 
-        {/* ================================================================
-            FIXED STAGE BACKGROUND -- always covers viewport, never scrolls
-        ================================================================ */}
-        <div className="fixed inset-0 z-0">
-          {/* Layer 1: instruments */}
-          <div style={{ opacity:instrumentsOp, position:"absolute", inset:0 }}>
+        {/* FIXED STAGE -- never scrolls */}
+        <div className="fixed inset-0 z-0" style={{ pointerEvents:"none" }}>
+          <div style={{ opacity:1-crossfade, position:"absolute", inset:0, transition:"opacity 0.05s linear" }}>
             <img src={stageBgLight} alt="" className="block dark:hidden"
               style={{ width:"100vw", height:"100vh", objectFit:"cover", objectPosition:"center" }} />
             <img src={stageBgDark}  alt="" className="hidden dark:block"
               style={{ width:"100vw", height:"100vh", objectFit:"cover", objectPosition:"center" }} />
           </div>
-          {/* Layer 2: empty stage */}
-          <div style={{ opacity:emptyStageOp, position:"absolute", inset:0 }}>
+          <div style={{ opacity:crossfade, position:"absolute", inset:0, transition:"opacity 0.05s linear" }}>
             <img src={stageEmptyLight} alt="" className="block dark:hidden"
               style={{ width:"100vw", height:"100vh", objectFit:"cover", objectPosition:"center" }} />
             <img src={stageEmptyDark}  alt="" className="hidden dark:block"
@@ -265,28 +278,29 @@ export default function Index() {
           </div>
         </div>
 
-        {/* ================================================================
-            PRESENTER -- fixed in viewport units, zoom-invariant
-        ================================================================ */}
-        <div className="fixed z-20" style={{
-          left: presenterLeft,
-          bottom: presenterBottom,
-          width: presenterWidth,
-          transition: "left 0.6s cubic-bezier(.22,1,.36,1)",
-          filter:"drop-shadow(0 14px 32px rgba(0,0,0,.55))",
-          animation:"presenter-float 3.5s ease-in-out infinite",
-        }}>
+        {/* PRESENTER -- fixed, feet at stage rim, NO float animation */}
+        <div
+          className="fixed z-20"
+          style={{
+            left: presLeft,
+            bottom: presBottom,
+            width: presWidth,
+            transition: "left 0.7s cubic-bezier(.22,1,.36,1)",
+            filter:"drop-shadow(0 14px 32px rgba(0,0,0,.55))",
+            cursor:"pointer",
+          }}
+          onMouseEnter={handlePresenterEnter}
+          onMouseLeave={handleLeave}
+        >
           <img src={imgPresenterHero} alt="" className="w-full block" style={{background:"transparent"}} />
         </div>
 
-        {/* ================================================================
-            SCROLL SPACER -- hero section (200vh)
-        ================================================================ */}
-        <div id={HOME_HERO_ID} style={{ height:"200vh", position:"relative", zIndex:5 }}>
+        {/* SCROLL SPACER */}
+        <div id={HOME_HERO_ID} style={{ height:"190vh", position:"relative", zIndex:5 }}>
 
-          {/* Hero text -- fades out with instruments */}
+          {/* Hero text */}
           <div className="fixed inset-0 z-10 flex flex-col items-center justify-start pt-20"
-            style={{ opacity:instrumentsOp, pointerEvents:instrumentsOp < 0.1 ? "none" : "auto" }}>
+            style={{ opacity:Math.max(0,1-crossfade*3), pointerEvents:crossfade > 0.33 ? "none" : "auto" }}>
             <img src={logoLight} alt="Toby Music"
               className="logo-entrance mb-4 h-[70px] object-contain drop-shadow-[0_6px_28px_rgba(0,0,0,.35)] dark:hidden md:h-[90px] lg:h-[100px]" />
             <img src={logoDark} alt="Toby Music"
@@ -312,14 +326,14 @@ export default function Index() {
             </div>
           </div>
 
-          {/* SIDE CARDS -- fixed to viewport */}
+          {/* LEFT CARDS */}
           <div className={`side-cards-col left${showCards ? " active" : ""}`}
-            style={{ opacity:cardProgress, transition:"opacity .4s ease" }}>
+            style={{ opacity:crossfade, transition:"opacity .4s ease" }}>
             {LEFT_CARDS.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
-                style={{ animation:showCards ? `slide-from-left .55s ${i*130}ms cubic-bezier(.22,1,.36,1) both` : "none" }}
-                onMouseEnter={() => setHoveredCard(card.key)}
-                onMouseLeave={() => setHoveredCard(null)}
+                style={{ animation:showCards ? `slide-from-left .55s ${i*140}ms cubic-bezier(.22,1,.36,1) both` : "none" }}
+                onMouseEnter={() => handleEnter(card.key)}
+                onMouseLeave={handleLeave}
                 onClick={(e) => { e.preventDefault(); scrollToStage(card.stageId); }}>
                 <img src={card.img} alt={card.title} className="side-card-img" />
                 <span className="side-card-title">{card.title}</span>
@@ -327,13 +341,14 @@ export default function Index() {
             ))}
           </div>
 
+          {/* RIGHT CARDS */}
           <div className={`side-cards-col right${showCards ? " active" : ""}`}
-            style={{ opacity:cardProgress, transition:"opacity .4s ease" }}>
+            style={{ opacity:crossfade, transition:"opacity .4s ease" }}>
             {RIGHT_CARDS.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
                 style={{ animation:showCards ? `slide-from-right .55s ${i*160}ms cubic-bezier(.22,1,.36,1) both` : "none" }}
-                onMouseEnter={() => setHoveredCard(card.key)}
-                onMouseLeave={() => setHoveredCard(null)}
+                onMouseEnter={() => handleEnter(card.key)}
+                onMouseLeave={handleLeave}
                 onClick={(e) => { e.preventDefault(); scrollToStage(card.stageId); }}>
                 <img src={card.img} alt={card.title} className="side-card-img" />
                 <span className="side-card-title">{card.title}</span>
@@ -341,21 +356,22 @@ export default function Index() {
             ))}
           </div>
 
-          {/* CENTER hover char + bubble */}
-          {hovCard && showCards && (
-            <div className="center-bubble-wrap" key={hovCard.key}>
-              <img src={hovCard.img} alt={hovCard.title} className="center-char-img" />
+          {/* CENTER hover char + bubble -- 3s timer */}
+          {activeCard && showCards && (
+            <div className={`center-bubble-wrap${!bubbleVisible ? " bubble-fading" : ""}`}
+              key={activeCard.key}>
+              <img src={activeCard.img} alt={activeCard.title} className="center-char-img" />
               <div className="center-bubble">
-                <div className="bubble-title">{hovCard.title}</div>
-                <div className="bubble-quote">{hovCard.text}</div>
-                <Link to={hovCard.href} className="bubble-btn" style={{pointerEvents:"auto"}}>
+                <div className="bubble-title">{activeCard.title}</div>
+                <div className="bubble-quote">{activeCard.text}</div>
+                <Link to={activeCard.href} className="bubble-btn" style={{pointerEvents:"auto"}}>
                   כניסה לדף
                 </Link>
               </div>
             </div>
           )}
 
-          {/* MARQUEE -- fire gradient, 50% opacity, appears when empty stage visible */}
+          {/* MARQUEE fixed bottom, 50% opacity fire */}
           {showMarquee && (
             <div className="fixed bottom-0 left-0 right-0 z-40 overflow-hidden py-3"
               style={{
@@ -364,7 +380,7 @@ export default function Index() {
               }}>
               <div className="toby-marquee-track flex items-center gap-8 whitespace-nowrap pr-8 text-white">
                 {[...MARQUEE_ITEMS,...MARQUEE_ITEMS,...MARQUEE_ITEMS].map((item,i) => (
-                  <span key={`${item}-${i}`} className="text-sm font-bold tracking-[.20em] sm:text-base">
+                  <span key={`m${i}`} className="text-sm font-bold tracking-[.20em] sm:text-base">
                     {item}<span className="mx-5 opacity-60">*</span>
                   </span>
                 ))}
@@ -373,19 +389,17 @@ export default function Index() {
           )}
         </div>
 
-        {/* ================================================================
-            STAGE NAV -- curtain call (scroll reveals instruments)
-        ================================================================ */}
+        {/* STAGE NAV -- z-index above fixed bg, below header */}
         <div style={{ position:"relative", zIndex:10 }}>
           <StageNav />
         </div>
 
-        {/* Bottom marquee (permanent, fire gradient) */}
+        {/* Bottom marquee */}
         <div className="relative overflow-hidden py-4 text-white z-10"
           style={{ background:"linear-gradient(135deg,#8B1A2B,#C9202A,#E85D20,#C9A961)" }}>
           <div className="toby-marquee-track flex items-center gap-8 whitespace-nowrap pr-8">
             {[...MARQUEE_ITEMS,...MARQUEE_ITEMS,...MARQUEE_ITEMS].map((item,i) => (
-              <span key={`${item}-${i}`} className="text-sm font-bold tracking-[.20em] sm:text-base">
+              <span key={`b${i}`} className="text-sm font-bold tracking-[.20em] sm:text-base">
                 {item}<span className="mx-5 opacity-60">*</span>
               </span>
             ))}
