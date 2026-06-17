@@ -104,8 +104,8 @@ export default function Index() {
   /* Presenter X position: at stage bottom during hero, between cols during cards */
   const presLeft   = showCards ? "22vw" : "3vw";
   /* Feet at stage rim -- stage rim is at ~67% from top, so bottom = 33vh */
-  const presBottom = "33vh";
-  const presWidth  = "11vw";
+  const presBottom = "2vh";   /* very bottom */
+  const presWidth  = "10vw";
 
   return (
     <>
