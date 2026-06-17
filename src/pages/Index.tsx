@@ -218,7 +218,9 @@ export default function Index() {
         }
         /* Bubble only -- appears on card hover, high center, tail DOWN toward cards */
         .card-hover-bubble-wrap {
-          position:fixed; top:16vh; left:50%; transform:translateX(-50%);
+          position:fixed; top:16vh;
+          left:0; right:0;          /* full width */
+          display:flex; justify-content:center; align-items:flex-start;
           z-index:35; pointer-events:none;
         }
         .card-bubble {
@@ -227,16 +229,17 @@ export default function Index() {
           text-align:center; direction:rtl; backdrop-filter:blur(12px);
           min-width:clamp(220px,26vw,360px);
           animation:bubble-pop .32s cubic-bezier(.22,1,.36,1) forwards, bubble-glow 2.8s ease-in-out .32s infinite;
-          position:relative; transform:translateX(-50%); pointer-events:auto;
+          position:relative; pointer-events:auto;
         }
         /* tail DOWN toward the card */
         .card-bubble::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:10px solid transparent; border-top-color:hsl(var(--primary)/.85); }
         .card-bubble::before { content:''; position:absolute; inset:5px; border-radius:14px; border:1px solid hsl(var(--primary)/.22); pointer-events:none; }
         /* Large char -- feet at very bottom of stage */
         .center-char-stage {
-          position:fixed; bottom:4vh; left:50%; transform:translateX(-50%);
+          position:fixed; bottom:4vh;
+          left:0; right:0;
+          display:flex; justify-content:center; align-items:flex-end;
           z-index:32; pointer-events:none;
-          display:flex; flex-direction:column; align-items:center;
         }
         @keyframes char-pop{
           from{ opacity:0; transform:translateY(50px) scale(.65); }
@@ -302,7 +305,7 @@ export default function Index() {
         </div>
 
         {/* SCROLL SPACER */}
-        <div id={HOME_HERO_ID} style={{ height:"190vh", position:"relative", zIndex:5 }}>
+        <div id={HOME_HERO_ID} style={{ height:"115vh", position:"relative", zIndex:5 }}>
 
           {/* Hero text */}
           <div className="fixed inset-0 z-10 flex flex-col items-center justify-start pt-20"
@@ -373,8 +376,8 @@ export default function Index() {
               </div>
             </div>
           )}
-          {/* Large char at floor */}
-          {activeCard && showCards && (
+          {/* Large char at floor -- only when bubble is visible */}
+          {activeCard && showCards && bubbleVisible && (
             <div className="center-char-stage" key={`c-${activeCard.key}`}>
               <img src={activeCard.img} alt={activeCard.title} className="center-char-img" />
             </div>
