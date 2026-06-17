@@ -276,7 +276,7 @@ export default function Index() {
             <img src={stageBgLight} alt="" className="block h-full w-full object-cover dark:hidden" />
             <img src={stageBgDark}  alt="" className="hidden h-full w-full object-cover dark:block" />
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
-            {[−15, 0, 15].map((deg,i) => (
+            {[-15, 0, 15].map((deg,i) => (
               <div key={i} aria-hidden="true"
                 className="absolute top-0 w-0.5 pointer-events-none z-[2]"
                 style={{
@@ -374,7 +374,7 @@ export default function Index() {
             STAGE NAV (phase 2+) — sticky empty stage
             instruments revealed one by one
         ══════════════════════════════════════════ */}
-        <StageNav scrollCards={SCROLL_CARDS} />
+        <StageNav />
 
         <Footer />
       </div>
