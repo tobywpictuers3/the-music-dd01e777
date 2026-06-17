@@ -273,8 +273,22 @@ export default function Index() {
         >
           {/* Stage background */}
           <div className="absolute inset-0">
-            <img src={stageBgLight} alt="" className="block h-full w-full object-cover dark:hidden" />
-            <img src={stageBgDark}  alt="" className="hidden h-full w-full object-cover dark:block" />
+            <img src={stageBgLight} alt=""
+              className="block dark:hidden"
+              style={{
+                position:"absolute", inset:0,
+                width:"100vw", height:"100vh",
+                objectFit:"cover", objectPosition:"center center",
+                maxWidth:"none",
+              }} />
+            <img src={stageBgDark} alt=""
+              className="hidden dark:block"
+              style={{
+                position:"absolute", inset:0,
+                width:"100vw", height:"100vh",
+                objectFit:"cover", objectPosition:"center center",
+                maxWidth:"none",
+              }} />
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
             {[-15, 0, 15].map((deg,i) => (
               <div key={i} aria-hidden="true"
