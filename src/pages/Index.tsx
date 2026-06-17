@@ -25,7 +25,7 @@ import imgGuitar    from "@/assets/homepage/characters/guitar.png";
 import imgFlute     from "@/assets/homepage/characters/flute.png";
 import imgPresenter from "@/assets/homepage/presenter/presenter.png";
 
-/* ── Cards shown on first scroll (below hero) ── */
+/* -- Cards shown on first scroll (below hero) -- */
 const SCROLL_CARDS = [
   {
     key: "orchestras", img: imgDrums,     href: "/orchestras",
@@ -100,13 +100,13 @@ export default function Index() {
   return (
     <>
       <style>{`
-        /* ── presenter float ── */
+        /* -- presenter float -- */
         @keyframes presenter-float {
           0%,100% { transform: translateY(0); }
           50%      { transform: translateY(-10px); }
         }
 
-        /* ── sparkle animation for כאן ── */
+        /* -- sparkle animation for כאן -- */
         @keyframes sparkle-float {
           0%,100% { opacity:0; transform:scale(0) rotate(0deg); }
           20%     { opacity:1; transform:scale(1) rotate(30deg); }
@@ -119,7 +119,7 @@ export default function Index() {
           animation:sparkle-float 1.6s ease-in-out infinite;
         }
 
-        /* ── hero text "כאן" — fire gradient, subtle glow at rest ── */
+        /* -- hero text "כאן" — fire gradient, subtle glow at rest -- */
         .hero-kaan {
           background: linear-gradient(135deg, #C9A961 0%, #E85D20 35%, #C9202A 65%, #8B1A2B 100%);
           -webkit-background-clip: text;
@@ -139,7 +139,7 @@ export default function Index() {
         .hero-kaan .sparkle-star { animation-play-state: paused; opacity:0; }
         .hero-kaan:hover .sparkle-star { animation-play-state: running; }
 
-        /* ── Neon frame ── */
+        /* -- Neon frame -- */
         @keyframes frame-pulse {
           0%,100% { box-shadow:0 0 8px 1px rgba(218,130,40,.35),0 0 24px 4px rgba(180,60,20,.18); }
           50%     { box-shadow:0 0 14px 3px rgba(218,130,40,.55),0 0 36px 8px rgba(180,60,20,.28); }
@@ -174,7 +174,7 @@ export default function Index() {
           background:linear-gradient(90deg,transparent,rgba(107,31,42,.35),transparent);
         }
 
-        /* ── SCROLL CARDS (phase 1) ── */
+        /* -- SCROLL CARDS (phase 1) -- */
         @keyframes cards-up {
           from { opacity:0; transform:translateY(60px); }
           to   { opacity:1; transform:translateY(0); }
@@ -222,7 +222,7 @@ export default function Index() {
           line-height:1.45; text-align:center;
         }
 
-        /* ── LOGO entrance ── */
+        /* -- LOGO entrance -- */
         @keyframes logo-entrance {
           0%  { opacity:0; transform:scale(.6) translateY(-28px); filter:blur(6px); }
           55% { opacity:1; transform:scale(1.07) translateY(4px); filter:blur(0); }
@@ -231,7 +231,7 @@ export default function Index() {
         }
         .logo-entrance { animation:logo-entrance 1.1s cubic-bezier(.16,1,.3,1) forwards; }
 
-        /* ── MARQUEE ── */
+        /* -- MARQUEE -- */
         @keyframes toby-marquee {
           0%  { transform:translateX(0); }
           100%{ transform:translateX(-50%); }
@@ -241,7 +241,7 @@ export default function Index() {
           width:max-content;
         }
 
-        /* ── Hero fade phases ── */
+        /* -- Hero fade phases -- */
         .hero-phase-0 { opacity:1; transition:opacity .6s ease; }
         .hero-phase-2 { opacity:0; transition:opacity .6s ease; }
       `}</style>
@@ -263,9 +263,9 @@ export default function Index() {
           </div>
         )}
 
-        {/* ══════════════════════════════════════════
+        {/* ==========================================
             HERO SECTION
-        ══════════════════════════════════════════ */}
+        ========================================== */}
         <section
           id={HOME_HERO_ID}
           ref={heroRef}
@@ -342,7 +342,7 @@ export default function Index() {
             </div>
           </div>
 
-          {/* ── PHASE 1 CARDS — appear below hero on first scroll ── */}
+          {/* -- PHASE 1 CARDS — appear below hero on first scroll -- */}
           <div
             id="scroll-cards"
             className={`relative z-30 ${phase >= 1 ? "scroll-card-enter" : "opacity-0"} ${phase >= 2 ? "scroll-card-exit" : ""}`}
@@ -370,10 +370,10 @@ export default function Index() {
 
         </section>
 
-        {/* ══════════════════════════════════════════
+        {/* ==========================================
             STAGE NAV (phase 2+) — sticky empty stage
             instruments revealed one by one
-        ══════════════════════════════════════════ */}
+        ========================================== */}
         <StageNav />
 
         <Footer />
