@@ -11,29 +11,27 @@ import imgFlute     from "@/assets/homepage/characters/flute.png";
 
 /* Each instrument = one "act" revealed by scroll */
 const ACTS = [
-  /* Each act reveals at scroll = (index+1) * 400px after StageNav starts */
-  /* 4 "wheel turns" empty, then 4 turns per instrument */
   { key:"orchestras",   id:"stage-orchestras",   img:imgDrums,     href:"/orchestras",
-    title:"תזמורות", text:"הרכבים מותאמים לכל אירוע -- מהרכב קטן עד הפקה מלאה עם תאורה והגברה.",
-    stageLeft:"30%", stageW:"21%", stageBottom:"19%", spotlightX:"41%" },
+    title:"תזמורות", text:"הרכבים מותאמים לכל אירוע -- מהרכב קטן עד הפקה מלאה.",
+    stageLeft:"33%", stageW:"20%", stageBottom:"17%" },
   { key:"performances", id:"stage-performances", img:imgSaxophone, href:"/performances",
-    title:"הופעות",  text:"מופע קיץ, ערב במה אינטימי, אירוע חגיגי -- מוזיקה חיה עם התאמה לקהל.",
-    stageLeft:"52%", stageW:"14%", stageBottom:"19%", spotlightX:"59%" },
+    title:"הופעות",  text:"מוזיקה חיה עם התאמה לקהל ולאופי האירוע.",
+    stageLeft:"55%", stageW:"13%", stageBottom:"17%" },
   { key:"students",     id:"stage-students",     img:imgPiano,     href:"/students",
-    title:"תלמידות", text:"26 שנות הוראה -- מסלול שמחזיק תלמידה לאורך זמן, עם ליווי ורגישות.",
-    stageLeft:"14%", stageW:"19%", stageBottom:"19%", spotlightX:"24%" },
+    title:"תלמידות", text:"26 שנות הוראה -- מסלול שמחזיק תלמידה לאורך זמן.",
+    stageLeft:"12%", stageW:"22%", stageBottom:"16%" },
   { key:"about",        id:"stage-about",        img:imgFlute,     href:"/about",
-    title:"אודות",   text:"אומנות ואמינות -- שני דברים שאני לא מוכנה לוותר עליהם. 35 שנות למידה.",
-    stageLeft:"74%", stageW:"11%", stageBottom:"19%", spotlightX:"79%" },
+    title:"אודות",   text:"אומנות ואמינות -- שני דברים שאני לא מוכנה לוותר עליהם.",
+    stageLeft:"81%", stageW:"10%", stageBottom:"21%" },
   { key:"sheets",       id:"stage-sheets",       img:imgGuitar,    href:"/sheets",
-    title:"תווים",   text:"ספריית תווים מסודרת -- רפרטואר קלאסי ומגוון, נוח ומהיר לשימוש.",
-    stageLeft:"65%", stageW:"12%", stageBottom:"19%", spotlightX:"71%" },
+    title:"תווים",   text:"ספריית תווים מסודרת -- רפרטואר קלאסי ומגוון.",
+    stageLeft:"69%", stageW:"11%", stageBottom:"20%" },
   { key:"blog",         id:"stage-blog",         img:imgViolin,    href:"/blog",
-    title:"בלוג",    text:"מחשבות על הוראה, הופעות וחיים מוזיקליים -- השראה שנעים לחזור אליה.",
-    stageLeft:"85%", stageW:"11%", stageBottom:"19%", spotlightX:"90%" },
+    title:"בלוג",    text:"מחשבות על הוראה, הופעות וחיים מוזיקליים.",
+    stageLeft:"88%", stageW:"9%",  stageBottom:"22%" },
   { key:"contact",      id:"stage-contact",      img:imgPresenter, href:"/contact",
-    title:"צור קשר", text:"שיעורים, הופעה, סדנאות, הפקת תזמורת -- מתחילים בפנייה קצרה.",
-    stageLeft:"4%",  stageW:"10%", stageBottom:"19%", spotlightX:"9%" },
+    title:"צור קשר", text:"שיעורים, הופעה, סדנאות, תזמורת -- מתחילים בפנייה קצרה.",
+    stageLeft:"3%",  stageW:"9%",  stageBottom:"15%" },
 ] as const;
 
 type ActKey = typeof ACTS[number]["key"];
@@ -55,8 +53,8 @@ export default function StageNav({ scrollCards }: Props) {
       if (!el) return;
       const rect    = el.getBoundingClientRect();
       const scrolled = Math.max(0, -rect.top);
-      /* 400px empty buffer, then one instrument per 400px */
-      const count   = Math.min(ACTS.length, Math.floor(Math.max(0, scrolled - 400) / 400));
+      /* 200px empty buffer = same as interval between instruments */
+      const count   = Math.min(ACTS.length, Math.floor(Math.max(0, scrolled - 200) / 200));
       setRevealedCount(count);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -93,17 +91,7 @@ export default function StageNav({ scrollCards }: Props) {
           15%  { opacity:.55; transform:scaleY(1) rotate(var(--rot)); transform-origin:top; }
           100% { opacity:.30; transform:scaleY(1) rotate(var(--rot)); transform-origin:top; }
         }
-        .act-spotlight {
-          position: absolute;
-          top: 0;
-          width: 3px;
-          height: 75%;
-          transform-origin: top center;
-          background: linear-gradient(180deg, rgba(201,169,97,.55) 0%, rgba(201,169,97,.10) 60%, transparent 100%);
-          animation: spotlight-sweep .7s ease forwards;
-          pointer-events: none;
-          z-index: 8;
-        }
+        /* act-spotlight removed */
 
         /* ── Instrument ── */
         @keyframes act-enter {
@@ -256,9 +244,7 @@ export default function StageNav({ scrollCards }: Props) {
                 }}
                 onMouseLeave={() => { /* let timer handle it */ }}
               >
-                {/* Spotlight */}
-                <div className="act-spotlight" aria-hidden
-                  style={{ left: act.spotlightX, "--rot": `${idx % 2 === 0 ? 2 : -2}deg` } as React.CSSProperties} />
+
 
                 {/* Bubble */}
                 {isActive && (
