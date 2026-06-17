@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import stageEmptyDark  from "@/assets/homepage/stage/stage-empty-dark.png";
@@ -11,244 +11,276 @@ import imgViolin    from "@/assets/homepage/characters/violin.png";
 import imgGuitar    from "@/assets/homepage/characters/guitar.png";
 import imgFlute     from "@/assets/homepage/characters/flute.png";
 
-const CARDS = [
-  { key:"presenter", img:imgPresenter, href:"/contact",      title:"צור קשר",   quote:"רוצה לשאול, להתייעץ או להזמין? כאן מתחילים שיחה פשוטה ונעימה." },
-  { key:"piano",     img:imgPiano,     href:"/students",     title:"תלמידות",   quote:"לימוד, תרגול והתקדמות — בקשר אישי ונעים." },
-  { key:"drums",     img:imgDrums,     href:"/orchestras",   title:"תזמורות",   quote:"הרכבים וסגנונות לכל אירוע — בלי להסתבך." },
-  { key:"saxophone", img:imgSaxophone, href:"/performances", title:"הופעות",    quote:"יומן הופעות, חוויה מוסיקלית, הזמנה מסודרת." },
-  { key:"guitar",    img:imgGuitar,    href:"/sheets",       title:"תווים",     quote:"ספריית תווים מסודרת — מהירה ונוחה לעין." },
-  { key:"violin",    img:imgViolin,    href:"/blog",         title:"בלוג",      quote:"טיפים, מחשבות והשראה מוזיקלית שנעים לחזור אליה." },
-  { key:"flute",     img:imgFlute,     href:"/about",        title:"אודות",     quote:"הסיפור, הדרך והאני מאמין של Toby Music." },
+/* Each instrument = one "act" revealed by scroll */
+const ACTS = [
+  { key:"orchestras",   id:"stage-orchestras",   img:imgDrums,     href:"/orchestras",
+    title:"תזמורות", text:"הרכבים מותאמים לכל אירוע — מהרכב קטן, עד הפקה מלאה עם תאורה והגברה.",
+    stageLeft:"32%", stageW:"22%", spotlightX:"41%" },
+  { key:"performances", id:"stage-performances", img:imgSaxophone, href:"/performances",
+    title:"הופעות",  text:"מופע קיץ, ערב במה אינטימי, אירוע חגיגי — מוזיקה חיה עם התאמה לקהל.",
+    stageLeft:"47%", stageW:"15%", spotlightX:"54%" },
+  { key:"students",     id:"stage-students",     img:imgPiano,     href:"/students",
+    title:"תלמידות", text:"26 שנות הוראה — מסלול שמחזיק תלמידה לאורך זמן, עם ליווי ורגישות.",
+    stageLeft:"20%", stageW:"20%", spotlightX:"30%" },
+  { key:"about",        id:"stage-about",        img:imgFlute,     href:"/about",
+    title:"אודות",   text:"אומנות ואמינות — שני דברים שאני לא מוכנה לוותר עליהם. 35 שנות למידה.",
+    stageLeft:"72%", stageW:"12%", spotlightX:"78%" },
+  { key:"sheets",       id:"stage-sheets",       img:imgGuitar,    href:"/sheets",
+    title:"תווים",   text:"ספריית תווים מסודרת — רפרטואר קלאסי ומגוון, נוח ומהיר לשימוש.",
+    stageLeft:"60%", stageW:"15%", spotlightX:"67%" },
+  { key:"blog",         id:"stage-blog",         img:imgViolin,    href:"/blog",
+    title:"בלוג",    text:"הקשבה, דיוק ורגישות — מחשבות על הוראה, הופעות וחיים מוזיקליים.",
+    stageLeft:"82%", stageW:"13%", spotlightX:"88%" },
+  { key:"contact",      id:"stage-contact",      img:imgPresenter, href:"/contact",
+    title:"צור קשר", text:"שיעורים, הופעה, סדנאות, הפקת תזמורת — מתחילים בפנייה קצרה.",
+    stageLeft:"9%",  stageW:"10%", spotlightX:"14%" },
 ] as const;
-type CardKey = typeof CARDS[number]["key"];
 
-const INSTR_W: Record<string,string> = {
-  piano:"22%", drums:"22%", saxophone:"15%",
-  guitar:"16%", violin:"15%", flute:"12%", presenter:"14%"
-};
+type ActKey = typeof ACTS[number]["key"];
+type ScrollCardsType = { key: string; stageId: string }[];
 
-export default function StageNav() {
-  const [hovered, setHovered] = useState<CardKey|null>(null);
-  const enter = useCallback((k:CardKey) => setHovered(k), []);
-  const leave = useCallback(() => setHovered(null), []);
+interface Props {
+  scrollCards?: ScrollCardsType;
+}
 
-  const activeCard = hovered && hovered !== "presenter"
-    ? CARDS.find(c => c.key === hovered) : null;
+export default function StageNav({ scrollCards }: Props) {
+  const outerRef = useRef<HTMLDivElement>(null);
+  const [revealedCount, setRevealedCount] = useState(0);
+  const [hovered, setHovered] = useState<ActKey | null>(null);
+  const [presenterHovered, setPresenterHovered] = useState(false);
+
+  /* Reveal instruments one-by-one as user scrolls */
+  useEffect(() => {
+    const onScroll = () => {
+      const el = outerRef.current;
+      if (!el) return;
+      const rect  = el.getBoundingClientRect();
+      const scrolled = Math.max(0, -rect.top);
+      const count = Math.min(ACTS.length, Math.floor(scrolled / 160));
+      setRevealedCount(count);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const activeAct = hovered ? ACTS.find(a => a.key === hovered) : null;
 
   return (
     <>
       <style>{`
-        /* ══ OUTER — creates scroll space so footer comes after ══ */
-        .snav-outer {
+        /* ══ OUTER — tall so scroll reveals each act ══ */
+        .snav5-outer {
           position: relative;
-          /* stage height = 100vh, we want footer below it */
-          height: 100vh;
+          height: calc(100vh + ${ACTS.length * 160}px);
           z-index: 0;
         }
 
         /* ══ STICKY STAGE ══ */
-        .snav-sticky {
+        .snav5-sticky {
           position: sticky;
           top: 0;
           height: 100vh;
           overflow: hidden;
         }
-        .snav-bg {
-          position: absolute;
-          inset: 0;
+        .snav5-bg {
+          position: absolute; inset: 0;
           width: 100%; height: 100%;
-          object-fit: cover;
-          object-position: center bottom;
+          object-fit: cover; object-position: center bottom;
         }
 
-        /* card styles moved to Header.tsx */
-
-        /* ── FLOOR ── */
-        .snav-floor {
+        /* ── Spotlight beam per act ── */
+        @keyframes spotlight-sweep {
+          0%   { opacity:0; transform:scaleY(0) rotate(var(--rot)); transform-origin:top; }
+          15%  { opacity:.55; transform:scaleY(1) rotate(var(--rot)); transform-origin:top; }
+          100% { opacity:.30; transform:scaleY(1) rotate(var(--rot)); transform-origin:top; }
+        }
+        .act-spotlight {
           position: absolute;
-          bottom: 0; left: 0; right: 0; height: 72%;
-          z-index: 10;
+          top: 0;
+          width: 3px;
+          height: 75%;
+          transform-origin: top center;
+          background: linear-gradient(180deg, rgba(201,169,97,.55) 0%, rgba(201,169,97,.10) 60%, transparent 100%);
+          animation: spotlight-sweep .7s ease forwards;
+          pointer-events: none;
+          z-index: 8;
         }
 
-        /* ── PRESENTER — below stage rim, left ── */
-        .snav-presenter {
+        /* ── Instrument ── */
+        @keyframes act-enter {
+          0%  { opacity:0; transform:translateY(50%) scale(.72); }
+          55% { transform:translateY(-4%) scale(1.06); }
+          100%{ opacity:1; transform:translateY(0) scale(1); }
+        }
+        .snav5-act {
           position: absolute;
-          bottom: 2%;      /* just above stage rim */
-          left: 4%;
-          width: 16%;
-          z-index: 15;
+          bottom: 18%;
+          z-index: 12;
           cursor: pointer;
-          filter: drop-shadow(0 14px 32px rgba(0,0,0,0.55));
+          animation: act-enter .55s cubic-bezier(.22,1,.36,1) forwards;
+          transition: filter .3s ease;
+        }
+        .snav5-act.active {
+          filter: drop-shadow(0 0 24px hsl(var(--primary)/.7))
+                  drop-shadow(0 14px 32px rgba(0,0,0,.45));
+          z-index: 14;
+        }
+        .snav5-act:not(.active) {
+          filter: drop-shadow(0 8px 18px rgba(0,0,0,.30));
+          opacity: .82;
+        }
+        .snav5-act img {
+          width: 100%; display: block; background: transparent;
+          transition: transform .3s ease;
+        }
+        .snav5-act.active img { transform: scale(1.08) translateY(-6px); }
+
+        /* act label */
+        .act-label {
+          text-align: center; margin-top: 4px;
+          font-size: clamp(9px,.85vw,13px); font-weight:700;
+          color: hsl(var(--primary));
+          text-shadow: 0 1px 6px rgba(0,0,0,.5);
+          opacity: .72;
+          transition: opacity .2s;
+        }
+        .snav5-act.active .act-label { opacity:1; }
+
+        /* ── Presenter (left) ── */
+        .snav5-presenter {
+          position: absolute;
+          bottom: 2%; left: 4%; width: 16%;
+          z-index: 15; cursor: pointer;
+          filter: drop-shadow(0 14px 32px rgba(0,0,0,.55));
           animation: presenter-float 3.5s ease-in-out infinite;
         }
         @keyframes presenter-float {
-          0%,100% { transform: translateY(0); }
-          50%     { transform: translateY(-10px); }
+          0%,100% { transform:translateY(0); }
+          50%     { transform:translateY(-10px); }
         }
-        .snav-presenter img { width:100%; display:block; background:transparent; }
+        .snav5-presenter img { width:100%; display:block; background:transparent; }
 
-        /* Presenter hover bubble */
-        .snav-presenter-bubble {
-          position: absolute;
-          bottom: calc(100% + 10px);
-          left: 50%;
-          transform: translateX(-50%);
-          width: clamp(160px,18vw,250px);
-          background: hsl(var(--card)/0.96);
-          border: 2px solid hsl(var(--primary)/.82);
-          border-radius: 16px;
-          padding: 12px 16px 14px;
-          text-align: center; direction: rtl;
-          backdrop-filter: blur(12px);
-          pointer-events: none;
-          z-index: 40;
-          box-shadow: 0 0 18px 4px hsl(var(--primary)/.18), 0 10px 28px rgba(0,0,0,.28);
-          animation: bubble-pop .32s cubic-bezier(.22,1,.36,1) forwards;
-        }
+        /* ── Neon bubble ── */
         @keyframes bubble-pop {
-          from { opacity:0; transform:translateX(-50%) scale(.84) translateY(10px); }
-          to   { opacity:1; transform:translateX(-50%) scale(1)   translateY(0);    }
-        }
-        .snav-presenter-bubble::after {
-          content:''; position:absolute;
-          top:100%; left:50%; transform:translateX(-50%);
-          border:8px solid transparent;
-          border-top-color: hsl(var(--primary)/.82);
-        }
-        .snav-presenter-bubble::before {
-          content:''; position:absolute;
-          top:100%; left:50%; transform:translateX(-50%) translateY(-2px);
-          border:8px solid transparent;
-          border-top-color: hsl(var(--card));
-          z-index:1;
-        }
-        .snav-bubble-title { font-weight:800; font-size:clamp(.88rem,1vw,1.08rem); color:hsl(var(--primary)); margin-bottom:5px; }
-        .snav-bubble-quote { font-size:clamp(.70rem,.82vw,.86rem); color:hsl(var(--foreground)/.76); line-height:1.52; margin-bottom:10px; }
-        .snav-bubble-btn {
-          display:inline-flex; align-items:center; gap:4px;
-          background:hsl(var(--accent)); color:hsl(var(--accent-foreground));
-          font-size:.74rem; font-weight:700; padding:5px 16px; border-radius:999px;
-          text-decoration:none; pointer-events:auto;
-          transition:opacity .2s,transform .2s;
-        }
-        .snav-bubble-btn:hover { opacity:.84; transform:scale(1.04); }
-
-        /* ── ACTIVE INSTRUMENT centre stage ── */
-        @keyframes instr-enter {
-          0%  { opacity:0; transform:translateX(-50%) translateY(35%) scale(.72); }
-          55% { transform:translateX(-50%) translateY(-4%) scale(1.05); }
-          100%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); }
-        }
-        .snav-instrument {
-          position:absolute;
-          bottom:18%; left:50%;
-          transform:translateX(-50%);
-          z-index:16;
-          animation:instr-enter .45s cubic-bezier(.22,1,.36,1) forwards;
-          filter:drop-shadow(0 0 24px hsl(var(--primary)/.55)) drop-shadow(0 14px 32px rgba(0,0,0,.45));
-        }
-        .snav-instrument img { display:block; background:transparent; }
-
-        /* Instrument neon bubble */
-        @keyframes instr-bubble-in {
-          from { opacity:0; transform:translateX(-50%) scale(.82) translateY(14px); }
+          from { opacity:0; transform:translateX(-50%) scale(.84) translateY(12px); }
           65%  { transform:translateX(-50%) scale(1.04) translateY(-3px); }
           to   { opacity:1; transform:translateX(-50%) scale(1) translateY(0); }
         }
         @keyframes bubble-glow {
           0%,100%{ box-shadow:0 0 0 1px hsl(var(--primary)/.20),0 0 18px 4px hsl(var(--primary)/.18),0 12px 32px rgba(0,0,0,.30); }
-          50%    { box-shadow:0 0 0 1px hsl(var(--primary)/.35),0 0 26px 8px hsl(var(--primary)/.28),0 12px 32px rgba(0,0,0,.30); }
+          50%    { box-shadow:0 0 0 1px hsl(var(--primary)/.35),0 0 28px 8px hsl(var(--primary)/.28),0 12px 32px rgba(0,0,0,.30); }
         }
-        .snav-bubble {
-          position:absolute;
-          bottom:calc(100% + 8px); left:50%;
-          transform:translateX(-50%);
-          width:clamp(170px,21vw,290px);
-          background:hsl(var(--card)/.95);
-          border:2px solid hsl(var(--primary)/.85);
-          border-radius:18px;
-          padding:14px 18px 16px;
-          text-align:center; direction:rtl;
-          backdrop-filter:blur(12px);
-          pointer-events:none;
-          animation:instr-bubble-in .36s cubic-bezier(.22,1,.36,1) forwards, bubble-glow 2.8s ease-in-out .36s infinite;
-          z-index:30;
+        .snav5-bubble {
+          position: absolute;
+          bottom: calc(100% + 10px); left: 50%;
+          transform: translateX(-50%);
+          width: clamp(170px,21vw,290px);
+          background: hsl(var(--card)/.95);
+          border: 2px solid hsl(var(--primary)/.85);
+          border-radius: 18px;
+          padding: 14px 18px 16px;
+          text-align: center; direction: rtl;
+          backdrop-filter: blur(12px);
+          pointer-events: none;
+          animation:
+            bubble-pop .36s cubic-bezier(.22,1,.36,1) forwards,
+            bubble-glow 2.8s ease-in-out .36s infinite;
+          z-index: 30;
         }
-        .snav-bubble::before {
+        .snav5-bubble::before {
           content:''; position:absolute; inset:4px;
           border-radius:14px; border:1px solid hsl(var(--primary)/.22); pointer-events:none;
         }
-        .snav-bubble::after {
+        .snav5-bubble::after {
           content:''; position:absolute;
           top:0; left:12%; right:12%; height:1px;
           background:linear-gradient(90deg,transparent,hsl(var(--primary)/.52),transparent);
         }
-        .snav-bubble-tail {
+        .snav5-bubble-tail {
           position:absolute; top:100%; left:50%; transform:translateX(-50%);
-          width:0; height:0;
-          border-left:10px solid transparent; border-right:10px solid transparent;
-          border-top:10px solid hsl(var(--primary)/.85);
+          border:10px solid transparent;
+          border-top-color:hsl(var(--primary)/.85);
         }
-        .snav-bubble-tail::after {
+        .snav5-bubble-tail::after {
           content:''; position:absolute;
           top:-12px; left:-8px;
-          width:0; height:0;
-          border-left:8px solid transparent; border-right:8px solid transparent;
-          border-top:8px solid hsl(var(--card));
+          border:8px solid transparent;
+          border-top-color:hsl(var(--card));
         }
+        .snav5-bubble-title { font-weight:800; font-size:clamp(.9rem,1.05vw,1.12rem); color:hsl(var(--primary)); margin-bottom:6px; }
+        .snav5-bubble-quote { font-size:clamp(.70rem,.82vw,.86rem); color:hsl(var(--foreground)/.76); line-height:1.52; margin-bottom:12px; }
+        .snav5-bubble-btn {
+          display:inline-flex; align-items:center; gap:5px;
+          background:hsl(var(--accent)); color:hsl(var(--accent-foreground));
+          font-size:.74rem; font-weight:700; padding:6px 18px; border-radius:999px;
+          text-decoration:none; pointer-events:auto;
+          transition:opacity .2s,transform .2s;
+        }
+        .snav5-bubble-btn:hover{ opacity:.84; transform:scale(1.04); }
       `}</style>
 
-      <div className="snav-outer">
-        <div className="snav-sticky" dir="rtl">
+      <div ref={outerRef} className="snav5-outer">
+        <div className="snav5-sticky" dir="rtl">
 
           {/* Stage backgrounds */}
-          <img src={stageEmptyLight} alt="" aria-hidden className="snav-bg block dark:hidden" />
-          <img src={stageEmptyDark}  alt="" aria-hidden className="snav-bg hidden dark:block" />
+          <img src={stageEmptyLight} alt="" aria-hidden className="snav5-bg block dark:hidden" />
+          <img src={stageEmptyDark}  alt="" aria-hidden className="snav5-bg hidden dark:block" />
 
-          {/* cards in Header.tsx */}
-
-          {/* ── FLOOR ── */}
-          <div className="snav-floor">
-
-            {/* Presenter — always left, below stage rim */}
-            <div
-              className="snav-presenter"
-              onMouseEnter={() => enter("presenter")}
-              onMouseLeave={leave}
-            >
-              {hovered==="presenter" && (
-                <div className="snav-presenter-bubble">
-                  <div className="snav-bubble-title">צור קשר</div>
-                  <div className="snav-bubble-quote">
-                    רוצה לשאול, להתייעץ או להזמין? כאן מתחילים שיחה פשוטה ונעימה.
-                  </div>
-                  <Link to="/contact" className="snav-bubble-btn">כניסה לדף ←</Link>
-                </div>
-              )}
-              <Link to="/contact" aria-label="צור קשר">
-                <img src={imgPresenter} alt="מגיש" />
-              </Link>
-            </div>
-
-            {/* Active instrument + bubble — centre stage */}
-            {activeCard && (
-              <div key={activeCard.key} className="snav-instrument"
-                   style={{ width: INSTR_W[activeCard.key] }}>
-                <div className="snav-bubble">
-                  <div className="snav-bubble-title">{activeCard.title}</div>
-                  <div className="snav-bubble-quote">{activeCard.quote}</div>
-                  <Link to={activeCard.href} className="snav-bubble-btn" style={{pointerEvents:"auto"}}>
-                    כניסה לדף ←
-                  </Link>
-                  <div className="snav-bubble-tail" />
-                </div>
-                <Link to={activeCard.href} aria-label={`דף ${activeCard.title}`}>
-                  <img src={activeCard.img} alt={activeCard.title} />
-                </Link>
+          {/* Presenter — always left */}
+          <div className="snav5-presenter"
+            onMouseEnter={() => setPresenterHovered(true)}
+            onMouseLeave={() => setPresenterHovered(false)}>
+            {presenterHovered && (
+              <div className="snav5-bubble">
+                <div className="snav5-bubble-title">צור קשר</div>
+                <div className="snav5-bubble-quote">שיעורים, הופעה, סדנאות, הפקת תזמורת — מתחילים בפנייה קצרה.</div>
+                <Link to="/contact" className="snav5-bubble-btn" style={{pointerEvents:"auto"}}>כניסה לדף ←</Link>
+                <div className="snav5-bubble-tail" />
               </div>
             )}
-
+            <Link to="/contact" aria-label="צור קשר">
+              <img src={imgPresenter} alt="מגיש" />
+            </Link>
           </div>
+
+          {/* Acts — revealed by scroll */}
+          {ACTS.map((act, idx) => {
+            const revealed = idx < revealedCount;
+            const isActive = hovered === act.key;
+            if (!revealed) return null;
+            return (
+              <div
+                key={act.key}
+                id={act.id}
+                className={`snav5-act${isActive ? " active" : ""}`}
+                style={{ left: act.stageLeft, width: act.stageW }}
+                onMouseEnter={() => setHovered(act.key as ActKey)}
+                onMouseLeave={() => setHovered(null)}
+              >
+                {/* Spotlight */}
+                <div className="act-spotlight" aria-hidden
+                  style={{ left: act.spotlightX, "--rot": `${idx % 2 === 0 ? 2 : -2}deg` } as React.CSSProperties} />
+
+                {/* Bubble */}
+                {isActive && (
+                  <div className="snav5-bubble">
+                    <div className="snav5-bubble-title">{act.title}</div>
+                    <div className="snav5-bubble-quote">{act.text}</div>
+                    <Link to={act.href} className="snav5-bubble-btn" style={{pointerEvents:"auto"}}>
+                      כניסה לדף ←
+                    </Link>
+                    <div className="snav5-bubble-tail" />
+                  </div>
+                )}
+
+                <Link to={act.href} aria-label={`דף ${act.title}`}>
+                  <img src={act.img} alt={act.title} />
+                </Link>
+                <div className="act-label">{act.title}</div>
+              </div>
+            );
+          })}
+
         </div>
       </div>
     </>
