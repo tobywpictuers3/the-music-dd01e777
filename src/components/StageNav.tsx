@@ -31,7 +31,7 @@ const ACTS = [
     stageLeft:"82%", stageW:"13%", spotlightX:"88%" },
   { key:"contact",      id:"stage-contact",      img:imgPresenter, href:"/contact",
     title:"צור קשר", text:"שיעורים, הופעה, סדנאות, הפקת תזמורת — מתחילים בפנייה קצרה.",
-    stageLeft:"9%",  stageW:"10%", spotlightX:"14%" },
+    stageLeft:"4%",  stageW:"14%", spotlightX:"11%" },
 ] as const;
 
 type ActKey = typeof ACTS[number]["key"];
