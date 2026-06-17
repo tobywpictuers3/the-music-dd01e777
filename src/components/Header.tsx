@@ -84,50 +84,60 @@ export default function Header() {
           flex-direction: column;
           align-items: center;
           gap: 2px;
-          padding: 4px 10px 5px;
+          padding: 4px 8px 5px;
           border-radius: 10px;
           text-decoration: none;
           cursor: pointer;
           position: relative;
           transition: background .2s, transform .18s;
-          min-width: 52px;
+          min-width: 48px;
         }
         .hdr-nav-card:hover {
-          background: hsl(var(--secondary));
-          transform: translateY(-1px);
+          background: hsl(var(--primary)/0.10);
+          transform: translateY(-2px);
         }
         .hdr-nav-card.active {
           background: hsl(var(--primary)/0.12);
         }
-        /* small char image in header */
+        /* small char image in header — NO background, transparent */
         .hdr-char-img {
-          width: clamp(22px, 2.2vw, 32px);
-          height: clamp(26px, 2.6vw, 38px);
+          width: clamp(20px, 2vw, 30px);
+          height: clamp(24px, 2.4vw, 36px);
           object-fit: contain;
-          background: transparent;
+          background: transparent !important;
           display: block;
-          /* subtle glow so visible on any bg */
-          filter: drop-shadow(0 2px 5px rgba(0,0,0,0.40));
+          /* glow for visibility on semi-transparent header */
+          filter: drop-shadow(0 2px 5px rgba(0,0,0,0.50))
+                  drop-shadow(0 1px 3px rgba(0,0,0,0.30));
           transition: transform .22s ease, filter .22s ease;
         }
         .hdr-nav-card:hover .hdr-char-img {
-          transform: translateY(-3px) scale(1.12);
-          filter: drop-shadow(0 4px 8px hsl(var(--primary)/0.45)) drop-shadow(0 2px 5px rgba(0,0,0,0.40));
+          transform: translateY(-4px) scale(1.15);
+          filter: drop-shadow(0 0 10px hsl(var(--primary)/0.55))
+                  drop-shadow(0 4px 8px rgba(0,0,0,0.45));
         }
         .hdr-nav-card.active .hdr-char-img {
-          filter: drop-shadow(0 3px 7px hsl(var(--primary)/0.50)) drop-shadow(0 2px 5px rgba(0,0,0,0.40));
+          filter: drop-shadow(0 0 8px hsl(var(--primary)/0.45))
+                  drop-shadow(0 3px 7px rgba(0,0,0,0.40));
         }
         .hdr-nav-label {
-          font-size: clamp(0.60rem, 0.70vw, 0.75rem);
+          font-size: clamp(0.58rem, 0.68vw, 0.73rem);
           font-weight: 600;
           color: hsl(var(--muted-foreground));
           white-space: nowrap;
-          transition: color .2s;
+          transition: color .2s, opacity .2s;
           line-height: 1;
+          /* hidden by default, shown on hover */
+          opacity: 0;
+          max-height: 0;
+          overflow: hidden;
+          transition: opacity .2s ease, max-height .2s ease, color .2s;
         }
         .hdr-nav-card:hover .hdr-nav-label,
         .hdr-nav-card.active .hdr-nav-label {
           color: hsl(var(--primary));
+          opacity: 1;
+          max-height: 20px;
         }
         /* active underline */
         .hdr-nav-card.active::after {
