@@ -205,62 +205,56 @@ export default function Index() {
           color:hsl(var(--primary)); white-space:nowrap;
         }
 
-        /* CENTER hover -- bigger char, positioned at stage floor */
-        .center-bubble-wrap{
-          position:fixed;
-          bottom:19vh; /* feet exactly on stage rim */
-          left:50%; transform:translateX(-50%);
-          z-index:30; pointer-events:none;
-          display:flex; flex-direction:column; align-items:center;
-          /* bubble is child above char -- flex-direction column-reverse so bubble on top */
-          flex-direction: column-reverse;
-        }
-        @keyframes char-pop{
-          from{ opacity:0; transform:translateY(40px) scale(.68); }
-          65% { transform:translateY(-7px) scale(1.06); }
-          to  { opacity:1; transform:translateY(0) scale(1); }
-        }
-        /* bubble fadeout after 3s */
-        @keyframes bubble-fadeout{
-          0%  { opacity:1; }
-          60% { opacity:1; }
-          100%{ opacity:0; }
-        }
+        @keyframes bubble-fadeout{ 0%{ opacity:1; } 60%{ opacity:1; } 100%{ opacity:0; } }
         .bubble-fading{ animation:bubble-fadeout 2s ease forwards; }
-
-        .center-char-img{
-          width:clamp(90px,12vw,180px); display:block; background:transparent; margin:0 auto 6px;
-          animation:char-pop .48s cubic-bezier(.22,1,.36,1) forwards;
-          filter:drop-shadow(0 0 28px rgba(201,169,97,.95)) drop-shadow(0 0 56px rgba(232,93,32,.60)) drop-shadow(0 12px 28px rgba(0,0,0,.58));
-        }
         @keyframes bubble-pop{
           from{ opacity:0; transform:translateX(-50%) scale(.84) translateY(14px); }
           65% { transform:translateX(-50%) scale(1.04) translateY(-3px); }
           to  { opacity:1; transform:translateX(-50%) scale(1) translateY(0); }
         }
         @keyframes bubble-glow{
-          0%,100%{ box-shadow:0 0 0 1px hsl(var(--primary)/.20),0 0 18px 4px hsl(var(--primary)/.18),0 12px 32px rgba(0,0,0,.30); }
-          50%    { box-shadow:0 0 0 1px hsl(var(--primary)/.35),0 0 28px 8px hsl(var(--primary)/.28),0 12px 32px rgba(0,0,0,.30); }
+          0%,100%{ box-shadow:0 0 0 1px hsl(var(--primary)/.20),0 0 18px 4px hsl(var(--primary)/.18); }
+          50%    { box-shadow:0 0 0 1px hsl(var(--primary)/.35),0 0 28px 8px hsl(var(--primary)/.28); }
         }
-        .center-bubble{
+        /* Bubble only -- appears on card hover, high center, tail DOWN toward cards */
+        .card-hover-bubble-wrap {
+          position:fixed; top:16vh; left:50%; transform:translateX(-50%);
+          z-index:35; pointer-events:none;
+        }
+        .card-bubble {
           background:hsl(var(--card)/.95); border:2px solid hsl(var(--primary)/.85);
           border-radius:18px; padding:16px 22px 18px;
           text-align:center; direction:rtl; backdrop-filter:blur(12px);
-          min-width:clamp(200px,24vw,340px);
-          animation:bubble-pop .36s cubic-bezier(.22,1,.36,1) forwards, bubble-glow 2.8s ease-in-out .36s infinite;
-          position:relative; transform:translateX(-50%);
-          pointer-events:auto;
+          min-width:clamp(220px,26vw,360px);
+          animation:bubble-pop .32s cubic-bezier(.22,1,.36,1) forwards, bubble-glow 2.8s ease-in-out .32s infinite;
+          position:relative; transform:translateX(-50%); pointer-events:auto;
         }
-        .center-bubble::before{ content:''; position:absolute; inset:5px; border-radius:14px; border:1px solid hsl(var(--primary)/.22); pointer-events:none; }
-        .center-bubble::after{ content:''; position:absolute; bottom:100%; left:50%; transform:translateX(-50%); border:9px solid transparent; border-bottom-color:hsl(var(--primary)/.85); }
+        /* tail DOWN toward the card */
+        .card-bubble::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:10px solid transparent; border-top-color:hsl(var(--primary)/.85); }
+        .card-bubble::before { content:''; position:absolute; inset:5px; border-radius:14px; border:1px solid hsl(var(--primary)/.22); pointer-events:none; }
+        /* Large char -- feet at very bottom of stage */
+        .center-char-stage {
+          position:fixed; bottom:4vh; left:50%; transform:translateX(-50%);
+          z-index:32; pointer-events:none;
+          display:flex; flex-direction:column; align-items:center;
+        }
+        @keyframes char-pop{
+          from{ opacity:0; transform:translateY(50px) scale(.65); }
+          60% { transform:translateY(-8px) scale(1.07); }
+          to  { opacity:1; transform:translateY(0) scale(1); }
+        }
+        .center-char-img{
+          height:clamp(200px,32vh,460px); width:auto; display:block; background:transparent;
+          animation:char-pop .55s cubic-bezier(.22,1,.36,1) forwards;
+          filter:drop-shadow(0 0 32px rgba(201,169,97,.95)) drop-shadow(0 0 64px rgba(232,93,32,.65)) drop-shadow(0 14px 32px rgba(0,0,0,.60));
+        }
         .bubble-title{ font-weight:800; font-size:clamp(1.1rem,1.3vw,1.4rem); color:hsl(var(--primary)); margin-bottom:6px; }
         .bubble-quote{ font-size:clamp(.82rem,.95vw,1.05rem); color:hsl(var(--foreground)/.80); line-height:1.55; margin-bottom:12px; }
         .bubble-btn{
           display:inline-flex; align-items:center; gap:5px;
           background:hsl(var(--accent)); color:hsl(var(--accent-foreground));
           font-size:.82rem; font-weight:700; padding:8px 22px; border-radius:999px;
-          text-decoration:none; pointer-events:auto; transition:opacity .2s,transform .2s;
-          cursor:pointer;
+          text-decoration:none; pointer-events:auto; transition:opacity .2s,transform .2s; cursor:pointer;
         }
         .bubble-btn:hover{ opacity:.84; transform:scale(1.04); }
 
@@ -368,7 +362,23 @@ export default function Index() {
             ))}
           </div>
 
-          {/* CENTER hover char + bubble -- 3s timer */}
+          
+          {/* Card hover: BUBBLE ONLY */}
+          {hoveredCard && showCards && activeCard && (
+            <div className={`card-hover-bubble-wrap${!bubbleVisible ? " bubble-fading" : ""}`} key={`b-${hoveredCard}`}>
+              <div className="card-bubble">
+                <div className="bubble-title">{activeCard.title}</div>
+                <div className="bubble-quote">{activeCard.text}</div>
+                <Link to={activeCard.href} className="bubble-btn" style={{pointerEvents:"auto"}}>כניסה לדף</Link>
+              </div>
+            </div>
+          )}
+          {/* Large char at floor */}
+          {activeCard && showCards && (
+            <div className="center-char-stage" key={`c-${activeCard.key}`}>
+              <img src={activeCard.img} alt={activeCard.title} className="center-char-img" />
+            </div>
+          )}
           {activeCard && showCards && cardsOpacity > 0.3 && (
             <div className={`center-bubble-wrap${!bubbleVisible ? " bubble-fading" : ""}`}
               key={activeCard.key}>
