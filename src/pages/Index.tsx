@@ -184,7 +184,7 @@ export default function Index() {
         }
         .side-cards-col.left { left:0; }
         .side-cards-col.right{ right:0; }
-        .side-cards-col.active{ pointer-events:auto; }
+        .side-cards-col.active{ pointer-events:auto !important; }
         @keyframes slide-from-left{
           from{ opacity:0; transform:translateX(-55px) scale(.88); }
           to  { opacity:1; transform:translateX(0) scale(1); }
@@ -200,8 +200,13 @@ export default function Index() {
           border:1.5px solid hsl(var(--primary)/.42);
           background:hsl(var(--background)/.65);
           backdrop-filter:blur(12px);
-          text-decoration:none; direction:rtl; cursor:pointer; width:100%;
+          text-decoration:none; direction:rtl; cursor:pointer !important; width:100%;
           transition:border-color .22s, transform .22s, box-shadow .22s, background .22s;
+          pointer-events:auto !important;
+          user-select:none;
+          -webkit-user-select:none;
+          position:relative;
+          z-index:26;
         }
         .side-card:hover{
           border-color:hsl(var(--primary)); background:hsl(var(--card)/.92);
@@ -211,6 +216,7 @@ export default function Index() {
         .side-card-img{
           width:clamp(72px,8vw,120px); height:clamp(86px,9.5vw,144px);
           object-fit:contain; background:transparent;
+          pointer-events:none; /* let parent card handle events */
           filter:drop-shadow(0 0 16px rgba(201,169,97,.80)) drop-shadow(0 0 32px rgba(232,93,32,.45)) drop-shadow(0 6px 14px rgba(0,0,0,.50));
           transition:filter .28s ease, transform .28s ease;
         }
@@ -247,7 +253,7 @@ export default function Index() {
           background:hsl(var(--card)/.95); border:2px solid hsl(var(--primary)/.85);
           border-radius:18px; padding:22px 30px 24px;
           text-align:center; direction:rtl; backdrop-filter:blur(12px);
-          min-width:clamp(320px,38vw,520px); max-width:clamp(320px,38vw,520px);
+          width:clamp(320px,38vw,520px);
           animation:bubble-pop .32s cubic-bezier(.22,1,.36,1) forwards, bubble-glow 2.8s ease-in-out .32s infinite;
           position:relative; pointer-events:auto;
         }
@@ -256,7 +262,7 @@ export default function Index() {
         .card-bubble::before { content:''; position:absolute; inset:5px; border-radius:14px; border:1px solid hsl(var(--primary)/.22); pointer-events:none; }
         /* Large char -- feet at very bottom of stage */
         .center-char-stage {
-          position:fixed; bottom:4vh;
+          position:fixed; bottom:14vh; /* feet on stage floor */
           left:0; right:0;
           display:flex; justify-content:center; align-items:flex-end;
           z-index:32; pointer-events:none;
