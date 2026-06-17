@@ -99,17 +99,22 @@ export default function Header() {
         .hdr-nav-card.active {
           background: hsl(var(--primary)/0.12);
         }
-        /* small char image in header — NO background, transparent */
+        /* small char image in header — fully transparent, no bg */
         .hdr-char-img {
           width: clamp(20px, 2vw, 30px);
           height: clamp(24px, 2.4vw, 36px);
           object-fit: contain;
           background: transparent !important;
+          background-color: transparent !important;
           display: block;
-          /* glow for visibility on semi-transparent header */
-          filter: drop-shadow(0 2px 5px rgba(0,0,0,0.50))
-                  drop-shadow(0 1px 3px rgba(0,0,0,0.30));
+          isolation: isolate;
+          /* glow so char is visible on any bg */
+          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.55))
+                  drop-shadow(0 1px 3px rgba(0,0,0,0.35));
           transition: transform .22s ease, filter .22s ease;
+          /* ensure no inherited background */
+          -webkit-mask: none;
+          mask: none;
         }
         .hdr-nav-card:hover .hdr-char-img {
           transform: translateY(-4px) scale(1.15);
