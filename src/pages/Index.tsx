@@ -53,7 +53,9 @@ export default function Index() {
   const [scrollY, setScrollY]     = useState(0);
   const [hoveredCard, setHovered] = useState<string|null>(null);
   const [bubbleVisible, setBubbleVisible] = useState(false);
-  const bubbleTimer = useRef<ReturnType<typeof setTimeout>|null>(null);
+  const [fadeClass, setFadeClass]         = useState<""|"fast-fade"|"slow-fade">("");
+  const bubbleTimer   = useRef<ReturnType<typeof setTimeout>|null>(null);
+  const fadeTimer     = useRef<ReturnType<typeof setTimeout>|null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
@@ -79,16 +81,32 @@ export default function Index() {
 
   /* Hover handlers with 3s+2s fadeout */
   const handleEnter = (key: string) => {
+    /* Clear any pending timers */
     if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
+    if (fadeTimer.current)   clearTimeout(fadeTimer.current);
     setHovered(key);
     setBubbleVisible(true);
-    /* Auto-hide after 3s */
+    setFadeClass("");
+    /* After 5s: start slow 2s fadeout */
     bubbleTimer.current = setTimeout(() => {
-      setBubbleVisible(false);
-    }, 3000);
+      setFadeClass("slow-fade");
+      fadeTimer.current = setTimeout(() => {
+        setBubbleVisible(false);
+        setHovered(null);
+        setFadeClass("");
+      }, 2000);
+    }, 5000);
   };
   const handleLeave = () => {
-    /* Don't immediately hide -- let the 3s timer run */
+    /* On mouse leave: fast 0.5s fadeout (overrides 5s timer) */
+    if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
+    if (fadeTimer.current)   clearTimeout(fadeTimer.current);
+    setFadeClass("fast-fade");
+    fadeTimer.current = setTimeout(() => {
+      setBubbleVisible(false);
+      setHovered(null);
+      setFadeClass("");
+    }, 500);
   };
   const handlePresenterEnter = () => handleEnter("contact");
 
@@ -205,8 +223,10 @@ export default function Index() {
           color:hsl(var(--primary)); white-space:nowrap;
         }
 
-        @keyframes bubble-fadeout{ 0%{ opacity:1; } 60%{ opacity:1; } 100%{ opacity:0; } }
-        .bubble-fading{ animation:bubble-fadeout 2s ease forwards; }
+        @keyframes slow-fadeout{ 0%{ opacity:1; } 100%{ opacity:0; } }
+        @keyframes fast-fadeout{ 0%{ opacity:1; } 100%{ opacity:0; } }
+        .slow-fade{ animation:slow-fadeout 2s ease forwards; }
+        .fast-fade{ animation:fast-fadeout 0.5s ease forwards; }
         @keyframes bubble-pop{
           from{ opacity:0; transform:translateX(-50%) scale(.84) translateY(14px); }
           65% { transform:translateX(-50%) scale(1.04) translateY(-3px); }
@@ -225,9 +245,9 @@ export default function Index() {
         }
         .card-bubble {
           background:hsl(var(--card)/.95); border:2px solid hsl(var(--primary)/.85);
-          border-radius:18px; padding:16px 22px 18px;
+          border-radius:18px; padding:22px 30px 24px;
           text-align:center; direction:rtl; backdrop-filter:blur(12px);
-          min-width:clamp(220px,26vw,360px);
+          min-width:clamp(320px,38vw,520px); max-width:clamp(320px,38vw,520px);
           animation:bubble-pop .32s cubic-bezier(.22,1,.36,1) forwards, bubble-glow 2.8s ease-in-out .32s infinite;
           position:relative; pointer-events:auto;
         }
@@ -247,12 +267,12 @@ export default function Index() {
           to  { opacity:1; transform:translateY(0) scale(1); }
         }
         .center-char-img{
-          height:clamp(200px,32vh,460px); width:auto; display:block; background:transparent;
+          height:clamp(380px,55vh,700px); width:auto; display:block; background:transparent;
           animation:char-pop .55s cubic-bezier(.22,1,.36,1) forwards;
           filter:drop-shadow(0 0 32px rgba(201,169,97,.95)) drop-shadow(0 0 64px rgba(232,93,32,.65)) drop-shadow(0 14px 32px rgba(0,0,0,.60));
         }
-        .bubble-title{ font-weight:800; font-size:clamp(1.1rem,1.3vw,1.4rem); color:hsl(var(--primary)); margin-bottom:6px; }
-        .bubble-quote{ font-size:clamp(.82rem,.95vw,1.05rem); color:hsl(var(--foreground)/.80); line-height:1.55; margin-bottom:12px; }
+        .bubble-title{ font-weight:800; font-size:clamp(1.4rem,1.8vw,2rem); color:hsl(var(--primary)); margin-bottom:8px; }
+        .bubble-quote{ font-size:clamp(1rem,1.2vw,1.3rem); color:hsl(var(--foreground)/.82); line-height:1.58; margin-bottom:16px; }
         .bubble-btn{
           display:inline-flex; align-items:center; gap:5px;
           background:hsl(var(--accent)); color:hsl(var(--accent-foreground));
@@ -368,7 +388,7 @@ export default function Index() {
           
           {/* Card hover: BUBBLE ONLY */}
           {hoveredCard && showCards && activeCard && (
-            <div className={`card-hover-bubble-wrap${!bubbleVisible ? " bubble-fading" : ""}`} key={`b-${hoveredCard}`}>
+            <div className={`card-hover-bubble-wrap ${fadeClass}`} key={`b-${hoveredCard}`}>
               <div className="card-bubble">
                 <div className="bubble-title">{activeCard.title}</div>
                 <div className="bubble-quote">{activeCard.text}</div>
@@ -383,7 +403,7 @@ export default function Index() {
             </div>
           )}
           {activeCard && showCards && cardsOpacity > 0.3 && (
-            <div className={`center-bubble-wrap${!bubbleVisible ? " bubble-fading" : ""}`}
+            <div className={`center-bubble-wrap ${fadeClass}`}
               key={activeCard.key}>
               <img src={activeCard.img} alt={activeCard.title} className="center-char-img" />
               <div className="center-bubble">
