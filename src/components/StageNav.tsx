@@ -66,7 +66,7 @@ export default function StageNav({ scrollCards }: Props) {
   return (
     <>
       <style>{`
-        /* ══ OUTER — tall so scroll reveals each act ══ */
+        /* ══ OUTER -- tall so scroll reveals each act ══ */
         .snav5-outer {
           position: relative;
           /* 400px empty + 7 acts x 400px each = 3200px total scroll */
@@ -222,11 +222,11 @@ export default function StageNav({ scrollCards }: Props) {
 
           {/* Stage bg handled by Index.tsx fixed layer -- no bg here */}
 
-          {/* Presenter — always left */}
+          {/* Presenter -- always left */}
    
           {/* Presenter arrives as last ACT (contact) via ACTS scroll reveal */}
 
-          {/* Acts — revealed by scroll */}
+          {/* Acts -- revealed by scroll */}
           {ACTS.map((act, idx) => {
             const revealed = idx < revealedCount;
             const isActive = hovered === act.key;
@@ -252,7 +252,7 @@ export default function StageNav({ scrollCards }: Props) {
                     <div className="snav5-bubble-title">{act.title}</div>
                     <div className="snav5-bubble-quote">{act.text}</div>
                     <Link to={act.href} className="snav5-bubble-btn" style={{pointerEvents:"auto"}}>
-                      כניסה לדף ←
+                      כניסה לדף <-
                     </Link>
                     <div className="snav5-bubble-tail" />
                   </div>
