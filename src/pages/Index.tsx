@@ -68,7 +68,7 @@ export default function Index() {
   const CARDS_GONE    = vh * 1.10;  // cards fully gone, instruments start
 
   const crossfade    = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
-  // Cards opacity: fade in 0.15→0.60, stay full 0.60→0.80, fade out 0.80→1.10
+  // Cards opacity: fade in 0.15->0.60, stay full 0.60->0.80, fade out 0.80->1.10
   const cardsFadeIn  = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
   const cardsFadeOut = Math.max(0, Math.min(1, (scrollY - CARDS_FADEOUT) / (CARDS_GONE - CARDS_FADEOUT)));
   const cardsOpacity = cardsFadeIn * (1 - cardsFadeOut);
