@@ -76,8 +76,24 @@ export default function Index() {
   const cardsOpacity = cardsFadeIn * (1 - cardsFadeOut);
   const showCards    = scrollY > CARDS_START && cardsOpacity > 0.01;
   const showMarquee  = crossfade > 0.25;
-  // Presenter fades out with cards
-  const presenterOpacity = Math.max(0, 1 - cardsFadeOut);
+
+  /* ── Scroll-up phase: cards scroll off screen ── */
+  const Z_HOLD_END   = vh * 0.85;   // hold ends, cards start scrolling
+  const Z_CARDS_OUT  = vh * 1.30;   // cards fully off screen
+  const Z_MAIL_OUT   = vh * 1.65;   // mailing section gone
+
+  const cardsScrolled    = Math.max(0, scrollY - Z_HOLD_END);
+  const cardsScrollPx    = Math.min(vh * 1.2, cardsScrolled);
+  const cardsScrolling   = scrollY > Z_HOLD_END;
+  const cardsInteractive = scrollY <= Z_HOLD_END && cardsFadeIn > 0.05;
+
+  const mailProgress = Math.max(0, Math.min(1, (scrollY - Z_HOLD_END) / (Z_CARDS_OUT - Z_HOLD_END)));
+  const mailOpacity  = Math.max(0, 1 - Math.max(0, (scrollY - Z_CARDS_OUT) / (Z_MAIL_OUT - Z_CARDS_OUT)));
+  const showMailing  = scrollY > Z_HOLD_END && scrollY < Z_MAIL_OUT;
+
+  const presenterOpacity = cardsInteractive
+    ? cardsFadeIn
+    : Math.max(0, 1 - Math.max(0, (scrollY - Z_HOLD_END) / (Z_CARDS_OUT - Z_HOLD_END)));
 
   /* Hover handlers with 3s+2s fadeout */
   const handleEnter = (key: string) => {
