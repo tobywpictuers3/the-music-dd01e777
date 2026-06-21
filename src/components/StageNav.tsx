@@ -45,6 +45,7 @@ export default function StageNav({ scrollCards }: Props) {
   const outerRef = useRef<HTMLDivElement>(null);
   const [revealedCount, setRevealedCount] = useState(0);
   const [hovered, setHovered] = useState<ActKey | null>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   /* Reveal instruments one-by-one as user scrolls */
   useEffect(() => {
