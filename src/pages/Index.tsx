@@ -176,7 +176,7 @@ export default function Index() {
           padding-right: var(--card-gap);
           z-index: 25;
           pointer-events: none;
-          direction: rtl;              /* cards flow right→left visually in RTL */
+          direction: rtl;              /* cards flow right->left visually in RTL */
         }
         .cards-top-row.active { pointer-events: auto !important; }
 
