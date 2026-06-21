@@ -296,10 +296,15 @@ export default function Header() {
                     alignItems:"center",
                     padding:"10px 6px",
                     gap:"6px",
-                    background: "linear-gradient(hsl(var(--background)), hsl(var(--background))) padding-box, linear-gradient(135deg, #C9A961, #E85D20, #C9202A, #E85D20, #C9A961) border-box",
-                    backgroundSize: "100% 100%, 300% 300%",
-                    border: "1.5px solid transparent",
+                    /* 50% opacity background */
+                    background: "linear-gradient(180deg, rgba(10,5,8,0.50) 0%, rgba(25,10,14,0.50) 100%)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    /* brand fire border */
+                    border: "1.5px solid rgba(201,169,97,0.60)",
                     borderRadius: "20px",
+                    /* gold glow */
+                    boxShadow: "0 0 18px 4px rgba(201,169,97,0.20), 0 0 40px 8px rgba(180,60,20,0.12), inset 0 0 12px rgba(201,169,97,0.06)",
                     animation: "fire-border 4s ease infinite",
                   }}>
 
