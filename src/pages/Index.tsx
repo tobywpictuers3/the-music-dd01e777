@@ -72,7 +72,7 @@ export default function Index() {
   const cardsFadeIn  = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
   const cardsFadeOut = Math.max(0, Math.min(1, (scrollY - CARDS_FADEOUT) / (CARDS_GONE - CARDS_FADEOUT)));
   const cardsOpacity = cardsFadeIn * (1 - cardsFadeOut);
-  const showCards    = scrollY > CARDS_START && cardsOpacity > 0.01;
+  const showCards    = scrollY > CARDS_START;
   const showMarquee  = crossfade > 0.25;
   // Presenter fades out with cards
   const presenterOpacity = Math.max(0, 1 - cardsFadeOut);
