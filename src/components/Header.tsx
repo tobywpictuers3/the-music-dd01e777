@@ -91,15 +91,15 @@ export default function Header() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 3px;
-          padding: 5px 10px 7px;
+          gap: 2px;
+          padding: 6px 4px 7px;
           border-radius: 12px;
           text-decoration: none;
           cursor: pointer;
           position: relative;
           background: transparent;
           transition: background .2s, transform .18s;
-          min-width: 54px;
+          width: 100%;
         }
         .hdr-nav-card:hover {
           background: hsl(var(--primary)/0.10);
@@ -194,23 +194,23 @@ export default function Header() {
         .hdr-nav-card.active::after {
           content: '';
           position: absolute;
-          bottom: -2px; left: 20%; right: 20%; height: 2px;
+          left: -4px; top: 20%; bottom: 20%; width: 3px;
           background: hsl(var(--primary));
-          border-radius: 2px;
+          border-radius: 3px;
         }
 
         /* ══ JUMPING CHARACTER ══ */
         @keyframes char-jump {
-          0%   { opacity:0; transform: translateX(-50%) translateY(-16px) scale(0.55); }
-          35%  { opacity:1; transform: translateX(-50%) translateY(80px)  scale(1.06); }
-          55%  { transform: translateX(-50%) translateY(72px) scale(0.96); }
-          70%  { transform: translateX(-50%) translateY(76px) scale(1.02); }
-          100% { opacity:1; transform: translateX(-50%) translateY(74px)  scale(1); }
+          0%   { opacity:0; transform: translateX(0) translateY(-50%) scale(0.55); }
+          35%  { opacity:1; transform: translateX(160px) translateY(-50%) scale(1.06); }
+          55%  { transform: translateX(150px) translateY(-50%) scale(0.96); }
+          70%  { transform: translateX(155px) translateY(-50%) scale(1.02); }
+          100% { opacity:1; transform: translateX(154px) translateY(-50%) scale(1); }
         }
         .hdr-jump-char {
           position: absolute;
-          top: 100%;
-          left: 50%;
+          top: 50%;
+          left: 100%;
           pointer-events: none;
           z-index: 300;
           animation: char-jump 0.52s cubic-bezier(0.22,1,0.36,1) forwards;
@@ -282,9 +282,9 @@ export default function Header() {
         }
       `}</style>
 
-      <header className="fixed inset-x-0 top-0 z-50 py-3 sm:py-4" dir="rtl">
-        <div className="mx-auto max-w-6xl px-3 sm:px-6 lg:px-8">
-          <div className="pill-nav flex h-14 items-center justify-between px-4 sm:h-16 sm:px-6"
+      <header className="fixed inset-y-0 left-0 z-50" dir="rtl" style={{width:"88px"}}>
+        <div style={{height:"100%", padding:"8px 6px"}}>
+          <div className="pill-nav" style={{height:"100%", display:"flex", flexDirection:"column", alignItems:"center", padding:"10px 6px", gap:"6px"}}
                   style={{
                     background: "linear-gradient(hsl(var(--background)), hsl(var(--background))) padding-box, linear-gradient(135deg, #C9A961, #E85D20, #C9202A, #E85D20, #C9A961) border-box",
                     backgroundSize: "100% 100%, 300% 300%",
@@ -296,11 +296,11 @@ export default function Header() {
             {/* ── Logo ── */}
             <Link to="/" className="flex min-w-0 items-center gap-2 rounded-full focus-visible:outline-none flex-shrink-0">
               <img src={currentLogo} alt="Toby Music"
-                   className="h-9 w-auto rounded-md object-contain sm:h-10" />
+                   className="w-12 h-auto rounded-md object-contain" />
             </Link>
 
             {/* ── Desktop nav — character cards ── */}
-            <nav className="hidden items-center gap-0.5 md:flex">
+            <nav className="hidden md:flex" style={{flexDirection:"column", gap:"2px", flex:1, justifyContent:"center", width:"100%"}}>
               {NAV_ITEMS.map((item) => {
                 const active  = isActive(item.href);
                 const isHov   = hovered === item.href;
@@ -354,7 +354,7 @@ export default function Header() {
             </nav>
 
             {/* ── Right controls ── */}
-            <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
+            <div className="flex flex-col items-center gap-2" style={{marginBottom:"4px"}}>
               <button
                 onClick={toggleTheme}
                 aria-label={isDark ? "עבור למצב יום" : "עבור למצב לילה"}
@@ -377,7 +377,7 @@ export default function Header() {
 
           {/* Mobile menu */}
           {isMenuOpen && (
-            <div className="mt-2 animate-fade-in overflow-hidden rounded-3xl border border-border bg-card p-4 shadow-hover md:hidden">
+            <div className="absolute left-full top-0 ml-2 w-48 animate-fade-in overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-hover">
               <nav className="flex flex-col gap-1">
                 {NAV_ITEMS.map((item) => (
                   <Link
