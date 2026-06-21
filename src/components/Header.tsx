@@ -297,15 +297,14 @@ export default function Header() {
                     padding:"10px 6px",
                     gap:"6px",
                     /* 50% opacity background */
-                    background: "linear-gradient(180deg, rgba(10,5,8,0.50) 0%, rgba(25,10,14,0.50) 100%)",
-                    backdropFilter: "blur(12px)",
-                    WebkitBackdropFilter: "blur(12px)",
-                    /* brand fire border */
-                    border: "1.5px solid rgba(201,169,97,0.60)",
+                    /* 50% opacity, brand-minimal */
+                    background: "rgba(8,4,6,0.50)",
+                    backdropFilter: "blur(14px)",
+                    WebkitBackdropFilter: "blur(14px)",
+                    border: "1px solid rgba(201,169,97,0.35)",
                     borderRadius: "20px",
-                    /* gold glow */
-                    boxShadow: "0 0 18px 4px rgba(201,169,97,0.20), 0 0 40px 8px rgba(180,60,20,0.12), inset 0 0 12px rgba(201,169,97,0.06)",
-                    animation: "fire-border 4s ease infinite",
+                    /* single subtle gold hairline glow — not heavy */
+                    boxShadow: "0 0 12px 2px rgba(201,169,97,0.12), 1px 0 0 0 rgba(201,169,97,0.08)",
                   }}>
 
             {/* ── Logo ── */}
