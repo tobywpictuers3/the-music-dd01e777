@@ -252,7 +252,7 @@ export default function StageNav({ scrollCards }: Props) {
                     <div className="snav5-bubble-title">{act.title}</div>
                     <div className="snav5-bubble-quote">{act.text}</div>
                     <Link to={act.href} className="snav5-bubble-btn" style={{pointerEvents:"auto"}}>
-                      כניסה לדף <-
+                      {"כניסה לדף <-"}
                     </Link>
                     <div className="snav5-bubble-tail" />
                   </div>
