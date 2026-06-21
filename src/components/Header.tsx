@@ -85,7 +85,7 @@ export default function Header() {
           50%  { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
-        /* pill-nav: vertical sidebar */
+        /* pill-nav: vertical sidebar v2 */
         .pill-nav {
           height: 100% !important;
           flex-direction: column !important;
