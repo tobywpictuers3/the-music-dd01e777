@@ -317,7 +317,7 @@ export default function Index() {
         <div id={HOME_HERO_ID} style={{ height:"115vh", position:"relative", zIndex:5 }}>
 
           {/* Hero text */}
-          <div className="fixed inset-0 z-10 flex flex-col items-center justify-start pt-20"
+          <div className="fixed inset-0 z-10 flex flex-col items-center justify-start pt-20" style={{paddingLeft:"88px"}}
             style={{ opacity:Math.max(0,1-crossfade*3), pointerEvents:crossfade > 0.33 ? "none" : "auto" }}>
             <img src={logoLight} alt="Toby Music"
               className="logo-entrance mb-4 h-[70px] object-contain drop-shadow-[0_6px_28px_rgba(0,0,0,.35)] dark:hidden md:h-[90px] lg:h-[100px]" />
