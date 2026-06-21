@@ -23,31 +23,29 @@ import imgFlute     from "@/assets/homepage/characters/flute.png";
 import imgPresenter from "@/assets/homepage/presenter/presenter.png";
 
 /* 3 left + 3 right (no contact card -- presenter handles that on hover) */
-const LEFT_CARDS = [
-  { key:"orchestras",   img:imgDrums,     href:"/orchestras",   stageId:"stage-orchestras",
-    title:"תזמורות", text:"הרכבים מותאמים לכל אירוע -- מהרכב קטן עד הפקה מלאה עם תאורה והגברה." },
-  { key:"performances", img:imgSaxophone, href:"/performances", stageId:"stage-performances",
-    title:"הופעות",  text:"מוזיקה חיה עם התאמה לקהל ולאופי האירוע." },
+/* ר-shape: 4 top + 3 right column */
+const TOP_ROW = [
+  { key:"contact",      img:imgPresenter, href:"/contact",      stageId:"stage-contact",
+    title:"צור קשר",  text:"שיעורים, הופעה, סדנאות, תזמורת -- מתחילים בפנייה קצרה." },
   { key:"students",     img:imgPiano,     href:"/students",     stageId:"stage-students",
-    title:"תלמידות", text:"26 שנות הוראה -- מסלול שמחזיק תלמידה לאורך זמן, עם ליווי ורגישות." },
+    title:"תלמידות",  text:"26 שנות הוראה -- מסלול עם ליווי, דרישה ורגישות." },
+  { key:"performances", img:imgSaxophone, href:"/performances", stageId:"stage-performances",
+    title:"הופעות",   text:"מוזיקה חיה עם התאמה לקהל ולאופי האירוע." },
+  { key:"orchestras",   img:imgDrums,     href:"/orchestras",   stageId:"stage-orchestras",
+    title:"תזמורות",  text:"הרכבים מותאמים לכל אירוע -- מהרכב קטן עד הפקה מלאה." },
 ] as const;
 
-const RIGHT_CARDS = [
-  { key:"about",   img:imgFlute,  href:"/about",   stageId:"stage-about",
-    title:"אודות",    text:"אומנות ואמינות -- שני דברים שאני לא מוכנה לוותר עליהם. 35 שנות למידה." },
-  { key:"blog",    img:imgViolin, href:"/blog",    stageId:"stage-blog",
-    title:"בלוג",     text:"מחשבות על הוראה, הופעות וחיים מוזיקליים -- השראה שנעים לחזור אליה." },
-  { key:"sheets",  img:imgGuitar, href:"/sheets",  stageId:"stage-sheets",
-    title:"תווים",    text:"ספריית תווים מסודרת -- רפרטואר קלאסי ומגוון, נוח ומהיר לשימוש." },
+const RIGHT_COL = [
+  { key:"about",  img:imgFlute,  href:"/about",  stageId:"stage-about",
+    title:"אודות", text:"אומנות ואמינות -- 35 שנות למידה רציפה." },
+  { key:"blog",   img:imgViolin, href:"/blog",   stageId:"stage-blog",
+    title:"בלוג",  text:"מחשבות על הוראה, הופעות וחיים מוזיקליים." },
+  { key:"sheets", img:imgGuitar, href:"/sheets", stageId:"stage-sheets",
+    title:"תווים", text:"ספריית תווים מסודרת -- נוח ומהיר לשימוש." },
 ] as const;
 
-/* Presenter "card" data for hover */
-const PRESENTER_CARD = {
-  key:"contact", img:imgPresenter, href:"/contact", stageId:"stage-contact",
-  title:"צור קשר", text:"שיעורים, הופעה, סדנאות, תזמורת -- מתחילים בפנייה קצרה."
-};
-
-const ALL_CARDS = [...LEFT_CARDS, ...RIGHT_CARDS];
+const ALL_CARDS = [...TOP_ROW, ...RIGHT_COL];
+const PRESENTER_CARD = TOP_ROW[0];
 
 export default function Index() {
   const [scrollY, setScrollY]     = useState(0);
@@ -71,7 +69,7 @@ export default function Index() {
   // Cards opacity: fade in 0.15->0.60, stay full 0.60->0.80, fade out 0.80->1.10
   const cardsFadeIn  = Math.max(0, Math.min(1, (scrollY - CARDS_START) / (CARDS_FULL - CARDS_START)));
   const cardsFadeOut = Math.max(0, Math.min(1, (scrollY - CARDS_FADEOUT) / (CARDS_GONE - CARDS_FADEOUT)));
-  const cardsOpacity = cardsFadeIn * (1 - cardsFadeOut);
+  const cardsOpacity = cardsFadeIn * (1 - cardsFadeOut);  /* cards interactive as soon as opacity > 0 */
   const showCards    = scrollY > CARDS_START;
   const showMarquee  = crossfade > 0.25;
   // Presenter fades out with cards
@@ -158,21 +156,32 @@ export default function Index() {
         }
         .logo-entrance{ animation:logo-entrance 1.1s cubic-bezier(.16,1,.3,1) forwards; }
 
-        /* SIDE CARDS -- bigger, bolder text */
-        .side-cards-col{
-          position:fixed; top:0; bottom:0; width:22vw;
-          display:flex; flex-direction:column; justify-content:center;
-          gap:18px; z-index:25; padding:88px 10px 60px; pointer-events:none;
+        /* ── ר-SHAPE CARDS ── */
+        .cards-top-row {
+          position:fixed;
+          top: clamp(68px,8.5vh,100px);
+          right: 0;
+          display: flex; flex-direction: row;
+          gap: 8px; padding-right: 8px;
+          z-index: 25; pointer-events: none;
         }
-        .side-cards-col.left { left:0; }
-        .side-cards-col.right{ right:0; }
-        .side-cards-col.active{ pointer-events:auto; }
-        @keyframes slide-from-left{
-          from{ opacity:0; transform:translateX(-55px) scale(.88); }
-          to  { opacity:1; transform:translateX(0) scale(1); }
+        .cards-top-row.active { pointer-events: auto !important; }
+        .cards-right-col {
+          position: fixed;
+          right: 8px;
+          /* top = top-row top + card height + gap */
+          top: calc(clamp(68px,8.5vh,100px) + clamp(95px,12.5vh,155px) + 8px);
+          width: clamp(90px,11vw,145px);
+          display: flex; flex-direction: column;
+          gap: 8px; z-index: 25; pointer-events: none;
+        }
+        .cards-right-col.active { pointer-events: auto !important; }
+        @keyframes slide-from-top{
+          from{ opacity:0; transform:translateY(-36px) scale(.88); }
+          to  { opacity:1; transform:translateY(0) scale(1); }
         }
         @keyframes slide-from-right{
-          from{ opacity:0; transform:translateX(55px) scale(.88); }
+          from{ opacity:0; transform:translateX(40px) scale(.88); }
           to  { opacity:1; transform:translateX(0) scale(1); }
         }
         .side-card{
@@ -335,12 +344,16 @@ export default function Index() {
             </div>
           </div>
 
-          {/* LEFT CARDS */}
-          <div className={`side-cards-col left${showCards ? " active" : ""}`}
-            style={{ opacity:cardsOpacity, transition:"opacity .15s ease" }}>
-            {LEFT_CARDS.map((card, i) => (
+          {/* ר TOP ROW -- 4 cards across top-right */}
+          <div className={`cards-top-row${showCards ? " active" : ""}`}
+            style={{ opacity:cardsOpacity, transition:"opacity .2s ease",
+                     pointerEvents: cardsOpacity > 0.02 ? "auto" : "none" }}>
+            {TOP_ROW.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
-                style={{ animation:showCards ? `slide-from-left .55s ${i*140}ms cubic-bezier(.22,1,.36,1) both` : "none" }}
+                style={{
+                  width:"clamp(90px,11vw,145px)", flexShrink:0,
+                  animation:showCards ? `slide-from-top .5s ${i*90}ms cubic-bezier(.22,1,.36,1) both` : "none"
+                }}
                 onMouseEnter={() => handleEnter(card.key)}
                 onMouseLeave={handleLeave}
                 onClick={(e) => { e.preventDefault(); scrollToStage(card.stageId); }}>
@@ -350,12 +363,15 @@ export default function Index() {
             ))}
           </div>
 
-          {/* RIGHT CARDS */}
-          <div className={`side-cards-col right${showCards ? " active" : ""}`}
-            style={{ opacity:cardsOpacity, transition:"opacity .15s ease" }}>
-            {RIGHT_CARDS.map((card, i) => (
+          {/* ר RIGHT COLUMN -- 3 cards below card 4 */}
+          <div className={`cards-right-col${showCards ? " active" : ""}`}
+            style={{ opacity:cardsOpacity, transition:"opacity .2s ease",
+                     pointerEvents: cardsOpacity > 0.02 ? "auto" : "none" }}>
+            {RIGHT_COL.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
-                style={{ animation:showCards ? `slide-from-right .55s ${i*160}ms cubic-bezier(.22,1,.36,1) both` : "none" }}
+                style={{
+                  animation:showCards ? `slide-from-right .5s ${(i+1)*110}ms cubic-bezier(.22,1,.36,1) both` : "none"
+                }}
                 onMouseEnter={() => handleEnter(card.key)}
                 onMouseLeave={handleLeave}
                 onClick={(e) => { e.preventDefault(); scrollToStage(card.stageId); }}>
