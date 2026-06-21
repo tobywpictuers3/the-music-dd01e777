@@ -156,42 +156,61 @@ export default function Index() {
         }
         .logo-entrance{ animation:logo-entrance 1.1s cubic-bezier(.16,1,.3,1) forwards; }
 
-        /* ── ר-SHAPE CARDS ── */
+        /* ── ר-SHAPE CARDS ── *
+           4 cards across the top (horizontal row, right-aligned)
+           3 cards down the right (vertical col, below card 4)
+           Card 4 = corner — shared anchor point */
+
+        /* Card size token */
+        :root { --card-w: clamp(100px, 11vw, 150px); --card-h: clamp(110px, 13.5vh, 170px); --card-gap: 10px; }
+
+        /* TOP ROW: horizontal, sticks to top-right */
         .cards-top-row {
-          position:fixed;
-          top: clamp(68px,8.5vh,100px);
+          position: fixed;
+          top: clamp(68px, 8.5vh, 100px);
           right: 0;
-          display: flex; flex-direction: row;
-          gap: 8px; padding-right: 8px;
-          z-index: 25; pointer-events: none;
+          display: flex;
+          flex-direction: row;          /* HORIZONTAL */
+          align-items: flex-start;
+          gap: var(--card-gap);
+          padding-right: var(--card-gap);
+          z-index: 25;
+          pointer-events: none;
+          direction: rtl;              /* cards flow right→left visually in RTL */
         }
         .cards-top-row.active { pointer-events: auto !important; }
+
+        /* RIGHT COL: vertical, aligned under card 4 (rightmost of top row) */
         .cards-right-col {
           position: fixed;
-          right: 8px;
-          /* top = top-row top + card height + gap */
-          top: calc(clamp(68px,8.5vh,100px) + clamp(95px,12.5vh,155px) + 8px);
-          width: clamp(90px,11vw,145px);
-          display: flex; flex-direction: column;
-          gap: 8px; z-index: 25; pointer-events: none;
+          right: var(--card-gap);
+          top: calc(clamp(68px,8.5vh,100px) + var(--card-h) + var(--card-gap));
+          width: var(--card-w);
+          display: flex;
+          flex-direction: column;      /* VERTICAL */
+          gap: var(--card-gap);
+          z-index: 25;
+          pointer-events: none;
         }
         .cards-right-col.active { pointer-events: auto !important; }
-        @keyframes slide-from-top{
-          from{ opacity:0; transform:translateY(-36px) scale(.88); }
-          to  { opacity:1; transform:translateY(0) scale(1); }
+
+        @keyframes slide-from-top {
+          from { opacity:0; transform:translateY(-32px) scale(.90); }
+          to   { opacity:1; transform:translateY(0) scale(1); }
         }
-        @keyframes slide-from-right{
-          from{ opacity:0; transform:translateX(40px) scale(.88); }
-          to  { opacity:1; transform:translateX(0) scale(1); }
+        @keyframes slide-from-right {
+          from { opacity:0; transform:translateX(32px) scale(.90); }
+          to   { opacity:1; transform:translateX(0) scale(1); }
         }
         .side-card{
-          display:flex; flex-direction:column; align-items:center; gap:10px;
-          padding:16px 14px 18px;
-          border-radius:18px;
+          display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+          padding:12px 10px 14px;
+          border-radius:16px;
           border:1.5px solid hsl(var(--primary)/.42);
-          background:hsl(var(--background)/.65);
+          background:hsl(var(--background)/.68);
           backdrop-filter:blur(12px);
           text-decoration:none; direction:rtl; cursor:pointer; width:100%;
+          box-sizing:border-box;
           transition:border-color .22s, transform .22s, box-shadow .22s, background .22s;
         }
         .side-card:hover{
@@ -200,7 +219,8 @@ export default function Index() {
           box-shadow:0 0 0 1px hsl(var(--primary)/.30),0 0 22px 6px hsl(var(--primary)/.25),0 8px 24px rgba(0,0,0,.28);
         }
         .side-card-img{
-          width:clamp(72px,8vw,120px); height:clamp(86px,9.5vw,144px);
+          width: clamp(52px, 5.5vw, 80px);
+          height: clamp(60px, 7vw, 100px);
           object-fit:contain; background:transparent;
           filter:drop-shadow(0 0 16px rgba(201,169,97,.80)) drop-shadow(0 0 32px rgba(232,93,32,.45)) drop-shadow(0 6px 14px rgba(0,0,0,.50));
           transition:filter .28s ease, transform .28s ease;
@@ -351,7 +371,9 @@ export default function Index() {
             {TOP_ROW.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
                 style={{
-                  width:"clamp(90px,11vw,145px)", flexShrink:0,
+                  width:"var(--card-w)",
+                  height:"var(--card-h)",
+                  flexShrink:0,
                   animation:showCards ? `slide-from-top .5s ${i*90}ms cubic-bezier(.22,1,.36,1) both` : "none"
                 }}
                 onMouseEnter={() => handleEnter(card.key)}
