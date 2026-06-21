@@ -85,7 +85,12 @@ export default function Header() {
           50%  { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
-        /* pill-nav gets fire border via box-shadow trick injected in JSX */
+        /* pill-nav: vertical sidebar */
+        .pill-nav {
+          height: 100% !important;
+          flex-direction: column !important;
+          border-radius: 20px !important;
+        }
 
         .hdr-nav-card {
           display: flex;
@@ -284,12 +289,17 @@ export default function Header() {
 
       <header className="fixed inset-y-0 left-0 z-50" dir="rtl" style={{width:"88px"}}>
         <div style={{height:"100%", padding:"8px 6px"}}>
-          <div className="pill-nav" style={{height:"100%", display:"flex", flexDirection:"column", alignItems:"center", padding:"10px 6px", gap:"6px"}}
-                  style={{
+          <div className="pill-nav" style={{
+                    height:"100%",
+                    display:"flex",
+                    flexDirection:"column",
+                    alignItems:"center",
+                    padding:"10px 6px",
+                    gap:"6px",
                     background: "linear-gradient(hsl(var(--background)), hsl(var(--background))) padding-box, linear-gradient(135deg, #C9A961, #E85D20, #C9202A, #E85D20, #C9A961) border-box",
                     backgroundSize: "100% 100%, 300% 300%",
                     border: "1.5px solid transparent",
-                    borderRadius: "9999px",
+                    borderRadius: "20px",
                     animation: "fire-border 4s ease infinite",
                   }}>
 
