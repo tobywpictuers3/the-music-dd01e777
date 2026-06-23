@@ -100,7 +100,7 @@ export default function Index() {
     : ALL_CARDS.find(c => c.key === hoveredCard) ?? null;
 
   /* Presenter X position: at stage bottom during hero, between cols during cards */
-  const presLeft   = showCards ? "22vw" : "3vw";
+  const presLeft   = "3vw";  /* fixed — same position as hero always */
   /* Feet at stage rim -- stage rim is at ~67% from top, so bottom = 33vh */
   const presBottom = "2vh";   /* very bottom */
   const presWidth  = "10vw";
@@ -162,7 +162,7 @@ export default function Index() {
            Card 4 = corner — shared anchor point */
 
         /* Card size token */
-        :root { --card-w: clamp(100px, 11vw, 150px); --card-h: clamp(110px, 13.5vh, 170px); --card-gap: 10px; }
+        :root { --card-w: clamp(120px, 13vw, 175px); --card-h: clamp(135px, 15.5vh, 200px); --card-gap: 10px; }
 
         /* TOP ROW: horizontal, sticks to top-right */
         .cards-top-row {
@@ -219,8 +219,8 @@ export default function Index() {
           box-shadow:0 0 0 1px hsl(var(--primary)/.30),0 0 22px 6px hsl(var(--primary)/.25),0 8px 24px rgba(0,0,0,.28);
         }
         .side-card-img{
-          width: clamp(52px, 5.5vw, 80px);
-          height: clamp(60px, 7vw, 100px);
+          width: clamp(64px, 7vw, 100px);
+          height: clamp(75px, 9vh, 130px);
           object-fit:contain; background:transparent;
           filter:drop-shadow(0 0 16px rgba(201,169,97,.80)) drop-shadow(0 0 32px rgba(232,93,32,.45)) drop-shadow(0 6px 14px rgba(0,0,0,.50));
           transition:filter .28s ease, transform .28s ease;
@@ -247,8 +247,8 @@ export default function Index() {
         }
         /* Bubble only -- appears on card hover, high center, tail DOWN toward cards */
         .card-hover-bubble-wrap {
-          position:fixed; top:16vh;
-          left:0; right:0;          /* full width */
+          position:fixed; top:12vh;
+          left:88px; right:0;  /* clear sidebar */
           display:flex; justify-content:center; align-items:flex-start;
           z-index:35; pointer-events:none;
         }
@@ -327,8 +327,7 @@ export default function Index() {
             cursor: presenterOpacity > 0.05 ? "pointer" : "none",
             pointerEvents: presenterOpacity > 0.05 ? "auto" : "none",
           }}
-          onMouseEnter={handlePresenterEnter}
-          onMouseLeave={handleLeave}
+
         >
           <img src={imgPresenterHero} alt="" className="w-full block" style={{background:"transparent"}} />
         </div>
@@ -418,19 +417,6 @@ export default function Index() {
           {activeCard && showCards && bubbleVisible && (
             <div className="center-char-stage" key={`c-${activeCard.key}`}>
               <img src={activeCard.img} alt={activeCard.title} className="center-char-img" />
-            </div>
-          )}
-          {activeCard && showCards && cardsOpacity > 0.3 && (
-            <div className={`center-bubble-wrap${!bubbleVisible ? " bubble-fading" : ""}`}
-              key={activeCard.key}>
-              <img src={activeCard.img} alt={activeCard.title} className="center-char-img" />
-              <div className="center-bubble">
-                <div className="bubble-title">{activeCard.title}</div>
-                <div className="bubble-quote">{activeCard.text}</div>
-                <Link to={activeCard.href} className="bubble-btn" style={{pointerEvents:"auto"}}>
-                  כניסה לדף
-                </Link>
-              </div>
             </div>
           )}
 
