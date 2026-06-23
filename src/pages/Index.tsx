@@ -162,35 +162,37 @@ export default function Index() {
            Card 4 = corner — shared anchor point */
 
         /* Card size token */
-        :root { --card-w: clamp(120px, 13vw, 175px); --card-h: clamp(135px, 15.5vh, 200px); --card-gap: 10px; }
+        :root { --card-w: clamp(115px, 12.5vw, 165px); --card-h: clamp(130px, 15vh, 190px); --card-gap: 8px; }
 
-        /* TOP ROW: horizontal, sticks to top-right */
+        /* TOP ROW: 4 cards horizontal, top-right */
         .cards-top-row {
           position: fixed;
           top: clamp(68px, 8.5vh, 100px);
           right: 0;
           display: flex;
-          flex-direction: row;          /* HORIZONTAL */
+          flex-direction: row;
           align-items: flex-start;
           gap: var(--card-gap);
           padding-right: var(--card-gap);
           z-index: 25;
-          pointer-events: none;
-          direction: rtl;              /* cards flow right->left visually in RTL */
+          /* ALWAYS clickable — opacity handled by parent */
+          pointer-events: auto !important;
+          direction: rtl;
         }
         .cards-top-row.active { pointer-events: auto !important; }
 
-        /* RIGHT COL: vertical, aligned under card 4 (rightmost of top row) */
+        /* RIGHT COL: 3 cards vertical under card 4 */
         .cards-right-col {
           position: fixed;
           right: var(--card-gap);
           top: calc(clamp(68px,8.5vh,100px) + var(--card-h) + var(--card-gap));
           width: var(--card-w);
           display: flex;
-          flex-direction: column;      /* VERTICAL */
+          flex-direction: column;
           gap: var(--card-gap);
           z-index: 25;
-          pointer-events: none;
+          /* ALWAYS clickable */
+          pointer-events: auto !important;
         }
         .cards-right-col.active { pointer-events: auto !important; }
 
@@ -209,8 +211,10 @@ export default function Index() {
           border:1.5px solid hsl(var(--primary)/.42);
           background:hsl(var(--background)/.68);
           backdrop-filter:blur(12px);
-          text-decoration:none; direction:rtl; cursor:pointer; width:100%;
-          box-sizing:border-box;
+          text-decoration:none; direction:rtl;
+          cursor:pointer !important;
+          width:100%; box-sizing:border-box;
+          pointer-events:auto !important;
           transition:border-color .22s, transform .22s, box-shadow .22s, background .22s;
         }
         .side-card:hover{
@@ -222,6 +226,7 @@ export default function Index() {
           width: clamp(64px, 7vw, 100px);
           height: clamp(75px, 9vh, 130px);
           object-fit:contain; background:transparent;
+          pointer-events:none;
           filter:drop-shadow(0 0 16px rgba(201,169,97,.80)) drop-shadow(0 0 32px rgba(232,93,32,.45)) drop-shadow(0 6px 14px rgba(0,0,0,.50));
           transition:filter .28s ease, transform .28s ease;
         }
@@ -247,10 +252,15 @@ export default function Index() {
         }
         /* Bubble only -- appears on card hover, high center, tail DOWN toward cards */
         .card-hover-bubble-wrap {
-          position:fixed; top:12vh;
-          left:88px; right:0;  /* clear sidebar */
-          display:flex; justify-content:center; align-items:flex-start;
-          z-index:35; pointer-events:none;
+          position:fixed;
+          top: 14vh;   /* below spotlights, above char */
+          left: 88px;  /* clear sidebar */
+          right: calc(var(--card-w) + var(--card-gap) * 2);  /* clear right cards */
+          display:flex;
+          justify-content: center;
+          align-items: flex-start;
+          z-index:35;
+          pointer-events:none;
         }
         .card-bubble {
           background:hsl(var(--card)/.95); border:2px solid hsl(var(--primary)/.85);
