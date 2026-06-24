@@ -5,7 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Index from "./pages/Index";
+import Index from "./pages/IndexHome";
 import IndexNew from "./pages/IndexNew";
 import Article from "./pages/Article";
 import Wellness from "./pages/Wellness";
