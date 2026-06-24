@@ -75,18 +75,36 @@ export default function Index() {
   // Presenter fades out with cards
   const presenterOpacity = Math.max(0, 1 - cardsFadeOut);
 
-  /* Hover handlers with 3s+2s fadeout */
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null);
+  const [fadeOut, setFadeOut] = useState(false);
+
   const handleEnter = (key: string) => {
+    /* Immediately clear any fading and show new card */
     if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
+    if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    setFadeOut(false);
     setHovered(key);
     setBubbleVisible(true);
-    /* Auto-hide after 3s */
+    /* After 5s: start 2s synchronized fade for both char + bubble */
     bubbleTimer.current = setTimeout(() => {
-      setBubbleVisible(false);
-    }, 3000);
+      setFadeOut(true);
+      fadeTimerRef.current = setTimeout(() => {
+        setBubbleVisible(false);
+        setHovered(null);
+        setFadeOut(false);
+      }, 2000);
+    }, 5000);
   };
   const handleLeave = () => {
-    /* Don't immediately hide -- let the 3s timer run */
+    /* On leave: 0.5s fast fade */
+    if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
+    if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    setFadeOut(true);
+    fadeTimerRef.current = setTimeout(() => {
+      setBubbleVisible(false);
+      setHovered(null);
+      setFadeOut(false);
+    }, 500);
   };
   const handlePresenterEnter = () => handleEnter("contact");
 
@@ -239,8 +257,10 @@ export default function Index() {
           color:hsl(var(--primary)); white-space:nowrap;
         }
 
-        @keyframes bubble-fadeout{ 0%{ opacity:1; } 60%{ opacity:1; } 100%{ opacity:0; } }
-        .bubble-fading{ animation:bubble-fadeout 2s ease forwards; }
+        @keyframes fade-slow{ from{opacity:1;} to{opacity:0;} }
+        @keyframes fade-fast{ from{opacity:1;} to{opacity:0;} }
+        .fade-slow{ animation:fade-slow 2s ease forwards; }
+        .fade-fast{ animation:fade-fast 0.5s ease forwards; }
         @keyframes bubble-pop{
           from{ opacity:0; transform:translateX(-50%) scale(.84) translateY(14px); }
           65% { transform:translateX(-50%) scale(1.04) translateY(-3px); }
@@ -381,7 +401,7 @@ export default function Index() {
           {/* ר TOP ROW -- 4 cards across top-right */}
           <div className={`cards-top-row${showCards ? " active" : ""}`}
             style={{ opacity:cardsOpacity, transition:"opacity .2s ease",
-                     pointerEvents: cardsOpacity > 0.02 ? "auto" : "none" }}>
+                     pointerEvents: "auto" }}>
             {TOP_ROW.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
                 style={{
@@ -402,7 +422,7 @@ export default function Index() {
           {/* ר RIGHT COLUMN -- 3 cards below card 4 */}
           <div className={`cards-right-col${showCards ? " active" : ""}`}
             style={{ opacity:cardsOpacity, transition:"opacity .2s ease",
-                     pointerEvents: cardsOpacity > 0.02 ? "auto" : "none" }}>
+                     pointerEvents: "auto" }}>
             {RIGHT_COL.map((card, i) => (
               <a key={card.key} className="side-card" href={card.href}
                 style={{
@@ -420,7 +440,7 @@ export default function Index() {
           
           {/* Card hover: BUBBLE ONLY */}
           {hoveredCard && showCards && activeCard && (
-            <div className={`card-hover-bubble-wrap${!bubbleVisible ? " bubble-fading" : ""}`} key={`b-${hoveredCard}`}>
+            <div className={`card-hover-bubble-wrap${fadeOut ? " fade-slow" : ""}`} key={`b-${hoveredCard}`}>
               <div className="card-bubble">
                 <div className="bubble-title">{activeCard.title}</div>
                 <div className="bubble-quote">{activeCard.text}</div>
@@ -430,7 +450,7 @@ export default function Index() {
           )}
           {/* Large char at floor -- only when bubble is visible */}
           {activeCard && showCards && bubbleVisible && (
-            <div className="center-char-stage" key={`c-${activeCard.key}`}>
+            <div className={`center-char-stage${fadeOut ? " fade-slow" : ""}`} key={`c-${activeCard.key}`}>
               <img src={activeCard.img} alt={activeCard.title} className="center-char-img" />
             </div>
           )}
