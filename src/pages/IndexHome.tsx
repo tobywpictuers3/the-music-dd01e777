@@ -196,6 +196,8 @@ export default function Index() {
           z-index: 26;
           pointer-events: auto !important;
           direction: rtl;
+          /* explicit width = 4 cards */
+          width: calc(4 * var(--card-w) + 3 * var(--card-gap) + var(--card-gap));
         }
         .cards-top-row.active { pointer-events: auto !important; }
 
@@ -231,7 +233,8 @@ export default function Index() {
           backdrop-filter:blur(12px);
           text-decoration:none; direction:rtl;
           cursor:pointer !important;
-          width:100%; box-sizing:border-box;
+          /* width set per-context: top row cards use var(--card-w) via style prop */
+          box-sizing:border-box;
           pointer-events:auto !important;
           transition:border-color .22s, transform .22s, box-shadow .22s, background .22s;
         }
